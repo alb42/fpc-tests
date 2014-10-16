@@ -1,0 +1,42 @@
+object Form1: TForm1
+  Left = 177
+  Height = 134
+  Top = 167
+  Width = 410
+  Caption = 'Form1'
+  ClientHeight = 134
+  ClientWidth = 410
+  LCLVersion = '1.0.10.0'
+  object ComboBox1: TComboBox
+    Left = 32
+    Height = 29
+    Top = 40
+    Width = 128
+    ItemHeight = 0
+    Items.Strings = (
+      'Entry 1'
+      'Entry 2'
+      'Entry 3'
+    )
+    OnChange = ComboBox1Change
+    TabOrder = 0
+    Text = 'ComboBox1'
+  end
+  object Button1: TButton
+    Left = 168
+    Height = 25
+    Top = 44
+    Width = 88
+    Caption = 'Button1'
+    OnClick = Button1Click
+    TabOrder = 1
+  end
+  object StaticText1: TStaticText
+    Left = 8
+    Height = 23
+    Top = 80
+    Width = 369
+    Caption = 'StaticText1'
+    TabOrder = 2
+  end
+end
