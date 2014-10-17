@@ -13,9 +13,11 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button2: TButton;
     ComboBox1: TComboBox;
     StaticText1: TStaticText;
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
   private
     { private declarations }
@@ -34,14 +36,21 @@ implementation
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-  ComboBox1.Clear;
+  ComboBox1.Items.BeginUpdate;
+  ComboBox1.Items.Clear;
   ComboBox1.Items.add('number 1');
   ComboBox1.Items.add('number 2');
   ComboBox1.Items.add('number 3');
   ComboBox1.Items.add('number 4');
   ComboBox1.Items.add('number 5');
   ComboBox1.Items.add('number 6');
+  ComboBox1.Items.EndUpdate;
   StaticText1.Caption:='Entries changed';
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  ComboBox1.ItemIndex := 2;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
