@@ -1,0 +1,55 @@
+object Form1: TForm1
+  Left = 0
+  Height = 152
+  Top = 238
+  Width = 341
+  Caption = 'Form1'
+  ClientHeight = 152
+  ClientWidth = 341
+  LCLVersion = '1.0.10.0'
+  object ProgressBar1: TProgressBar
+    Left = 8
+    Height = 24
+    Top = 8
+    Width = 296
+    Max = 65
+    Smooth = True
+    Step = 1
+    TabOrder = 0
+    BarShowText = True
+  end
+  object CheckBox1: TCheckBox
+    Left = 24
+    Height = 24
+    Top = 57
+    Width = 51
+    Caption = 'Run'
+    OnChange = CheckBox1Change
+    TabOrder = 1
+  end
+  object Button1: TButton
+    Left = 224
+    Height = 25
+    Top = 56
+    Width = 75
+    Caption = 'Zero'
+    OnClick = Button1Click
+    TabOrder = 2
+  end
+  object ProgressBar2: TProgressBar
+    Left = 312
+    Height = 132
+    Top = 8
+    Width = 24
+    Orientation = pbVertical
+    TabOrder = 3
+    BarShowText = True
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = Timer1Timer
+    left = 180
+    top = 82
+  end
+end
