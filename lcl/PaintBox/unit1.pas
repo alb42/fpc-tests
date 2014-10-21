@@ -40,6 +40,17 @@ begin
     LineTo(5, PaintBox1.Height - 40);
     Pen.Color := clBlue;
     LineTo(50,6);
+    Pen.Color := clYellow;
+    Brush.Color := clGreen;
+    Rectangle(35,25,90,99);
+    Pen.Color := clRed;
+    Font.Color := clRed;
+    Brush.Color := clWhite;
+    Brush.Style:= bsClear;
+    TextOut(100, 100, 'Test Text Clear');
+    Brush.Color := clBlue;
+    Brush.Style:= bsSolid;
+    TextOut(100, 120, 'Test Text Solid');
   end;
 end;
 
