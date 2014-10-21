@@ -1,0 +1,72 @@
+object Form1: TForm1
+  Left = 177
+  Height = 283
+  Top = 167
+  Width = 433
+  Caption = 'Form1'
+  ClientHeight = 283
+  ClientWidth = 433
+  OnCreate = FormCreate
+  LCLVersion = '1.0.10.0'
+  object Label1: TLabel
+    Left = 24
+    Height = 18
+    Top = 15
+    Width = 101
+    Caption = 'AutoSize Label'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 24
+    Height = 18
+    Top = 40
+    Width = 80
+    AutoSize = False
+    Caption = 'Non autosize Label'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 24
+    Height = 66
+    Top = 64
+    Width = 99
+    AutoSize = False
+    Caption = 'Multiline label with a long text'
+    ParentColor = False
+    WordWrap = True
+  end
+  object Label4: TLabel
+    Left = 152
+    Height = 18
+    Top = 15
+    Width = 165
+    Caption = 'Label to Change: 0 Clicks'
+    ParentColor = False
+  end
+  object Button1: TButton
+    Left = 344
+    Height = 25
+    Top = 12
+    Width = 75
+    Caption = 'Click'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object Label5: TLabel
+    Left = 152
+    Height = 18
+    Top = 48
+    Width = 96
+    Caption = 'Label to Move'
+    ParentColor = False
+  end
+  object Button2: TButton
+    Left = 344
+    Height = 25
+    Top = 44
+    Width = 75
+    Caption = 'Move'
+    OnClick = Button2Click
+    TabOrder = 1
+  end
+end
