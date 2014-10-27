@@ -1,0 +1,91 @@
+object Form1: TForm1
+  Left = 377
+  Height = 240
+  Top = 320
+  Width = 320
+  Caption = 'Form1'
+  ClientHeight = 217
+  ClientWidth = 320
+  Menu = MainMenu1
+  LCLVersion = '1.0.10.0'
+  object StaticText1: TStaticText
+    Left = 23
+    Height = 21
+    Top = 19
+    Width = 289
+    Caption = 'StaticText1'
+    TabOrder = 0
+  end
+  object MainMenu1: TMainMenu
+    left = 109
+    top = 48
+    object MenuItem1: TMenuItem
+      Caption = 'File'
+      object MenuItem3: TMenuItem
+        Caption = 'New'
+        ShortCut = 32846
+        OnClick = MenuItem3Click
+      end
+      object MenuItem4: TMenuItem
+        Caption = 'Open'
+        ShortCut = 32847
+        OnClick = MenuItem3Click
+      end
+      object MenuItem5: TMenuItem
+        Caption = 'Save'
+        ShortCut = 32851
+        OnClick = MenuItem3Click
+      end
+      object MenuItem6: TMenuItem
+        Caption = 'Quit'
+        ShortCut = 32849
+        OnClick = MenuItem3Click
+      end
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'About'
+      object MenuItem7: TMenuItem
+        Caption = 'RadioItem'
+        object MenuItem8: TMenuItem
+          AutoCheck = True
+          Caption = 'Radio 1'
+          Checked = True
+          GroupIndex = 1
+          RadioItem = True
+          ShowAlwaysCheckable = True
+          OnClick = MenuItem3Click
+        end
+        object MenuItem9: TMenuItem
+          AutoCheck = True
+          Caption = 'Radio 2'
+          GroupIndex = 1
+          RadioItem = True
+          ShowAlwaysCheckable = True
+          OnClick = MenuItem3Click
+        end
+        object MenuItem10: TMenuItem
+          AutoCheck = True
+          Caption = 'Radio 3'
+          GroupIndex = 1
+          RadioItem = True
+          ShowAlwaysCheckable = True
+          OnClick = MenuItem3Click
+        end
+      end
+      object MenuItem11: TMenuItem
+        Caption = '-'
+        OnClick = MenuItem3Click
+      end
+      object MenuItem12: TMenuItem
+        AutoCheck = True
+        Caption = 'Checkable'
+        OnClick = MenuItem12Click
+      end
+      object MenuItem13: TMenuItem
+        Caption = 'Disabled'
+        Enabled = False
+        OnClick = MenuItem3Click
+      end
+    end
+  end
+end
