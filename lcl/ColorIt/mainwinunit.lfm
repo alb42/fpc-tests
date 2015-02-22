@@ -1,0 +1,232 @@
+object MainForm: TMainForm
+  Left = 233
+  Height = 570
+  Top = 154
+  Width = 645
+  BorderStyle = bsToolWindow
+  Caption = 'ColorIt'
+  ClientHeight = 570
+  ClientWidth = 645
+  OnCreate = FormCreate
+  LCLVersion = '1.0.10.0'
+  object StartGame: TButton
+    Left = 473
+    Height = 40
+    Top = 72
+    Width = 163
+    Caption = 'Restart Game'
+    OnClick = StartGameClick
+    TabOrder = 0
+  end
+  object ColPanel1: TPanel
+    Left = 8
+    Height = 72
+    Top = 480
+    Width = 66
+    Color = clRed
+    ParentColor = False
+    TabOrder = 1
+    OnClick = ColPanel1Click
+  end
+  object ColPanel3: TPanel
+    Tag = 2
+    Left = 160
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = clBlue
+    ParentColor = False
+    TabOrder = 2
+    OnClick = ColPanel1Click
+  end
+  object ColPanel2: TPanel
+    Tag = 1
+    Left = 80
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = clLime
+    ParentColor = False
+    TabOrder = 3
+    OnClick = ColPanel1Click
+  end
+  object ColPanel4: TPanel
+    Tag = 3
+    Left = 240
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = clYellow
+    ParentColor = False
+    TabOrder = 4
+    OnClick = ColPanel1Click
+  end
+  object ColPanel5: TPanel
+    Tag = 4
+    Left = 320
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = clAqua
+    ParentColor = False
+    TabOrder = 5
+    OnClick = ColPanel1Click
+  end
+  object ColPanel6: TPanel
+    Tag = 5
+    Left = 400
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = clFuchsia
+    ParentColor = False
+    TabOrder = 6
+    OnClick = ColPanel1Click
+  end
+  object Panel7: TPanel
+    Left = 473
+    Height = 64
+    Top = 120
+    Width = 163
+    ClientHeight = 64
+    ClientWidth = 163
+    TabOrder = 7
+    object NeedTime: TLabel
+      Left = 80
+      Height = 18
+      Top = 36
+      Width = 64
+      AutoSize = False
+      Caption = '00:00:00'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 16
+      Height = 18
+      Top = 36
+      Width = 38
+      Caption = 'Time:'
+      ParentColor = False
+    end
+    object MoveNum: TLabel
+      Left = 80
+      Height = 18
+      Top = 9
+      Width = 56
+      AutoSize = False
+      Caption = '0'
+      ParentColor = False
+    end
+    object Label1: TLabel
+      Left = 16
+      Height = 18
+      Top = 8
+      Width = 49
+      Caption = 'Moves:'
+      ParentColor = False
+    end
+  end
+  object Label2: TLabel
+    Left = 13
+    Height = 18
+    Top = 456
+    Width = 437
+    Caption = 'Fill complete area with one color by clicking on this color buttons:'
+    ParentColor = False
+  end
+  object GamePanel: TPanel
+    Left = 0
+    Height = 450
+    Top = 0
+    Width = 450
+    BevelOuter = bvNone
+    Caption = 'GamePanel'
+    ClientHeight = 450
+    ClientWidth = 450
+    TabOrder = 8
+    object Gamefield: TPaintBox
+      Left = 0
+      Height = 450
+      Top = 0
+      Width = 450
+      OnPaint = GamefieldPaint
+    end
+  end
+  object ChooseSize: TComboBox
+    Left = 512
+    Height = 29
+    Top = 8
+    Width = 124
+    ItemHeight = 0
+    ItemIndex = 1
+    Items.Strings = (
+      'Small'
+      'Medium'
+      'Big'
+    )
+    TabOrder = 9
+    Text = 'Medium'
+  end
+  object Label4: TLabel
+    Left = 473
+    Height = 18
+    Top = 16
+    Width = 32
+    Caption = 'Size:'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 473
+    Height = 18
+    Top = 48
+    Width = 49
+    Caption = 'Colors:'
+    ParentColor = False
+  end
+  object ChooseColors: TComboBox
+    Left = 576
+    Height = 29
+    Top = 37
+    Width = 60
+    ItemHeight = 0
+    Items.Strings = (
+      '3'
+      '4'
+      '5'
+      '6'
+      '7'
+      '8'
+    )
+    TabOrder = 10
+    Text = '6'
+  end
+  object ColPanel7: TPanel
+    Tag = 5
+    Left = 480
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = 36351
+    ParentColor = False
+    TabOrder = 11
+    OnClick = ColPanel1Click
+  end
+  object ColPanel8: TPanel
+    Tag = 5
+    Left = 560
+    Height = 72
+    Top = 480
+    Width = 72
+    Color = 16711838
+    ParentColor = False
+    TabOrder = 12
+    OnClick = ColPanel1Click
+  end
+  object OverallTimer: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = OverallTimerTimer
+    left = 472
+    top = 296
+  end
+end
