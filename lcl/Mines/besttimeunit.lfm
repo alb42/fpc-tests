@@ -1,0 +1,29 @@
+object Form2: TForm2
+  Left = 58
+  Height = 491
+  Top = 157
+  Width = 304
+  BorderStyle = bsDialog
+  Caption = 'Statistics'
+  ClientHeight = 491
+  ClientWidth = 304
+  LCLVersion = '1.0.10.0'
+  object okButton: TButton
+    Left = 112
+    Height = 25
+    Top = 456
+    Width = 75
+    Caption = 'Ok'
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object Stat: TMemo
+    Left = 16
+    Height = 440
+    Top = 8
+    Width = 278
+    ReadOnly = True
+    ScrollBars = ssAutoBoth
+    TabOrder = 1
+  end
+end

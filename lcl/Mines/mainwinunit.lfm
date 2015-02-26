@@ -1,0 +1,145 @@
+object MainWin: TMainWin
+  Left = 41
+  Height = 498
+  Top = 55
+  Width = 481
+  Caption = 'FPCMines'
+  ClientHeight = 498
+  ClientWidth = 481
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  LCLVersion = '1.0.10.0'
+  object TopPanel: TPanel
+    Left = 0
+    Height = 64
+    Top = 0
+    Width = 481
+    Align = alTop
+    ClientHeight = 64
+    ClientWidth = 481
+    TabOrder = 0
+    object NewButton: TButton
+      Left = 8
+      Height = 25
+      Top = 5
+      Width = 100
+      Caption = 'New'
+      OnClick = NewButtonClick
+      TabOrder = 0
+    end
+    object PlayMode: TComboBox
+      Left = 8
+      Height = 27
+      Top = 34
+      Width = 100
+      ItemHeight = 0
+      ItemIndex = 0
+      Items.Strings = (
+        'Easy'
+        'Medium'
+        'Hard'
+      )
+      Style = csDropDownList
+      TabOrder = 1
+      Text = 'Easy'
+    end
+    object ScoreBoard: TButton
+      Left = 304
+      Height = 25
+      Top = 5
+      Width = 96
+      Caption = 'Statistics'
+      OnClick = ScoreBoardClick
+      TabOrder = 2
+    end
+    object Panel1: TPanel
+      Left = 112
+      Height = 56
+      Top = 2
+      Width = 192
+      BevelOuter = bvNone
+      ClientHeight = 56
+      ClientWidth = 192
+      TabOrder = 3
+      object Label1: TLabel
+        Left = 8
+        Height = 25
+        Top = 8
+        Width = 133
+        Caption = 'Mines to find:'
+        Font.Height = 20
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label2: TLabel
+        Left = 8
+        Height = 25
+        Top = 37
+        Width = 55
+        Caption = 'Time:'
+        Font.Height = 20
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object TimeLabel: TLabel
+        Left = 112
+        Height = 25
+        Top = 37
+        Width = 81
+        Caption = '00:00:00'
+        Font.Height = 20
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+      object MineLabel: TLabel
+        Left = 161
+        Height = 25
+        Top = 8
+        Width = 23
+        Caption = '00'
+        Font.Height = 20
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+      end
+    end
+  end
+  object PlayPanel: TPanel
+    Left = 0
+    Height = 434
+    Top = 64
+    Width = 481
+    Align = alClient
+    BevelInner = bvLowered
+    ClientHeight = 434
+    ClientWidth = 481
+    TabOrder = 1
+    object PlayField: TPaintBox
+      Left = 2
+      Height = 430
+      Top = 2
+      Width = 477
+      Align = alClient
+      OnDblClick = PlayFieldDblClick
+      OnMouseDown = PlayFieldMouseDown
+      OnMouseMove = PlayFieldMouseMove
+      OnMouseUp = PlayFieldMouseUp
+      OnMouseLeave = PlayFieldMouseLeave
+      OnPaint = PlayFieldPaint
+    end
+  end
+  object GameTimer: TTimer
+    Enabled = False
+    OnTimer = GameTimerTimer
+    left = 16
+    top = 8
+  end
+end
