@@ -1,17 +1,17 @@
 object Form1: TForm1
-  Left = 84
+  Left = 82
   Height = 230
-  Top = 104
-  Width = 316
+  Top = 163
+  Width = 391
   Caption = 'Form1'
   ClientHeight = 230
-  ClientWidth = 316
+  ClientWidth = 391
   LCLVersion = '1.0.10.0'
   object Image1: TImage
     Left = 0
     Height = 186
     Top = 44
-    Width = 316
+    Width = 391
     Align = alBottom
     Anchors = [akTop, akLeft, akRight, akBottom]
     Picture.Data = {
@@ -926,5 +926,14 @@ object Form1: TForm1
     OnChange = CheckBox2Change
     State = cbChecked
     TabOrder = 1
+  end
+  object Button1: TButton
+    Left = 288
+    Height = 25
+    Top = 8
+    Width = 75
+    Caption = 'Draw'
+    OnClick = Button1Click
+    TabOrder = 2
   end
 end
