@@ -9,7 +9,9 @@ uses
   StdCtrls, Math, dos;
 
 const
-  Version = '$VER: FPCMines 1.0 (26.02.2015)';
+  Version = '$VER: FPCMines 1.1 (03.03.2015)';
+                                  // 0        1        2       3      4       5       6          7          8
+  Colors: array[0..8] of TColor = (clBlack, clBlue, clGreen, clRed, clNavy, clPurple, clTeal, clMaroon, clFuchsia);
 
 type
   TDrawStatus = (dsClosed, dsQuestion, dsMine, dsOpen);
@@ -119,8 +121,8 @@ begin
   Cv.Pen.Style:= psSolid;
   Cv.Brush.Style:= bsSolid;
   CV.Pen.Mode:= pmCopy;
-  Cv.Font.Name:='Arial';
-  cv.Font.Height:=13;
+  Cv.Font.Name:='Vera Sans Bold';
+  cv.Font.Height := Max(13, Min(TileHeight, TileWidth) div 2);
   // redraw all tiles
   for x := 0 to XSize - 1 do
   begin
@@ -140,8 +142,9 @@ begin
           Cv.Brush.Color := clWhite;
           if MArea[x,y].Status > 0 then // it has a number paint the number
           begin
-            cx := TileWidth div 2 + XPos;
-            cy := TileHeight div 2 + YPos;
+            cx := TileWidth div 2 + XPos - (CV.TextWidth('2') div 2);
+            cy := TileHeight div 2 + YPos - (CV.TextHeight('|') div 2);
+            CV.Font.Color:= Colors[MArea[x,y].Status];
             CV.TextOut(cx, cy, IntToStr(MArea[x,y].Status));
           end;
         end else
