@@ -5,7 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  ExtCtrls;
 
 type
 
@@ -13,9 +14,13 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    PaintBox1: TPaintBox;
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure PaintBox1Paint(Sender: TObject);
   private
-    { private declarations }
+    Bit: TBitmap;
   public
     { public declarations }
   end;
@@ -33,7 +38,7 @@ procedure TForm1.Button1Click(Sender: TObject);
 var
   Bmp: TBitmap;
 begin
-  Bmp := TBitmap.Create;
+  Bmp := Bit;
   try
     Bmp.SetSize(100,100);
     Bmp.Canvas.Brush.Color := clRed;
@@ -55,8 +60,23 @@ begin
     Bmp.Canvas.TextOut(50,50, 'Test');
     Bmp.SaveToFile('test.bmp');
   finally
-    Bmp.Free;
   end;
+  PaintBox1.Invalidate;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Bit := TBitmap.create;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  Bit.Free;
+end;
+
+procedure TForm1.PaintBox1Paint(Sender: TObject);
+begin
+  PaintBox1.Canvas.Draw(0,0, Bit);
 end;
 
 end.
