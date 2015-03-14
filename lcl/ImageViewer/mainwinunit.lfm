@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 51
+  Left = 92
   Height = 472
-  Top = 76
+  Top = 252
   Width = 670
   Caption = 'APict'
   ClientHeight = 472
@@ -10,22 +10,23 @@ object MainForm: TMainForm
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnResize = FormResize
+  OnShow = FormShow
   LCLVersion = '1.0.10.0'
   object TopPanel: TPanel
     Left = 0
-    Height = 42
+    Height = 31
     Top = 0
     Width = 670
     Align = alTop
     BevelInner = bvRaised
     BevelOuter = bvLowered
-    ClientHeight = 42
+    ClientHeight = 31
     ClientWidth = 670
     TabOrder = 0
     object OpenButton: TBitBtn
-      Left = 8
-      Height = 30
-      Top = 8
+      Left = 6
+      Height = 22
+      Top = 4
       Width = 56
       Caption = 'Open'
       ModalResult = 10
@@ -33,39 +34,80 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object PrevButton: TBitBtn
-      Left = 64
-      Height = 30
-      Top = 8
+      Left = 62
+      Height = 22
+      Top = 4
       Width = 40
       Caption = '<--'
       OnClick = PrevButtonClick
       TabOrder = 1
     end
     object NextButton: TBitBtn
-      Left = 104
-      Height = 30
-      Top = 8
+      Left = 102
+      Height = 22
+      Top = 4
       Width = 40
       Caption = '-->'
       OnClick = NextButtonClick
       TabOrder = 2
     end
+    object ZoomInButton: TBitBtn
+      Left = 142
+      Height = 22
+      Top = 4
+      Width = 40
+      Caption = '+'
+      Enabled = False
+      OnClick = ZoomInButtonClick
+      TabOrder = 3
+    end
+    object ZoomOutButton: TBitBtn
+      Left = 182
+      Height = 22
+      Top = 4
+      Width = 40
+      Caption = '-'
+      Enabled = False
+      OnClick = ZoomOutButtonClick
+      TabOrder = 4
+    end
+    object ZoomResetButton: TBitBtn
+      Left = 222
+      Height = 22
+      Top = 4
+      Width = 40
+      Caption = 'R'
+      Enabled = False
+      OnClick = ZoomResetButtonClick
+      TabOrder = 5
+    end
+    object IsStretched: TCheckBox
+      Left = 264
+      Height = 24
+      Top = 3
+      Width = 151
+      Caption = 'Stretch to Window'
+      Checked = True
+      OnClick = IsStretchedClick
+      State = cbChecked
+      TabOrder = 6
+    end
   end
   object LowerPanel: TPanel
     Left = 0
-    Height = 34
-    Top = 438
+    Height = 22
+    Top = 450
     Width = 670
     Align = alBottom
     BevelInner = bvRaised
     BevelOuter = bvLowered
-    ClientHeight = 34
+    ClientHeight = 22
     ClientWidth = 670
     TabOrder = 1
     object SizeLabel: TLabel
       Left = 8
       Height = 19
-      Top = 10
+      Top = 3
       Width = 55
       Caption = 'Info: '
       Font.Height = 15
@@ -76,27 +118,53 @@ object MainForm: TMainForm
   end
   object ImagePanel: TPanel
     Left = 0
-    Height = 396
-    Top = 42
-    Width = 670
+    Height = 406
+    Top = 31
+    Width = 657
     Align = alClient
     BevelOuter = bvNone
-    ClientHeight = 396
-    ClientWidth = 670
+    ClientHeight = 406
+    ClientWidth = 657
     TabOrder = 2
-    object Image1: TImage
+    object PB: TPaintBox
       Left = 0
-      Height = 396
+      Height = 406
       Top = 0
-      Width = 670
+      Width = 657
       Align = alClient
-      Proportional = True
-      Stretch = True
+      Color = clBlack
+      ParentColor = False
+      OnMouseDown = PBMouseDown
+      OnMouseMove = PBMouseMove
+      OnMouseUp = PBMouseUp
+      OnPaint = PBPaint
     end
+  end
+  object VerticalSB: TScrollBar
+    Left = 657
+    Height = 406
+    Top = 31
+    Width = 13
+    Align = alRight
+    Kind = sbVertical
+    PageSize = 0
+    TabOrder = 3
+    OnChange = VerticalSBChange
+  end
+  object HorizontalSB: TScrollBar
+    Left = 0
+    Height = 13
+    Top = 437
+    Width = 670
+    Align = alBottom
+    PageSize = 1
+    Position = 96
+    TabOrder = 4
+    OnChange = HorizontalSBChange
   end
   object OpenDialog: TOpenDialog
     Title = 'Open Image'
-    left = 248
+    left = 552
     top = 8
   end
 end
