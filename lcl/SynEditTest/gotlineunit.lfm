@@ -1,0 +1,42 @@
+object GoToLineWin: TGoToLineWin
+  Left = 383
+  Height = 54
+  Top = 86
+  Width = 266
+  BorderStyle = bsDialog
+  Caption = 'GoTo Line'
+  ClientHeight = 54
+  ClientWidth = 266
+  OnShow = FormShow
+  LCLVersion = '1.0.10.0'
+  object AimLine: TEdit
+    Left = 90
+    Height = 27
+    Top = 12
+    Width = 80
+    Alignment = taRightJustify
+    OnChange = AimLineChange
+    OnEditingDone = AimLineEditingDone
+    OnKeyDown = AimLineKeyDown
+    TabOrder = 0
+    Text = '1'
+  end
+  object Label1: TLabel
+    Left = 8
+    Height = 18
+    Top = 16
+    Width = 71
+    Caption = 'GoTo Line:'
+    ParentColor = False
+  end
+  object OkButton: TButton
+    Left = 176
+    Height = 27
+    Top = 12
+    Width = 75
+    Caption = 'Close'
+    ModalResult = 1
+    OnClick = OkButtonClick
+    TabOrder = 1
+  end
+end

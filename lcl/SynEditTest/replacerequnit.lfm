@@ -1,0 +1,69 @@
+object ReplaceRequest: TReplaceRequest
+  Left = 476
+  Height = 116
+  Top = 191
+  Width = 358
+  BorderStyle = bsDialog
+  Caption = 'Replace this?'
+  ClientHeight = 116
+  ClientWidth = 358
+  LCLVersion = '1.0.10.0'
+  object MsgPanel: TPanel
+    Left = 5
+    Height = 56
+    Top = 5
+    Width = 348
+    Align = alClient
+    BorderSpacing.Around = 5
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    TabOrder = 0
+  end
+  object ButtonPanel: TPanel
+    Left = 0
+    Height = 50
+    Top = 66
+    Width = 358
+    Align = alBottom
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 358
+    TabOrder = 1
+    object YesButton: TButton
+      Left = 8
+      Height = 25
+      Top = 13
+      Width = 75
+      Caption = 'Yes'
+      ModalResult = 6
+      TabOrder = 0
+    end
+    object NoButton: TButton
+      Left = 184
+      Height = 25
+      Top = 14
+      Width = 75
+      Caption = 'No'
+      ModalResult = 7
+      TabOrder = 1
+    end
+    object YesToAllButton: TButton
+      Left = 96
+      Height = 25
+      Top = 14
+      Width = 75
+      Caption = 'Yes to All'
+      ModalResult = 10
+      TabOrder = 2
+    end
+    object CancelButton: TButton
+      Left = 272
+      Height = 25
+      Top = 13
+      Width = 75
+      Caption = 'Cancel'
+      ModalResult = 2
+      TabOrder = 3
+    end
+  end
+end
