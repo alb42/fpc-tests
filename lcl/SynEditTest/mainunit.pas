@@ -14,7 +14,7 @@ uses
   synexporthtml, SynEditTypes, StrUtils, SynEditKeyCmds, LCLType, Math;
 
 const
-  VERSION = '$VER: EdiSyn 0.21 (21.03.2015)';
+  VERSION = '$VER: EdiSyn 0.22 (22.03.2015)';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
