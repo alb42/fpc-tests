@@ -25,13 +25,14 @@ type
     OldText: string;
     NewLine: Integer;
   public
-    SynEdit1: TSynEdit;
   end;
 
 var
   GoToLineWin: TGoToLineWin;
 
 implementation
+uses
+  MainUnit;
 
 {$R *.lfm}
 
@@ -41,7 +42,7 @@ procedure TGoToLineWin.FormShow(Sender: TObject);
 begin
   AimLine.SetFocus;
   AimLine.Text := '';
-  NewLine := SynEdit1.CaretY;
+  NewLine := Form1.CurEditor.CaretY;
 end;
 
 procedure TGoToLineWin.OkButtonClick(Sender: TObject);
@@ -63,13 +64,13 @@ begin
   end else
   begin
     OldText := NewText;
-    SynEdit1.CaretY := NewLine;
+    Form1.CurEditor.CaretY := NewLine;
   end;
 end;
 
 procedure TGoToLineWin.AimLineEditingDone(Sender: TObject);
 begin
-  SynEdit1.CaretY := Min(SynEdit1.Lines.Count, NewLine);
+  Form1.CurEditor.CaretY := Min(Form1.CurEditor.Lines.Count, NewLine);
   Close;
 end;
 
@@ -78,7 +79,7 @@ procedure TGoToLineWin.AimLineKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_RETURN then
   begin
-    SynEdit1.CaretY := Min(SynEdit1.Lines.Count, NewLine);
+    Form1.CurEditor.CaretY := Min(Form1.CurEditor.Lines.Count, NewLine);
     Close;
   end;
 end;

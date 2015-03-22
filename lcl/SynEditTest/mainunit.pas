@@ -8,13 +8,14 @@ uses
 
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,
   Graphics, Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, SynHighlighterCpp,
+  contnrs, FrameUnit,
   {$ifdef HASAMIGA}
   Workbench,
   {$endif}
-  synexporthtml, SynEditTypes, StrUtils, SynEditKeyCmds, LCLType, Math;
+  synexporthtml, SynEditTypes, StrUtils, SynEditKeyCmds, LCLType, Math, ATTabs;
 
 const
-  VERSION = '$VER: EdiSyn 0.22 (22.03.2015)';
+  VERSION = '$VER: EdiSyn 0.3 (22.03.2015)';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -134,6 +135,7 @@ type
     MenuItem1: TMenuItem;
     GoToLineMenu: TMenuItem;
     AutoMenu: TMenuItem;
+    EditorPanel: TPanel;
     ShowNumMenu: TMenuItem;
     ViewMenu: TMenuItem;
     RecMenu5: TMenuItem;
@@ -164,8 +166,6 @@ type
     PasteMenu: TMenuItem;
     SelAllMenu: TMenuItem;
     SaveAsMenu: TMenuItem;
-    SynEdit1: TSynEdit;
-    SynPasSyn1: TSynPasSyn;
     MainMenu: TMainMenu;
     FileMenu: TMenuItem;
     NewMenu: TMenuItem;
@@ -179,7 +179,6 @@ type
     ExampleMenu: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
-    SynCppSyn1: TSynCppSyn;
     SynExporterHTML1: TSynExporterHTML;
     procedure AutoMenuClick(Sender: TObject);
     procedure CMenuClick(Sender: TObject);
@@ -214,19 +213,28 @@ type
       AReplace: string; Line, Column: integer;
       var ReplaceAction: TSynReplaceAction);
     procedure SynEdit1StatusChange(Sender: TObject; Changes: TSynStatusChanges);
+    procedure TabClickEvent(Sender: TObject);
+    procedure TabCloseEvent(Sender: TObject; ATabIndex: Integer; var ACanClose,
+      ACanContinue: boolean);
+    procedure TabPlusClickEvent(Sender: TObject);
     procedure UndoMenuClick(Sender: TObject);
   private
+    FAbsCount: Integer;
     ProgName: string;
-    FFilename: string;
-    ChangedStamp: Int64;
     RecFileList: TStringList;
     RecMenuList: array[0..9] of TMenuItem;
     procedure ResetChanged;
     procedure RemakeRecentFiles;
     procedure AddNewRecent(Filename: string);
     procedure AutoHighlighter;
+    procedure UpdateStatusBar;
+    procedure UpdateTitlebar;
   public
+    Tabs: TATTabs;
     procedure LoadFile;
+    function AbsCount: Integer;
+    function CurEditor: TSynEdit;
+    function CurFrame: TEditorFrame;
     { public declarations }
   end;
 
@@ -245,12 +253,12 @@ uses
 procedure TForm1.ExampleMenuClick(Sender: TObject);
 begin
   if CMenu.Checked then
-    SynEdit1.Lines.Text := CTEXT
+    CurEditor.Lines.Text := CTEXT
   else
     if PascalMenu.checked then
-      SynEdit1.Lines.Text := PASTEXT
+      CurEditor.Lines.Text := PASTEXT
     else
-      SynEdit1.Lines.Text := NTEXT;
+      CurEditor.Lines.Text := NTEXT;
   ResetChanged;
 end;
 
@@ -258,8 +266,8 @@ procedure TForm1.ExportMenuClick(Sender: TObject);
 begin
   if SaveDialog1.Execute then
   begin
-    SynExporterHTML1.ExportAll(SynEdit1.Lines);
-    SynExporterHTML1.Highlighter := SynEdit1.Highlighter;
+    SynExporterHTML1.ExportAll(CurEditor.Lines);
+    SynExporterHTML1.Highlighter := CurEditor.Highlighter;
     SynExporterHTML1.SaveToFile(SaveDialog1.FileName);
   end;
 end;
@@ -267,11 +275,17 @@ end;
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
   Res: Integer;
+  i: Integer;
 begin
   CanClose := True;
-  if SynEdit1.Modified then
+  for i := 0 to Tabs.TabCount - 1 do
   begin
-    Res := MessageDlg('Unsaved Changes', 'There are unsaved changes in this document do you really want to close?', mtConfirmation, mbYesNo, 0);
+    if TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject).Editor.Modified then
+      CanClose := False;
+  end;
+  if not CanClose then
+  begin
+    Res := MessageDlg('Unsaved Changes', 'There are unsaved changes do you really want to close?', mtConfirmation, mbYesNo, 0);
     CanClose := Res = mrYes;
   end;
 end;
@@ -280,7 +294,45 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   i: Integer;
   NFile: string;
+  NewFrame: TEditorFrame;
 begin
+  FAbsCount := 0;
+  //
+  Tabs := TATTabs.create(Self);
+  Tabs.Align:= alTop;
+  Tabs.Font.Size:= 8;
+  Tabs.Height:= 42;
+  Tabs.TabAngle:= 0;
+  Tabs.TabIndentInter:= 2;
+  Tabs.TabIndentInit:= 2;
+  Tabs.TabIndentTop:= 4;
+  Tabs.TabIndentXSize:= 13;
+  Tabs.TabWidthMin:= 18;
+  Tabs.TabDragEnabled:= false;
+
+  Tabs.Font.Color:= clBlack;
+  Tabs.ColorBg:= $F9EADB;
+  Tabs.ColorBorderActive:= $ACA196;
+  Tabs.ColorBorderPassive:= $ACA196;
+  Tabs.ColorTabActive:= $FCF5ED;
+  Tabs.ColorTabPassive:= $E0D3C7;
+  Tabs.ColorTabOver:= $F2E4D7;
+  Tabs.ColorCloseBg:= clNone;
+  Tabs.ColorCloseBgOver:= $D5C9BD;
+  Tabs.ColorCloseBorderOver:= $B0B0B0;
+  Tabs.ColorCloseX:= $7B6E60;
+  Tabs.ColorArrow:= $5C5751;
+  Tabs.ColorArrowOver:= Tabs.ColorArrow;
+  Tabs.Parent := Self;
+  Tabs.OnTabPlusClick:=@TabPlusClickEvent;
+  Tabs.OnTabClose:=@TabCloseEvent;
+  Tabs.OnTabClick:=@TabClickEvent;
+  NewFrame := TEditorFrame.Create(Self);
+  NewFrame.TabLink := Tabs;
+  NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
+  NewFrame.Align := alClient;
+  NewFrame.Editor.Parent := EditorPanel;
+  Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
   // Auto Highlighter
   AutoMenu.Checked := Prefs.AutoHighlighter;
   case Prefs.DefHighlighter of
@@ -299,8 +351,8 @@ begin
   end;
   // LineNumbers
   ShowNumMenu.Checked := Prefs.LineNumbers;
-  SynEdit1.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
-  SynEdit1.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  CurEditor.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
+  CurEditor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
   // Recent Files
   RecFileList := TStringList.Create;
   RecMenuList[0] := RecMenu1;
@@ -323,26 +375,26 @@ begin
     RecMenuList[i].Tag := i;
   end;
   // Load file if parameter list
-  FFilename := '';
+  CurFrame.Filename := '';
   if Paramcount > 0 then
   begin
     try
-      FFilename := ParamStr(1);
+      CurFrame.Filename := ParamStr(1);
       LoadFile;
     except
-      FFilename := '';
+      CurFrame.Filename := '';
     end;
   end;
   {$ifdef HASAMIGA}
-  if (FFilename = '') and Assigned(AOS_WBMsg) then
+  if (CurFrame.Filename = '') and Assigned(AOS_WBMsg) then
   begin
     if PWBStartup(AOS_WBMsg)^.sm_NumArgs > 1 then
     begin
       try
-        FFilename := PWBStartup(AOS_WBMsg)^.sm_ArgList^[2].WA_Name;
+        CurFrame.Filename := PWBStartup(AOS_WBMsg)^.sm_ArgList^[2].WA_Name;
         LoadFile;
       except
-        FFilename := '';
+        CurFrame.Filename := '';
       end;
     end;
   end;
@@ -352,10 +404,7 @@ begin
   Delete(Progname, 1, 6);
   Delete(Progname, Pos('(', Progname), Length(Progname));
   //
-  if FFilename = '' then
-    Caption := Progname + ' - No File Loaded'
-  else
-    Caption := Progname + ' - ' + ExtractFileName(FFilename);
+  UpdateTitlebar;
   ResetChanged;
 end;
 
@@ -371,13 +420,11 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 begin
   SetBounds(Prefs.XPos, Prefs.YPos, Prefs.Width, Prefs.Height);
-  SynEdit1.SetFocus;
 end;
 
 procedure TForm1.GoToLineMenuClick(Sender: TObject);
 begin
   GotoLineWin.Visible := False;
-  GoToLineWin.SynEdit1 := SynEdit1;
   GoToLineWin.SetBounds(Max(5, Left + Width - GotoLineWin.Width), Max(5, Top - GoToLineWin.Height div 2), GoToLineWin.Width, GoToLineWin.Height);
   GoToLineWin.Show;
 end;
@@ -386,7 +433,7 @@ procedure TForm1.NoneMenuClick(Sender: TObject);
 begin
   if NoneMenu.Checked then
   begin
-    SynEdit1.Highlighter := nil;
+    CurEditor.Highlighter := nil;
     Prefs.DefHighlighter := HIGHLIGHTER_NONE;
     ExportMenu.Enabled := False;
   end;
@@ -394,7 +441,7 @@ end;
 
 procedure TForm1.PasteMenuClick(Sender: TObject);
 begin
-  SynEdit1.PasteFromClipboard;
+  CurEditor.PasteFromClipboard;
 end;
 
 procedure TForm1.PersSelMenuClick(Sender: TObject);
@@ -411,7 +458,7 @@ begin
     Num := TMenuItem(Sender).Tag;
     if (Num >= 0) and (Num < RecFileList.Count) then
     begin
-      FFileName := RecFileList[Num];
+      CurFrame.FileName := RecFileList[Num];
       LoadFile;
     end;
   end;
@@ -419,12 +466,11 @@ end;
 
 procedure TForm1.RedoMenuClick(Sender: TObject);
 begin
-  SynEdit1.Redo;
+  CurEditor.Redo;
 end;
 
 procedure TForm1.ReplaceMenuClick(Sender: TObject);
 begin
-  SearchReplaceWin.SynEdit1 := SynEdit1;
   SearchReplaceWin.StartReq(True);
 end;
 
@@ -435,20 +481,19 @@ end;
 
 procedure TForm1.SearchMenuClick(Sender: TObject);
 begin
-  SearchReplaceWin.SynEdit1 := SynEdit1;
   SearchReplaceWin.StartReq(False);
 end;
 
 procedure TForm1.SelAllMenuClick(Sender: TObject);
 begin
-  SynEdit1.SelectAll;
+  CurEditor.SelectAll;
 end;
 
 procedure TForm1.NewMenuClick(Sender: TObject);
 begin
-  FFilename := '';
-  SynEdit1.Lines.Clear;
-  Caption := Progname + ' - No File Loaded';
+  CurFrame.Filename := '';
+  CurEditor.Lines.Clear;
+  UpdateTitlebar;
   ResetChanged;
 end;
 
@@ -462,7 +507,7 @@ begin
     OpenDialog1.InitialDir := 'Sys:';
   if OpenDialog1.Execute then
   begin
-    FFilename := OpenDialog1.FileName;
+    CurFrame.Filename := OpenDialog1.FileName;
     LoadFile;
     Prefs.InitialDir := ExtractFilePath(OpenDialog1.FileName);
   end;
@@ -472,7 +517,7 @@ procedure TForm1.CMenuClick(Sender: TObject);
 begin
   if CMenu.Checked then
   begin
-    SynEdit1.Highlighter := SynCppSyn1;
+    CurEditor.Highlighter := CurFrame.SynCppSyn1;
     Prefs.DefHighlighter := HIGHLIGHTER_C;
     ExportMenu.Enabled := True;
   end;
@@ -485,19 +530,19 @@ end;
 
 procedure TForm1.CopyMenuClick(Sender: TObject);
 begin
-  SynEdit1.CopyToClipboard;
+  CurEditor.CopyToClipboard;
 end;
 
 procedure TForm1.CutMenuClick(Sender: TObject);
 begin
-  SynEdit1.CutToClipboard;
+  CurEditor.CutToClipboard;
 end;
 
 procedure TForm1.PascalMenuClick(Sender: TObject);
 begin
   if PascalMenu.Checked then
   begin
-    SynEdit1.Highlighter := SynPasSyn1;
+    CurEditor.Highlighter := CurFrame.SynPasSyn1;
     Prefs.DefHighlighter := HIGHLIGHTER_PASCAL;
     ExportMenu.Enabled := True;
   end;
@@ -505,45 +550,52 @@ end;
 
 procedure TForm1.QuitMenuClick(Sender: TObject);
 begin
-  SynEdit1.Lines.Clear;
-  SynEdit1.SelStart := 0;
-  SynEdit1.SelEnd := 0;
+  CurEditor.Lines.Clear;
+  CurEditor.SelStart := 0;
+  CurEditor.SelEnd := 0;
   Close;
 end;
 
 procedure TForm1.SaveAsMenuClick(Sender: TObject);
 begin
-  SaveDialog1.InitialDir:= ExtractFilePath(FFilename);
+  SaveDialog1.InitialDir:= ExtractFilePath(CurFrame.Filename);
   if SaveDialog1.InitialDir = '' then
     SaveDialog1.InitialDir := Prefs.InitialDir;
-  SaveDialog1.FileName:= ExtractFileName(FFilename);
+  SaveDialog1.FileName:= ExtractFileName(CurFrame.Filename);
   if SaveDialog1.Execute then
   begin
-    FFilename := SaveDialog1.FileName;
-    SynEdit1.Lines.SaveToFile(FFilename);
-    Caption := Progname + ' - ' + ExtractFileName(FFilename);
-    AddNewRecent(FFilename);
+    CurFrame.Filename := SaveDialog1.FileName;
+    CurEditor.Lines.SaveToFile(CurFrame.Filename);
+    UpdateTitlebar;
+    AddNewRecent(CurFrame.Filename);
     ResetChanged;
   end;
 end;
 
 procedure TForm1.SaveMenuClick(Sender: TObject);
 begin
-  if FFilename <> '' then
+  if CurFrame.Filename <> '' then
   begin
-    SynEdit1.Lines.SaveToFile(FFilename);
-    Caption := Progname + ' - ' + ExtractFileName(FFilename);
+    CurEditor.Lines.SaveToFile(CurFrame.Filename);
+    UpdateTitlebar;
     ResetChanged;
-    SynEdit1.MarkTextAsSaved;
+    CurEditor.MarkTextAsSaved;
   end else
     SaveAsMenuClick(Sender);
 end;
 
 procedure TForm1.ShowNumMenuClick(Sender: TObject);
+var
+  Editor: TSynEdit;
+  i: Integer;
 begin
   Prefs.LineNumbers := ShowNumMenu.Checked;
-  SynEdit1.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
-  SynEdit1.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  for i := 0 to Tabs.TabCount - 1 do
+  begin
+    Editor := TSynEdit(TEditorFrame(Tabs.GetTabData(i).TabObject).Editor);
+    Editor.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
+    Editor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  end;
 end;
 
 procedure TForm1.SynEdit1ProcessCommand(Sender: TObject;
@@ -579,23 +631,71 @@ end;
 procedure TForm1.SynEdit1StatusChange(Sender: TObject;
   Changes: TSynStatusChanges);
 begin
-  CoordPanel.Caption := IntToStr(SynEdit1.CaretX) + ', ' + IntToStr(SynEdit1.CaretY);
-  ChangedPanel.Caption := ifthen(SynEdit1.Modified, 'Changed', '');
-  UndoMenu.Enabled := SynEdit1.CanUndo;
-  RedoMenu.Enabled := SynEdit1.CanRedo;
-  PasteMenu.Enabled := SynEdit1.CanPaste;
+  if CurEditor = Sender then
+  begin
+    UpdateStatusBar;
+  end;
+end;
+
+procedure TForm1.TabClickEvent(Sender: TObject);
+var
+  i: Integer;
+  Frame: TEditorFrame;
+begin
+  for i := 0 to Tabs.TabCount - 1 do
+  begin
+    Frame := TEditorFrame(Tabs.GetTabData(i).TabObject);
+    Frame.Editor.Visible := i = Tabs.TabIndex;
+    if Frame.Editor.Visible then
+    begin
+      Frame.Editor.SetFocus;
+    end;
+  end;
+  UpdateStatusBar;
+  UpdateTitlebar;
+end;
+
+procedure TForm1.TabCloseEvent(Sender: TObject; ATabIndex: Integer;
+  var ACanClose, ACanContinue: boolean);
+begin
+  if Tabs.TabCount > 1 then
+  begin
+    Tabs.GetTabData(ATabIndex).TabObject.Free;
+    ACanClose := True;
+  end else
+  begin
+    CurEditor.Lines.Clear;
+    ACanClose := False;
+  end;
+end;
+
+procedure TForm1.TabPlusClickEvent(Sender: TObject);
+var
+  NewFrame: TEditorFrame;
+begin
+  NewFrame := TEditorFrame.Create(Self);
+  NewFrame.TabLink := Tabs;
+  NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
+  NewFrame.Align := alClient;
+  NewFrame.Editor.Parent := EditorPanel;
+  NewFrame.Editor.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
+  NewFrame.Editor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
+  NewFrame.Editor.SetFocus;
+  Tabs.TabIndex := Tabs.TabCount - 1;
 end;
 
 procedure TForm1.UndoMenuClick(Sender: TObject);
 begin
-  SynEdit1.Undo;
+  CurEditor.Undo;
 end;
 
 procedure TForm1.ResetChanged;
 begin
-  ChangedStamp := SynEdit1.ChangeStamp;
-  SynEdit1.Modified := False;
-  ChangedPanel.Caption := ifthen(SynEdit1.Modified, 'Changed', '');
+  CurEditor.Modified := False;
+  Tabs.GetTabData(Tabs.TabIndex).TabModified := False;
+  Tabs.Invalidate;
+  UpdateTitlebar;
 end;
 
 procedure TForm1.RemakeRecentFiles;
@@ -628,7 +728,7 @@ begin
       RecFileList.Delete(Idx);
     RecFileList.Insert(0, Filename);
     RemakeRecentFiles;
-    Prefs.InitialDir := ExtractFilePath(FFileName);
+    Prefs.InitialDir := ExtractFilePath(CurFrame.FileName);
   end;
 end;
 
@@ -639,7 +739,7 @@ var
 begin
   if AutoMenu.Checked then
   begin
-    Ext := LowerCase(trim(ExtractFileExt(FFilename)));
+    Ext := LowerCase(trim(ExtractFileExt(CurFrame.Filename)));
     for i := 0 to High(PASEXT) do
     begin
       if Ext = PASEXT[i] then
@@ -663,14 +763,59 @@ begin
   end;
 end;
 
+procedure TForm1.UpdateStatusBar;
+begin
+  CoordPanel.Caption := IntToStr(CurEditor.CaretX) + ', ' + IntToStr(CurEditor.CaretY);
+  ChangedPanel.Caption := ifthen(CurEditor.Modified, 'Changed', '');
+  UndoMenu.Enabled := CurEditor.CanUndo;
+  RedoMenu.Enabled := CurEditor.CanRedo;
+  PasteMenu.Enabled := CurEditor.CanPaste;
+  if Tabs.GetTabData(Tabs.TabIndex).TabModified <> CurEditor.Modified then
+  begin
+    Tabs.GetTabData(Tabs.TabIndex).TabModified := CurEditor.Modified;
+    Tabs.Invalidate;
+  end;
+end;
+
+procedure TForm1.UpdateTitlebar;
+begin
+  Caption := Progname + ' - ' + IntToStr(Tabs.TabIndex + 1) + ': ' + Tabs.GetTabData(Tabs.TabIndex).TabCaption;
+  CurEditor;
+end;
+
 procedure TForm1.LoadFile;
 begin
-  SynEdit1.Lines.LoadFromFile(FFilename);
+  CurEditor.Lines.LoadFromFile(CurFrame.Filename);
   AutoHighlighter;
-  Caption := Progname + ' - ' + ExtractFileName(FFilename);
-  AddNewRecent(FFilename);
+  UpdateTitlebar;
+  AddNewRecent(CurFrame.Filename);
   ResetChanged;
-  Prefs.InitialDir := ExtractFilePath(FFileName);
+  Prefs.InitialDir := ExtractFilePath(CurFrame.FileName);
+end;
+
+function TForm1.AbsCount: Integer;
+begin
+  Result := FAbsCount;
+  Inc(FAbsCount);
+end;
+
+function TForm1.CurEditor: TSynEdit;
+begin
+  REsult := nil;
+  if Tabs.TabIndex >= 0 then
+  begin
+    Result := TSynEdit(CurFrame.Editor);
+  end;
+end;
+
+function TForm1.CurFrame: TEditorFrame;
+begin
+  Result := nil;
+  if Tabs.TabIndex >= 0 then
+  begin
+    if Assigned(Tabs.GetTabData(Tabs.TabIndex)) then
+      Result := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
+  end;
 end;
 
 end.

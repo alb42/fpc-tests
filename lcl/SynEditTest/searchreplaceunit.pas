@@ -15,6 +15,9 @@ type
   TSearchReplaceWin = class(TForm)
     IsBackwards: TCheckBox;
     InSelection: TCheckBox;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     ResultPanel: TPanel;
     SearchBack: TButton;
     UseRegExp: TCheckBox;
@@ -36,8 +39,6 @@ type
     ReplaceMode: Boolean;
     procedure GetSearchSettings;
   public
-    SynEdit1: TSynEdit;
-
     procedure StartReq(AsReplace: Boolean);
   end;
 
@@ -45,6 +46,9 @@ var
   SearchReplaceWin: TSearchReplaceWin;
 
 implementation
+
+uses
+  MainUnit;
 
 {$R *.lfm}
 
@@ -75,7 +79,7 @@ begin
     ReplaceString := ReplaceEdit.Text;
     GetSearchSettings;
     Close;
-    if not SynEdit1.SearchReplace(SearchString, ReplaceString, SearchSett + [ssoEntireScope, ssoReplaceAll, ssoPrompt]) > 0 then
+    if not Form1.CurEditor.SearchReplace(SearchString, ReplaceString, SearchSett + [ssoEntireScope, ssoReplaceAll, ssoPrompt]) > 0 then
     begin
       ResultPanel.Caption:= 'Nothing found';
       Show;
@@ -85,7 +89,7 @@ begin
     GetSearchSettings;
     SearchString := SearchEdit.Text;
     Close;
-    if not SynEdit1.SearchReplace(SearchString, '', SearchSett + [ssoEntireScope]) > 0 then
+    if not Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoEntireScope]) > 0 then
     begin
       ResultPanel.Caption:= 'Nothing found';
       Show;
@@ -113,12 +117,12 @@ end;
 
 procedure TSearchReplaceWin.SearchAgainClick(Sender: TObject);
 begin
-  SynEdit1.SearchReplace(SearchString, '', SearchSett + [ssoFindContinue]);
+  Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoFindContinue]);
 end;
 
 procedure TSearchReplaceWin.SearchBackClick(Sender: TObject);
 begin
-  SynEdit1.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]);
+  Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]);
 end;
 
 procedure TSearchReplaceWin.StartReq(AsReplace: Boolean);

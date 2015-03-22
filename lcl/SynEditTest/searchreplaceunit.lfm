@@ -1,12 +1,13 @@
 object SearchReplaceWin: TSearchReplaceWin
-  Left = 158
+  Left = 177
   Height = 216
-  Top = 282
+  Top = 284
   Width = 339
   BorderStyle = bsSingle
   Caption = 'Search & Replace'
   ClientHeight = 216
   ClientWidth = 339
+  Color = 16578029
   LCLVersion = '1.0.10.0'
   object Label1: TLabel
     Left = 8
@@ -71,9 +72,8 @@ object SearchReplaceWin: TSearchReplaceWin
       Left = 16
       Height = 24
       Top = 8
-      Width = 99
-      Caption = 'Backwards'
-      Color = clBtnFace
+      Width = 24
+      Color = 16578029
       ParentColor = False
       TabOrder = 0
     end
@@ -81,17 +81,39 @@ object SearchReplaceWin: TSearchReplaceWin
       Left = 16
       Height = 24
       Top = 36
-      Width = 103
-      Caption = 'In Selection'
+      Width = 24
       TabOrder = 1
     end
     object UseRegExp: TCheckBox
       Left = 16
       Height = 24
       Top = 64
-      Width = 76
-      Caption = 'RegExp'
+      Width = 24
       TabOrder = 2
+    end
+    object Label2: TLabel
+      Left = 42
+      Height = 18
+      Top = 11
+      Width = 74
+      Caption = 'Backwards'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 42
+      Height = 18
+      Top = 39
+      Width = 78
+      Caption = 'In Selection'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 42
+      Height = 18
+      Top = 68
+      Width = 54
+      Caption = 'Reg Exp'
+      ParentColor = False
     end
   end
   object ResultPanel: TPanel

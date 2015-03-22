@@ -14,7 +14,9 @@
       <EnableI18N LFM="False"/>
     </i18n>
     <VersionInfo>
-      <StringTable ProductVersion=""/>
+      <UseVersionInfo Value="True"/>
+      <MinorVersionNr Value="3"/>
+      <StringTable Comments="Your friendly Editor" InternalName="EdiSyn" OriginalFilename="EdiSyn" ProductName="EdiSyn" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -38,7 +40,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="7">
       <Unit0>
         <Filename Value="EdiSyn.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -81,6 +83,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="PrefsUnit"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="frameunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditorFrame"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+        <UnitName Value="FrameUnit"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

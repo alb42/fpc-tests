@@ -7,6 +7,7 @@ object GoToLineWin: TGoToLineWin
   Caption = 'GoTo Line'
   ClientHeight = 54
   ClientWidth = 266
+  Color = 16578029
   OnShow = FormShow
   LCLVersion = '1.0.10.0'
   object AimLine: TEdit
