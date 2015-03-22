@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 17
+  Left = 20
   Height = 514
-  Top = 122
+  Top = 85
   Width = 801
   Caption = 'Form1'
   ClientHeight = 491
@@ -40,16 +40,24 @@ object Form1: TForm1
       ParentFont = False
       TabOrder = 0
     end
-    object ChangedPanel: TPanel
-      Left = 671
+    inline MikroStat: TMikroStatus
+      Left = 666
       Height = 28
-      Top = 0
-      Width = 130
-      Align = alRight
-      BevelInner = bvLowered
-      Color = 16578029
-      ParentColor = False
+      ClientHeight = 28
       TabOrder = 1
+      inherited StatPanel: TPanel
+        Height = 24
+        ClientHeight = 24
+        inherited ChPanel: TPanel
+          Height = 20
+        end
+        inherited InsModePanel: TPanel
+          Height = 20
+        end
+        inherited HiLightPanel: TPanel
+          Height = 20
+        end
+      end
     end
   end
   object EditorPanel: TPanel
@@ -73,6 +81,10 @@ object Form1: TForm1
       object NewMenu: TMenuItem
         Caption = 'New'
         OnClick = NewMenuClick
+      end
+      object NewTabMenu: TMenuItem
+        Caption = 'New Tab'
+        OnClick = NewTabMenuClick
       end
       object MenuItem1: TMenuItem
         Caption = '-'
@@ -148,6 +160,17 @@ object Form1: TForm1
         OnClick = ExportMenuClick
       end
       object MenuItem2: TMenuItem
+        Caption = '-'
+      end
+      object CloseTabMenu: TMenuItem
+        Caption = 'Close Tab'
+        OnClick = CloseTabMenuClick
+      end
+      object CloseAllMenu: TMenuItem
+        Caption = 'Close all Tabs'
+        OnClick = CloseAllMenuClick
+      end
+      object SepMenu4: TMenuItem
         Caption = '-'
       end
       object QuitMenu: TMenuItem
@@ -251,6 +274,10 @@ object Form1: TForm1
         Caption = 'Example Code'
         OnClick = ExampleMenuClick
       end
+      object SetDefHighMenu: TMenuItem
+        Caption = 'Set as Default'
+        OnClick = SetDefHighMenuClick
+      end
       object AutoMenu: TMenuItem
         AutoCheck = True
         Caption = 'Auto'
@@ -281,5 +308,12 @@ object Form1: TForm1
     UseBackground = False
     left = 296
     top = 120
+  end
+  object KeyTimer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = KeyTimerTimer
+    left = 456
+    top = 32
   end
 end

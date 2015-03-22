@@ -1,0 +1,66 @@
+object MikroStatus: TMikroStatus
+  Left = 0
+  Height = 41
+  Top = 0
+  Width = 135
+  Align = alRight
+  ClientHeight = 41
+  ClientWidth = 135
+  Color = 16578029
+  ParentColor = False
+  TabOrder = 0
+  DesignLeft = 522
+  DesignTop = 255
+  object StatPanel: TPanel
+    Left = 9
+    Height = 37
+    Top = 2
+    Width = 124
+    Align = alRight
+    AutoSize = True
+    BorderSpacing.Around = 2
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
+    ClientHeight = 37
+    ClientWidth = 124
+    Color = 16578029
+    ParentColor = False
+    TabOrder = 0
+    object ChPanel: TPanel
+      Left = 2
+      Height = 33
+      Top = 2
+      Width = 40
+      Align = alRight
+      BevelOuter = bvLowered
+      Caption = 'M'
+      Color = 16578029
+      ParentColor = False
+      TabOrder = 0
+    end
+    object InsModePanel: TPanel
+      Left = 42
+      Height = 33
+      Top = 2
+      Width = 40
+      Align = alRight
+      BevelOuter = bvLowered
+      Caption = 'Ov'
+      Color = 16578029
+      ParentColor = False
+      TabOrder = 1
+    end
+    object HiLightPanel: TPanel
+      Left = 82
+      Height = 33
+      Top = 2
+      Width = 40
+      Align = alRight
+      BevelOuter = bvLowered
+      Caption = 'C'
+      Color = clSkyBlue
+      ParentColor = False
+      TabOrder = 2
+    end
+  end
+end

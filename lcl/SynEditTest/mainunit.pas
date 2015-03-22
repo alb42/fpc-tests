@@ -7,12 +7,12 @@ interface
 uses
 
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,
-  Graphics, Dialogs, Menus, ComCtrls, ExtCtrls, StdCtrls, SynHighlighterCpp,
-  contnrs, FrameUnit,
+  Graphics, Dialogs, Menus, ExtCtrls, SynHighlighterCpp, FrameUnit, LCLIntf,
   {$ifdef HASAMIGA}
   Workbench,
   {$endif}
-  synexporthtml, SynEditTypes, StrUtils, SynEditKeyCmds, LCLType, Math, ATTabs;
+  synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, Math, ATTabs,
+  MikroStatUnit;
 
 const
   VERSION = '$VER: EdiSyn 0.3 (22.03.2015)';
@@ -128,7 +128,6 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
-    ChangedPanel: TPanel;
     EditMenu: TMenuItem;
     CopyMenu: TMenuItem;
     CutMenu: TMenuItem;
@@ -136,7 +135,14 @@ type
     GoToLineMenu: TMenuItem;
     AutoMenu: TMenuItem;
     EditorPanel: TPanel;
+    CloseTabMenu: TMenuItem;
+    CloseAllMenu: TMenuItem;
+    SepMenu4: TMenuItem;
+    NewTabMenu: TMenuItem;
+    MikroStat: TMikroStatus;
+    SetDefHighMenu: TMenuItem;
     ShowNumMenu: TMenuItem;
+    KeyTimer: TTimer;
     ViewMenu: TMenuItem;
     RecMenu5: TMenuItem;
     RecMenu6: TMenuItem;
@@ -181,6 +187,8 @@ type
     SaveDialog1: TSaveDialog;
     SynExporterHTML1: TSynExporterHTML;
     procedure AutoMenuClick(Sender: TObject);
+    procedure CloseAllMenuClick(Sender: TObject);
+    procedure CloseTabMenuClick(Sender: TObject);
     procedure CMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
     procedure CutMenuClick(Sender: TObject);
@@ -191,6 +199,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
+    procedure KeyTimerTimer(Sender: TObject);
+    procedure NewTabMenuClick(Sender: TObject);
     procedure NoneMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
     procedure PersSelMenuClick(Sender: TObject);
@@ -206,6 +216,7 @@ type
     procedure QuitMenuClick(Sender: TObject);
     procedure SaveAsMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
+    procedure SetDefHighMenuClick(Sender: TObject);
     procedure ShowNumMenuClick(Sender: TObject);
     procedure SynEdit1ProcessCommand(Sender: TObject;
       var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
@@ -231,7 +242,7 @@ type
     procedure UpdateTitlebar;
   public
     Tabs: TATTabs;
-    procedure LoadFile;
+    procedure LoadFile(AFileName: string);
     function AbsCount: Integer;
     function CurEditor: TSynEdit;
     function CurFrame: TEditorFrame;
@@ -264,6 +275,8 @@ end;
 
 procedure TForm1.ExportMenuClick(Sender: TObject);
 begin
+  if CurEditor.Highlighter = nil then
+    Exit;
   if SaveDialog1.Execute then
   begin
     SynExporterHTML1.ExportAll(CurEditor.Lines);
@@ -285,7 +298,7 @@ begin
   end;
   if not CanClose then
   begin
-    Res := MessageDlg('Unsaved Changes', 'There are unsaved changes do you really want to close?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data', 'There are unsaved changes.'#13#10'Do you really want to close?', mtConfirmation, mbYesNo, 0);
     CanClose := Res = mrYes;
   end;
 end;
@@ -379,8 +392,7 @@ begin
   if Paramcount > 0 then
   begin
     try
-      CurFrame.Filename := ParamStr(1);
-      LoadFile;
+      LoadFile(ParamStr(1));
     except
       CurFrame.Filename := '';
     end;
@@ -391,8 +403,7 @@ begin
     if PWBStartup(AOS_WBMsg)^.sm_NumArgs > 1 then
     begin
       try
-        CurFrame.Filename := PWBStartup(AOS_WBMsg)^.sm_ArgList^[2].WA_Name;
-        LoadFile;
+        LoadFile(PWBStartup(AOS_WBMsg)^.sm_ArgList^[2].WA_Name);
       except
         CurFrame.Filename := '';
       end;
@@ -404,8 +415,14 @@ begin
   Delete(Progname, 1, 6);
   Delete(Progname, Pos('(', Progname), Length(Progname));
   //
+  MikroStat.Highlighter := '';
+  MikroStat.Changed := True;
+  MikroStat.Changed := False;
+  MikroStat.InsMode:=False;
+  MikroStat.InsMode := True;
   UpdateTitlebar;
   ResetChanged;
+  UpdateStatusBar;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -429,13 +446,23 @@ begin
   GoToLineWin.Show;
 end;
 
+procedure TForm1.KeyTimerTimer(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.NewTabMenuClick(Sender: TObject);
+begin
+  TabPlusClickEvent(Tabs);
+end;
+
 procedure TForm1.NoneMenuClick(Sender: TObject);
 begin
   if NoneMenu.Checked then
   begin
     CurEditor.Highlighter := nil;
-    Prefs.DefHighlighter := HIGHLIGHTER_NONE;
     ExportMenu.Enabled := False;
+    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
   end;
 end;
 
@@ -457,10 +484,7 @@ begin
   begin
     Num := TMenuItem(Sender).Tag;
     if (Num >= 0) and (Num < RecFileList.Count) then
-    begin
-      CurFrame.FileName := RecFileList[Num];
-      LoadFile;
-    end;
+      LoadFile(RecFileList[Num]);
   end;
 end;
 
@@ -507,8 +531,7 @@ begin
     OpenDialog1.InitialDir := 'Sys:';
   if OpenDialog1.Execute then
   begin
-    CurFrame.Filename := OpenDialog1.FileName;
-    LoadFile;
+    LoadFile(OpenDialog1.FileName);
     Prefs.InitialDir := ExtractFilePath(OpenDialog1.FileName);
   end;
 end;
@@ -518,14 +541,50 @@ begin
   if CMenu.Checked then
   begin
     CurEditor.Highlighter := CurFrame.SynCppSyn1;
-    Prefs.DefHighlighter := HIGHLIGHTER_C;
     ExportMenu.Enabled := True;
+    MikroStat.Highlighter:='C';
   end;
 end;
 
 procedure TForm1.AutoMenuClick(Sender: TObject);
 begin
   Prefs.AutoHighlighter := AutoMenu.Checked;
+end;
+
+procedure TForm1.CloseAllMenuClick(Sender: TObject);
+var
+  i: Integer;
+  Modified: Boolean;
+  CanClose: boolean;
+  CanCont: boolean;
+  Res: Integer;
+begin
+  Modified := False;
+  for i := 0 to Tabs.TabCount - 1 do
+  begin
+    Modified := TEditorFrame(Tabs.GetTabData(i).TabObject).Editor.Modified;
+    if Modified then
+      Break;
+  end;
+
+  if Modified then
+  begin
+    Res := MessageDlg('Unsaved Data', 'There are unsaved changes.'#13#10'Do you really want to close all Tabs?', mtConfirmation, mbYesNo, 0);
+    if Res <> mrYes then
+      Exit;
+  end;
+  for i := 0 to Tabs.TabCount - 2 do
+    Tabs.DeleteTab(0, False, False);
+  Tabs.TabIndex := 0;
+  CurEditor.Modified := False;
+  CanClose := True;
+  CanCont := True;
+  TabCloseEvent(Tabs, 0, CanClose, CanCont);
+end;
+
+procedure TForm1.CloseTabMenuClick(Sender: TObject);
+begin
+  Tabs.DeleteTab(Tabs.TabIndex, True, True);
 end;
 
 procedure TForm1.CopyMenuClick(Sender: TObject);
@@ -543,8 +602,8 @@ begin
   if PascalMenu.Checked then
   begin
     CurEditor.Highlighter := CurFrame.SynPasSyn1;
-    Prefs.DefHighlighter := HIGHLIGHTER_PASCAL;
     ExportMenu.Enabled := True;
+    MikroStat.Highlighter:='Pas';
   end;
 end;
 
@@ -584,6 +643,16 @@ begin
     SaveAsMenuClick(Sender);
 end;
 
+procedure TForm1.SetDefHighMenuClick(Sender: TObject);
+begin
+  if CMenu.Checked then
+    Prefs.DefHighlighter := HIGHLIGHTER_C;
+  if PascalMenu.Checked then
+    Prefs.DefHighlighter := HIGHLIGHTER_PASCAL;
+  if NoneMenu.Checked then
+    Prefs.DefHighlighter := HIGHLIGHTER_NONE;
+end;
+
 procedure TForm1.ShowNumMenuClick(Sender: TObject);
 var
   Editor: TSynEdit;
@@ -610,6 +679,10 @@ begin
     5: SearchAgainMenuClick(Sender); // F3 Search
     6: SearchReplaceWin.SearchBackClick(Sender); // Shift + F3 Search backwards
     7: ReplaceMenuClick(Sender);  // Ctrl + R Replace
+    8: NewTabMenuClick(Sender);   // Ctrl + B Open New Tab
+    9: CloseTabMenuClick(Sender); // Ctrl + G Close Tab
+    10: Tabs.SwitchTab(False);    // Ctrl + Shift + F1 previous Tab
+    11: Tabs.SwitchTab(True);     // Ctrl + Shift + F2 next Tab
   end;
 end;
 
@@ -619,7 +692,7 @@ procedure TForm1.SynEdit1ReplaceText(Sender: TObject; const ASearch,
 var
   Res: TModalResult;
 begin
-  Res := ReplaceReqUnit.ReplaceRequest.StartReq('Replace this occurence?');
+  Res := ReplaceReqUnit.ReplaceRequest.StartReq('Replace this occurence by "' + AReplace + '" ?');
   case Res of
     mrYes: ReplaceAction := raReplace;
     mrYesToAll: ReplaceAction := raReplaceAll;
@@ -651,20 +724,46 @@ begin
       Frame.Editor.SetFocus;
     end;
   end;
+  if Assigned(CurEditor.Highlighter) then
+  begin
+    if CurEditor.Highlighter is TSynCppSyn then
+      CMenu.Checked := True
+    else
+      PascalMenu.Checked := True
+  end else
+    NoneMenu.Checked := True;
   UpdateStatusBar;
   UpdateTitlebar;
 end;
 
 procedure TForm1.TabCloseEvent(Sender: TObject; ATabIndex: Integer;
   var ACanClose, ACanContinue: boolean);
+var
+  TabData: TATTabData;
+  Res: Integer;
 begin
+  ACanClose := True;
+  TabData := Tabs.GetTabData(ATabIndex);
+  if TEditorFrame(TabData.TabObject).Editor.Modified then
+  begin
+    Res := MessageDlg('Unsaved Data', 'The Text in this Tab is not saved.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+    ACanClose := Res = mrYes;
+  end;
+  if not ACanClose then
+    Exit;
   if Tabs.TabCount > 1 then
   begin
-    Tabs.GetTabData(ATabIndex).TabObject.Free;
-    ACanClose := True;
+    if ACanClose then
+      TabData.TabObject.Free;
   end else
   begin
     CurEditor.Lines.Clear;
+    CurEditor.Modified := False;
+    TabData := Tabs.GetTabData(Tabs.TabIndex);
+    TabData.TabModified := False;
+    TEditorFrame(TabData.TabObject).Filename := '';
+    TabData.TabCaption := 'Empty Tab';
+    Tabs.Invalidate;
     ACanClose := False;
   end;
 end;
@@ -680,6 +779,12 @@ begin
   NewFrame.Editor.Parent := EditorPanel;
   NewFrame.Editor.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
   NewFrame.Editor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  if PascalMenu.Checked then
+    NewFrame.Editor.Highlighter := NewFrame.SynPasSyn1;
+  if CMenu.Checked then
+    NewFrame.Editor.Highlighter := NewFrame.SynCppSyn1;
+  if NoneMenu.Checked then
+    NewFrame.Editor.Highlighter := nil;
   Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
   NewFrame.Editor.SetFocus;
   Tabs.TabIndex := Tabs.TabCount - 1;
@@ -766,15 +871,28 @@ end;
 procedure TForm1.UpdateStatusBar;
 begin
   CoordPanel.Caption := IntToStr(CurEditor.CaretX) + ', ' + IntToStr(CurEditor.CaretY);
-  ChangedPanel.Caption := ifthen(CurEditor.Modified, 'Changed', '');
+  MikroStat.Changed:= CurEditor.Modified;
+  if CurEditor.Highlighter = nil then
+  begin
+    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
+  end else
+  begin
+    if CurEditor.Highlighter is TSynCppSyn then
+      MikroStat.Highlighter := 'C'
+    else
+      MikroStat.Highlighter := 'Pas';
+  end;
+  MikroStat.InsMode := CurEditor.InsertMode;
   UndoMenu.Enabled := CurEditor.CanUndo;
   RedoMenu.Enabled := CurEditor.CanRedo;
   PasteMenu.Enabled := CurEditor.CanPaste;
+  ExportMenu.Enabled := Assigned(CurEditor.Highlighter);
   if Tabs.GetTabData(Tabs.TabIndex).TabModified <> CurEditor.Modified then
   begin
     Tabs.GetTabData(Tabs.TabIndex).TabModified := CurEditor.Modified;
     Tabs.Invalidate;
   end;
+  MikroStat.Invalidate;
 end;
 
 procedure TForm1.UpdateTitlebar;
@@ -783,8 +901,17 @@ begin
   CurEditor;
 end;
 
-procedure TForm1.LoadFile;
+procedure TForm1.LoadFile(AFileName: string);
+var
+  Res: Integer;
 begin
+  if CurEditor.Modified then
+  begin
+    Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+    if Res <> mrYes then
+      Exit;
+  end;
+  CurFrame.Filename := AFileName;
   CurEditor.Lines.LoadFromFile(CurFrame.Filename);
   AutoHighlighter;
   UpdateTitlebar;

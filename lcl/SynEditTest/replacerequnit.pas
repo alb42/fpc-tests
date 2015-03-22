@@ -34,6 +34,7 @@ implementation
 
 { TReplaceRequest }
 
+
 function TReplaceRequest.StartReq(ReqText: string): TModalResult;
 begin
   MsgPanel.Caption := ReqText;

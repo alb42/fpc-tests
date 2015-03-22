@@ -480,6 +480,22 @@ object EditorFrame: TEditorFrame
       item
         Command = ecUserDefined7
         ShortCut = 16466
+      end    
+      item
+        Command = ecUserDefined8
+        ShortCut = 16450
+      end    
+      item
+        Command = ecUserDefined9
+        ShortCut = 16455
+      end    
+      item
+        Command = ecUserDefined10
+        ShortCut = 24688
+      end    
+      item
+        Command = ecUserDefined11
+        ShortCut = 24689
       end>
     MouseActions = <>
     MouseSelActions = <>

@@ -1375,7 +1375,7 @@ begin
   GetArrowRect(RDown);
   P:= Point(RDown.Left, RDown.Bottom);
   P:= ClientToScreen(P);
-  {$ifdef AROS}
+  {$ifndef AROS}
   FTabMenu.Popup(P.X, P.Y);
   {$endif}
 end;

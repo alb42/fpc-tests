@@ -3,10 +3,14 @@ object ReplaceRequest: TReplaceRequest
   Height = 116
   Top = 191
   Width = 358
-  BorderStyle = bsDialog
   Caption = 'Replace this?'
   ClientHeight = 116
   ClientWidth = 358
+  Color = 16578029
+  Constraints.MaxHeight = 116
+  Constraints.MaxWidth = 358
+  Constraints.MinHeight = 116
+  Constraints.MinWidth = 358
   LCLVersion = '1.0.10.0'
   object MsgPanel: TPanel
     Left = 5
