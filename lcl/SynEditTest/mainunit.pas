@@ -131,6 +131,7 @@ type
     EditMenu: TMenuItem;
     CopyMenu: TMenuItem;
     CutMenu: TMenuItem;
+    BookmarkImages: TImageList;
     MenuItem1: TMenuItem;
     GoToLineMenu: TMenuItem;
     AutoMenu: TMenuItem;
@@ -448,7 +449,8 @@ end;
 
 procedure TForm1.KeyTimerTimer(Sender: TObject);
 begin
-
+  KeyTimer.Enabled:= False;
+  CloseTabMenuClick(Sender)
 end;
 
 procedure TForm1.NewTabMenuClick(Sender: TObject);
@@ -680,7 +682,7 @@ begin
     6: SearchReplaceWin.SearchBackClick(Sender); // Shift + F3 Search backwards
     7: ReplaceMenuClick(Sender);  // Ctrl + R Replace
     8: NewTabMenuClick(Sender);   // Ctrl + B Open New Tab
-    9: CloseTabMenuClick(Sender); // Ctrl + G Close Tab
+    9: KeyTimer.Enabled:= True; // Ctrl + G Close Tab
     10: Tabs.SwitchTab(False);    // Ctrl + Shift + F1 previous Tab
     11: Tabs.SwitchTab(True);     // Ctrl + Shift + F2 next Tab
   end;
@@ -715,14 +717,12 @@ var
   i: Integer;
   Frame: TEditorFrame;
 begin
+  EditorPanel.BeginUpdateBounds;
   for i := 0 to Tabs.TabCount - 1 do
   begin
     Frame := TEditorFrame(Tabs.GetTabData(i).TabObject);
-    Frame.Editor.Visible := i = Tabs.TabIndex;
-    if Frame.Editor.Visible then
-    begin
-      Frame.Editor.SetFocus;
-    end;
+    if Frame.Editor.Visible <> (i = Tabs.TabIndex) then
+      Frame.Editor.Visible := (i = Tabs.TabIndex);
   end;
   if Assigned(CurEditor.Highlighter) then
   begin
@@ -734,6 +734,9 @@ begin
     NoneMenu.Checked := True;
   UpdateStatusBar;
   UpdateTitlebar;
+  EditorPanel.EndUpdateBounds;
+  Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
+  Frame.Editor.SetFocus;
 end;
 
 procedure TForm1.TabCloseEvent(Sender: TObject; ATabIndex: Integer;
@@ -773,10 +776,10 @@ var
   NewFrame: TEditorFrame;
 begin
   NewFrame := TEditorFrame.Create(Self);
+  NewFrame.Editor.Parent := EditorPanel;
   NewFrame.TabLink := Tabs;
   NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
   NewFrame.Align := alClient;
-  NewFrame.Editor.Parent := EditorPanel;
   NewFrame.Editor.Gutter.Parts[0].Visible:= ShowNumMenu.Checked;
   NewFrame.Editor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
   if PascalMenu.Checked then
@@ -786,6 +789,7 @@ begin
   if NoneMenu.Checked then
     NewFrame.Editor.Highlighter := nil;
   Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
+  NewFrame.Editor.Visible := True;
   NewFrame.Editor.SetFocus;
   Tabs.TabIndex := Tabs.TabCount - 1;
 end;

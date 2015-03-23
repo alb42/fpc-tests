@@ -59,6 +59,7 @@ begin
   Editor.OnProcessCommand := @(MainUnit.Form1.SynEdit1ProcessCommand);
   Editor.OnReplaceText:=@MainUnit.Form1.SynEdit1ReplaceText;
   Editor.OnStatusChange:=@MainUnit.Form1.SynEdit1StatusChange;
+  Editor.BookMarkOptions.BookmarkImages := MainUnit.Form1.BookmarkImages;
 end;
 
 {$R *.lfm}

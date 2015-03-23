@@ -1,22 +1,22 @@
 [General]
 LineNumbers=1
-XPos=26
-YPos=27
-Width=649
-Height=467
+XPos=153
+YPos=149
+Width=790
+Height=552
 
 [Files]
-Recent_0=System:mainwinunit.pas
-Recent_1=System:Animate_Clean/BallMain.pas
-Recent_2=System:ReadMe
-Recent_3=System:APict.readme
-Recent_4=Releasemake
-Recent_5=Sys:fpc-tests/lcl/SynEditTest/Releasemake
-Recent_6=EdiSyn.readme
-Recent_7=EdiSyn
-Recent_8=
-Recent_9=
-InitialDir=System:
+Recent_0=sys:Animate_Clean/BallObj.pas
+Recent_1=makesyntest1
+Recent_2=Sys:fpc-tests/lcl/SynEditTest/makesyntest1
+Recent_3=Sys:fpc-tests/lcl/SynEditTest/Releasemake
+Recent_4=System:Animate_Clean/BallMain.pas
+Recent_5=System:APict.readme
+Recent_6=System:mainwinunit.pas
+Recent_7=System:ReadMe
+Recent_8=Releasemake
+Recent_9=EdiSyn.readme
+InitialDir=sys:Animate_Clean/
 
 [Highlighter]
 Default=2

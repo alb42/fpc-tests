@@ -95,6 +95,7 @@
         <Filename Value="mikrostatunit.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MikroStatus"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="MikroStatUnit"/>
       </Unit7>

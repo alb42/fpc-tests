@@ -1,19 +1,20 @@
 object EditorFrame: TEditorFrame
   Left = 0
-  Height = 392
+  Height = 58
   Top = 0
-  Width = 603
-  ClientHeight = 392
-  ClientWidth = 603
+  Width = 107
+  ClientHeight = 58
+  ClientWidth = 107
   TabOrder = 0
-  DesignLeft = 86
-  DesignTop = 691
+  Visible = False
+  DesignLeft = 52
+  DesignTop = 126
   inline Editor: TSynEdit
     Cursor = crDefault
     Left = 0
-    Height = 392
+    Height = 58
     Top = 0
-    Width = 603
+    Width = 107
     Align = alClient
     Font.Height = -15
     Font.Name = 'Courier'
@@ -286,43 +287,43 @@ object EditorFrame: TEditorFrame
         ShortCut = 16441
       end    
       item
-        Command = ecSetMarker0
+        Command = ecToggleMarker0
         ShortCut = 24624
       end    
       item
-        Command = ecSetMarker1
+        Command = ecToggleMarker1
         ShortCut = 24625
       end    
       item
-        Command = ecSetMarker2
+        Command = ecToggleMarker2
         ShortCut = 24626
       end    
       item
-        Command = ecSetMarker3
+        Command = ecToggleMarker3
         ShortCut = 24627
       end    
       item
-        Command = ecSetMarker4
+        Command = ecToggleMarker4
         ShortCut = 24628
       end    
       item
-        Command = ecSetMarker5
+        Command = ecToggleMarker5
         ShortCut = 24629
       end    
       item
-        Command = ecSetMarker6
+        Command = ecToggleMarker6
         ShortCut = 24630
       end    
       item
-        Command = ecSetMarker7
+        Command = ecToggleMarker7
         ShortCut = 24631
       end    
       item
-        Command = ecSetMarker8
+        Command = ecToggleMarker8
         ShortCut = 24632
       end    
       item
-        Command = ecSetMarker9
+        Command = ecToggleMarker9
         ShortCut = 24633
       end    
       item
@@ -503,8 +504,9 @@ object EditorFrame: TEditorFrame
       ''
     )
     MaxLeftChar = 80
-    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces, eoTrimTrailingSpaces]
+    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces, eoTrimTrailingSpaces, eoDragDropEditing]
     Options2 = [eoEnhanceEndKey, eoFoldedCopyPaste, eoOverwriteBlock]
+    MouseOptions = [emDragDropEditing]
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
     SelectedColor.BackPriority = 50
     SelectedColor.ForePriority = 50
