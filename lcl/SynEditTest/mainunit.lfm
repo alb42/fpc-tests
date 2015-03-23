@@ -235,6 +235,13 @@ object Form1: TForm1
     end
     object ViewMenu: TMenuItem
       Caption = 'View'
+      object BookMarkMenu: TMenuItem
+        AutoCheck = True
+        Caption = 'Bookmarks'
+        Checked = True
+        ShowAlwaysCheckable = True
+        OnClick = BookMarkMenuClick
+      end
       object ShowNumMenu: TMenuItem
         AutoCheck = True
         Caption = 'Line Numbers'
@@ -309,10 +316,10 @@ object Form1: TForm1
     left = 296
     top = 120
   end
-  object KeyTimer: TTimer
+  object DestroyTabTimer: TTimer
     Enabled = False
     Interval = 100
-    OnTimer = KeyTimerTimer
+    OnTimer = DestroyTabTimerTimer
     left = 456
     top = 32
   end

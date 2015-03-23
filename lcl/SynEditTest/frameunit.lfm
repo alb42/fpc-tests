@@ -536,7 +536,7 @@ object EditorFrame: TEditorFrame
         MarkupInfo.Background = 16578029
         MarkupInfo.Foreground = clNone
         DigitCount = 2
-        ShowOnlyLineNumbersMultiplesOf = 1
+        ShowOnlyLineNumbersMultiplesOf = 5
         ZeroStart = False
         LeadingZeros = False
       end

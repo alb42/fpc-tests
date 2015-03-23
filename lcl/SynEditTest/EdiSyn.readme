@@ -1,11 +1,11 @@
-EdiSyn 0.21
+EdiSyn 0.31
 
 by Marcus "ALB42" Sackrow
 
 thanks to Magorium, serk118uk, cavemann
 
-EdiSyn is an editor with Syntaxhighlighting. Written in Freepascal, based on the
-mighty SynEdit component of Lazarus.
+EdiSyn is an editor with Tabs and Syntaxhighlighting. Written in Freepascal,
+based on the mighty SynEdit component of Lazarus.
 
 ########
 # Keys #
@@ -27,6 +27,8 @@ Ctrl + I                   Jump to line (requester)
 Ctrl + F                   Find
 F3                         Find again
 Shift + F3                 Find again backwards
+Ctrl + Shift + 0..9        Set/Clear Bookmark at current Position
+Ctrl + 0..9                Jump to Bookmark
 
 
 Selecting:
@@ -60,10 +62,15 @@ Ctrl + Shift + I           Increase Indent
 Ctrl + Shift + U           Decrease Indent
 Ctrl + R                   Replace
 
-FileHandling:
+File/Tab Handling:
 =============
 
 Ctrl + O                   Open file requester
 Ctrl + S                   Save File (if no filename present, requester appears)
 Ctrl + W                   Save As (Save requester)
 Esc                        Quit
+Ctrl + B                   Open a new empty Tab
+Ctrl + G                   Close Current Tab
+
+
+

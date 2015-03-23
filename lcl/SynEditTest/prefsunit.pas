@@ -23,6 +23,7 @@ type
   private
     IniFile: TIniFile;
     function GetAutoHighlighter: Boolean;
+    function GetBookmarks: Boolean;
     function GetDefHighlighter: Integer;
     function GetHeight: Integer;
     function GetInitialDir: string;
@@ -32,6 +33,7 @@ type
     function GetXPos: Integer;
     function GetYPos: Integer;
     procedure SetAutoHighlighter(AValue: Boolean);
+    procedure SetBookmarks(AValue: Boolean);
     procedure SetHeight(AValue: Integer);
     procedure SetHighlighter(AValue: Integer);
     procedure SetInitialDir(AValue: string);
@@ -50,6 +52,7 @@ type
     property RecentFiles[Idx: Integer]: string read GetRecFile write SetRecFile;
     property AutoHighlighter: Boolean read GetAutoHighlighter write SetAutoHighlighter;
     property LineNumbers: Boolean read GetLineNumbers write SetLineNumbers;
+    property Bookmarks: Boolean read GetBookmarks write SetBookmarks;
     property DefHighlighter: Integer read GetDefHighlighter write SetHighlighter;
     property InitialDir: string read GetInitialDir write SetInitialDir;
   end;
@@ -102,6 +105,11 @@ begin
   IniFile.WriteBool(SECTION_HIGHLIGHTER, 'Auto', AValue);
 end;
 
+procedure TPrefs.SetBookmarks(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'Bookmarks', AValue);
+end;
+
 procedure TPrefs.SetRecFile(Idx: Integer; AValue: string);
 begin
   IniFile.WriteString(SECTION_FILES, 'Recent_' + IntToStr(Idx), AValue);
@@ -135,6 +143,11 @@ end;
 function TPrefs.GetAutoHighlighter: Boolean;
 begin
   Result := IniFile.ReadBool(SECTION_HIGHLIGHTER, 'Auto', True);
+end;
+
+function TPrefs.GetBookmarks: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'Bookmarks', True);
 end;
 
 function TPrefs.GetDefHighlighter: Integer;
