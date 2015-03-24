@@ -15,7 +15,7 @@ uses
   MikroStatUnit;
 
 const
-  VERSION = '$VER: EdiSyn 0.31 (23.03.2015)';
+  VERSION = '$VER: EdiSyn 0.32 (24.03.2015)';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -531,6 +531,8 @@ end;
 
 procedure TForm1.SearchMenuClick(Sender: TObject);
 begin
+  if CurEditor.SelAvail then
+    SearchReplaceWin.SearchEdit.Text := CurEditor.SelText;
   SearchReplaceWin.StartReq(False);
 end;
 
