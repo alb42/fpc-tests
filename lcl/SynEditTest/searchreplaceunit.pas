@@ -100,7 +100,7 @@ var
 begin
   if SearchEdit.Text = '' then
   begin
-    myBeep;
+    MyBeep;
     ResultPanel.Caption := 'Nothing to find';
     Exit;
   end;
@@ -261,7 +261,8 @@ end;
 
 procedure TSearchReplaceWin.SearchBackClick(Sender: TObject);
 begin
-  Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]);
+  if Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]) <= 0 then
+    MyBeep;
 end;
 
 procedure TSearchReplaceWin.StartReq(AsReplace: Boolean);

@@ -111,7 +111,7 @@ object SearchReplaceWin: TSearchReplaceWin
       object Label3: TLabel
         Left = 33
         Height = 18
-        Top = 45
+        Top = 46
         Width = 82
         Caption = 'Whole word'
         ParentColor = False
@@ -119,7 +119,7 @@ object SearchReplaceWin: TSearchReplaceWin
       object UseWholeWord: TCheckBox
         Left = 8
         Height = 24
-        Top = 42
+        Top = 43
         Width = 24
         TabOrder = 2
       end
@@ -245,14 +245,14 @@ object SearchReplaceWin: TSearchReplaceWin
       end
     end
     object OriginPanel2: TPanel
-      Left = 5
+      Left = 8
       Height = 64
       Top = 178
-      Width = 147
+      Width = 144
       BevelInner = bvRaised
       BevelOuter = bvLowered
       ClientHeight = 64
-      ClientWidth = 147
+      ClientWidth = 144
       TabOrder = 8
       object Label11: TLabel
         Left = 5

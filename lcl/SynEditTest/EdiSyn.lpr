@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, MainUnit, GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit,
-  FrameUnit, MikroStatUnit;
+  FrameUnit, MikroStatUnit, AboutUnit, ATTabs;
 
 {$R *.res}
 
@@ -19,6 +19,7 @@ begin
   Application.CreateForm(TGoToLineWin, GoToLineWin);
   Application.CreateForm(TSearchReplaceWin, SearchReplaceWin);
   Application.CreateForm(TReplaceRequest, ReplaceRequest);
+  Application.CreateForm(TAboutForm, AboutForm);
   Application.Run;
 end.
 

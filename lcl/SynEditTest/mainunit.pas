@@ -15,7 +15,7 @@ uses
   MikroStatUnit;
 
 const
-  VERSION = '$VER: EdiSyn 0.32 (24.03.2015)';
+  VERSION = '$VER: EdiSyn 0.33 (27.03.2015)';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -139,6 +139,9 @@ type
     CloseTabMenu: TMenuItem;
     CloseAllMenu: TMenuItem;
     BookMarkMenu: TMenuItem;
+    FullPathMenu: TMenuItem;
+    AboutMainMenu: TMenuItem;
+    AboutMenu: TMenuItem;
     SepMenu4: TMenuItem;
     NewTabMenu: TMenuItem;
     MikroStat: TMikroStatus;
@@ -188,6 +191,7 @@ type
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
     SynExporterHTML1: TSynExporterHTML;
+    procedure AboutMenuClick(Sender: TObject);
     procedure AutoMenuClick(Sender: TObject);
     procedure BookMarkMenuClick(Sender: TObject);
     procedure CloseAllMenuClick(Sender: TObject);
@@ -201,6 +205,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FullPathMenuClick(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
@@ -257,7 +262,7 @@ var
 implementation
 
 uses
-  GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit;
+  GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit, AboutUnit;
 
 {$R *.lfm}
 
@@ -358,7 +363,7 @@ begin
   NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
   NewFrame.Align := alClient;
   NewFrame.Editor.Parent := EditorPanel;
-  Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
+  Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
   // Auto Highlighter preferences
   AutoMenu.Checked := Prefs.AutoHighlighter;
   // which highlighter is default
@@ -381,6 +386,7 @@ begin
   BookMarkMenu.Checked := Prefs.Bookmarks;
   CurEditor.Gutter.Parts[0].Visible:= BookMarkMenu.Checked;
   CurEditor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
+  FullPathMenu.Checked := Prefs.FullPath;
   // Recent Files up to 10
   RecFileList := TStringList.Create;
   RecMenuList[0] := RecMenu1;
@@ -430,6 +436,7 @@ begin
   ProgName := VERSION;
   Delete(Progname, 1, 6);  // Cut Version
   Delete(Progname, Pos('(', Progname), Length(Progname)); // Cut Date
+  AboutUnit.PrgVersion := Trim(Copy(Progname, Pos(' ', Progname), Length(Progname)));
   // Init Mikrostats set everything twice, to init (because it compares for equal values)
   MikroStat.Highlighter := '';
   MikroStat.Changed := True;
@@ -457,6 +464,12 @@ procedure TForm1.FormShow(Sender: TObject);
 begin
   // Move/Size the window to the previous saved parameters
   SetBounds(Prefs.XPos, Prefs.YPos, Prefs.Width, Prefs.Height);
+end;
+
+procedure TForm1.FullPathMenuClick(Sender: TObject);
+begin
+  UpdateTitlebar;
+  Prefs.FullPath := FullPathMenu.Checked;
 end;
 
 procedure TForm1.GoToLineMenuClick(Sender: TObject);
@@ -600,6 +613,11 @@ procedure TForm1.AutoMenuClick(Sender: TObject);
 begin
   // save Autohighlighter function to preferences
   Prefs.AutoHighlighter := AutoMenu.Checked;
+end;
+
+procedure TForm1.AboutMenuClick(Sender: TObject);
+begin
+  AboutForm.Showmodal;
 end;
 
 procedure TForm1.BookMarkMenuClick(Sender: TObject);
@@ -846,7 +864,7 @@ begin
     TabData := Tabs.GetTabData(Tabs.TabIndex);
     TabData.TabModified := False;
     TEditorFrame(TabData.TabObject).Filename := '';
-    TabData.TabCaption := 'Empty Tab';
+    TabData.TabCaption := 'New Tab';
     Tabs.Invalidate;
     ACanClose := False;
   end;
@@ -869,7 +887,7 @@ begin
     NewFrame.Editor.Highlighter := NewFrame.SynCppSyn1;
   if NoneMenu.Checked then
     NewFrame.Editor.Highlighter := nil;
-  Tabs.AddTab(-1, 'Empty Tab', NewFrame, False, clNone);
+  Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
   NewFrame.Editor.Visible := True;
   NewFrame.Editor.SetFocus;
   Tabs.TabIndex := Tabs.TabCount - 1;
@@ -981,15 +999,36 @@ begin
 end;
 
 procedure TForm1.UpdateTitlebar;
+var
+  DispName: string;
 begin
-  Caption := Progname + ' - ' + IntToStr(Tabs.TabIndex + 1) + ': ' + Tabs.GetTabData(Tabs.TabIndex).TabCaption;
-  CurEditor;
+  if FullPathMenu.Checked then
+    DispName := CurFrame.Filename
+  else
+    DispName := ExtractFileName(CurFrame.Filename);
+  if Dispname = '' then
+    Dispname := 'New Tab';
+  Caption := Progname + ' - ' + IntToStr(Tabs.TabIndex + 1) + ': ' + DispName;
 end;
 
 procedure TForm1.LoadFile(AFileName: string);
 var
   Res: Integer;
+  i: Integer;
 begin
+  for i := 0 to Tabs.TabCount - 1 do
+  begin
+    if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) = lowercase(AFilename) then
+    begin
+      Res := MessageDlg('Already open', 'This file is already open in Tab ' + IntToStr(i + 1) + #13#10+ 'Change to this Tab, instead of loading?', mtConfirmation, mbYesNo, 0);
+      if Res = mrYes then
+      begin
+        AddNewRecent(AFilename);
+        Tabs.TabIndex:= i;
+        Exit;
+      end;
+    end;
+  end;
   if CurEditor.Modified then
   begin
     Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);

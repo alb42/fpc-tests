@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Height = 514
-  Top = 614
+  Top = 240
   Width = 801
   Caption = 'Form1'
   ClientHeight = 491
@@ -249,6 +249,12 @@ object Form1: TForm1
         ShowAlwaysCheckable = True
         OnClick = ShowNumMenuClick
       end
+      object FullPathMenu: TMenuItem
+        AutoCheck = True
+        Caption = 'Show Full Path'
+        ShowAlwaysCheckable = True
+        OnClick = FullPathMenuClick
+      end
     end
     object HighLightMenu: TMenuItem
       Caption = 'Highlighter'
@@ -291,6 +297,13 @@ object Form1: TForm1
         Checked = True
         ShowAlwaysCheckable = True
         OnClick = AutoMenuClick
+      end
+    end
+    object AboutMainMenu: TMenuItem
+      Caption = 'About'
+      object AboutMenu: TMenuItem
+        Caption = 'About'
+        OnClick = AboutMenuClick
       end
     end
   end

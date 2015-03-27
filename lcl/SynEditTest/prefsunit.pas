@@ -30,6 +30,7 @@ type
     function GetBookmarks: boolean;
     function GetCaseSens: boolean;
     function GetDefHighlighter: integer;
+    function GetFullPath: boolean;
     function GetHeight: integer;
     function GetInitialDir: string;
     function GetLineNumbers: boolean;
@@ -46,6 +47,7 @@ type
     procedure SetAutoHighlighter(AValue: boolean);
     procedure SetBookmarks(AValue: boolean);
     procedure SetCaseSens(AValue: boolean);
+    procedure SetFullPath(AValue: boolean);
     procedure SetHeight(AValue: integer);
     procedure SetHighlighter(AValue: integer);
     procedure SetInitialDir(AValue: string);
@@ -85,6 +87,7 @@ type
     property SearchBegin: boolean read GetSearchBegin write SetSearchBegin;
     property SearchGlobal: boolean read GetSearchGlobal write SetSearchGlobal;
     property PromptReplace: boolean read GetPromptReplace write SetPromptReplace;
+    property FullPath: boolean read GetFullPath write SetFullPath;
   end;
 
 var
@@ -148,6 +151,11 @@ end;
 procedure TPrefs.SetCaseSens(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'CaseSensitive', AValue);
+end;
+
+procedure TPrefs.SetFullPath(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'FullPath', AValue);
 end;
 
 procedure TPrefs.SetRecFile(Idx: integer; AValue: string);
@@ -228,6 +236,11 @@ end;
 function TPrefs.GetDefHighlighter: integer;
 begin
   Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
+end;
+
+function TPrefs.GetFullPath: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'FullPath', False);
 end;
 
 function TPrefs.GetRecFile(Idx: integer): string;
