@@ -1020,12 +1020,15 @@ begin
   begin
     if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) = lowercase(AFilename) then
     begin
-      Res := MessageDlg('Already open', 'This file is already open in Tab ' + IntToStr(i + 1) + #13#10+ 'Change to this Tab, instead of loading?', mtConfirmation, mbYesNo, 0);
-      if Res = mrYes then
+      if i <> Tabs.TabIndex then
       begin
-        AddNewRecent(AFilename);
-        Tabs.TabIndex:= i;
-        Exit;
+        Res := MessageDlg('Already open', 'This file is already open in Tab ' + IntToStr(i + 1) + #13#10+ 'Change to this Tab, instead of loading?', mtConfirmation, mbYesNo, 0);
+        if Res = mrYes then
+        begin
+          AddNewRecent(AFilename);
+          Tabs.TabIndex:= i;
+          Exit;
+        end;
       end;
     end;
   end;
