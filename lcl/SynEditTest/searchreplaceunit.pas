@@ -99,6 +99,7 @@ uses
 procedure TSearchReplaceWin.SearchButtonClick(Sender: TObject);
 var
   Res: Integer;
+  Idx: Integer;
 begin
   if SearchEdit.Text = '' then
   begin
@@ -111,17 +112,27 @@ begin
   GetSearchSettings;
   SearchString := SearchEdit.Text;
   SearchAllUnit.SearchAllForm.SearchEdit.Text := SearchString;
-  if SearchHist.IndexOf(SearchString) < 0 then
+  if SearchString <> '' then
+  begin
+    Idx := SearchHist.IndexOf(SearchString);
+    if Idx >= 0 then
+      SearchHist.Delete(Idx);
     SearchHist.Insert(0, SearchString);
-  while SearchHist.Count > 100 do
+    while SearchHist.Count > 100 do
       SearchHist.Delete(SearchHist.Count - 1);
+  end;
   if ReplaceMode then
   begin
     ReplaceString := ReplaceEdit.Text;
-    if ReplaceHist.IndexOf(ReplaceString) < 0 then
+    if ReplaceString <> '' then
+    begin
+      Idx := ReplaceHist.IndexOf(ReplaceString);
+      if Idx >= 0 then
+        ReplaceHist.Delete(Idx);
       ReplaceHist.Insert(0, ReplaceString);
-    while ReplaceHist.Count > 100 do
-      ReplaceHist.Delete(ReplaceHist.Count - 1);
+      while ReplaceHist.Count > 100 do
+        ReplaceHist.Delete(ReplaceHist.Count - 1);
+    end;
   end;
   Close;
   Res := MainWindow.CurEditor.SearchReplace(SearchString, ReplaceString, SearchSett);

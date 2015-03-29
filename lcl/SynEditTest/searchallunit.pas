@@ -23,7 +23,7 @@ type
     ChooseDirectory: TRadioButton;
     ChooseProject: TRadioButton;
     DirectoryEdit1: TDirectoryEdit;
-    HistoryBox: TListBox;
+    SAllHistoryBox: TListBox;
     HistoryLabel: TPanel;
     Label1: TLabel;
     Label15: TLabel;
@@ -47,7 +47,7 @@ type
     procedure ChooseProjectClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
-    procedure HistoryBoxDblClick(Sender: TObject);
+    procedure SAllHistoryBoxDblClick(Sender: TObject);
     procedure SearchButtonClick(Sender: TObject);
     procedure SearchEditEditingDone(Sender: TObject);
     procedure UseCaseSenClick(Sender: TObject);
@@ -75,13 +75,19 @@ uses
 procedure TSearchAllForm.SearchButtonClick(Sender: TObject);
 var
   SearchString: TCaption;
+  Idx: integer;
 begin
   SearchReplaceWin.SearchEdit.Text := SearchEdit.Text;
   SearchString := SearchEdit.Text;
-  if SearchReplaceWin.SearchHist.IndexOf(SearchString) < 0 then
+  if SearchString <> '' then
+  begin
+    Idx := SearchReplaceWin.SearchHist.IndexOf(SearchString);
+    if Idx >= 0 then
+      SearchReplaceWin.SearchHist.Delete(Idx);
     SearchReplaceWin.SearchHist.Insert(0, SearchString);
-  while SearchReplaceWin.SearchHist.Count > 100 do
-    SearchReplaceWin.SearchHist.Delete(SearchReplaceWin.SearchHist.Count - 1);
+    while SearchReplaceWin.SearchHist.Count > 100 do
+      SearchReplaceWin.SearchHist.Delete(SearchReplaceWin.SearchHist.Count - 1);
+  end;
   if ChooseOpenFiles.Checked then
   begin
     SearchOpenEditors;
@@ -120,6 +126,7 @@ procedure TSearchAllForm.FormShow(Sender: TObject);
 var
   FilePath: string;
 begin
+  FilePattern.Text := Prefs.SearchFilePattern;
   if MainWindow.CurEditor.SelText <> '' then
     SearchEdit.Text := MainWindow.CurEditor.SelText;
   FilePath := ExtractFilePath(MainWindow.CurFrame.Filename);
@@ -128,27 +135,29 @@ begin
   if FilePath = '' then
     FilePath := GetCurrentDir;
   DirectoryEdit1.Directory := FilePath;
-  HistoryBox.Items.Assign(SearchReplaceWin.SearchHist);
   UseCaseSen.Checked := Prefs.CaseSens;
   UseRegExp.Checked := Prefs.RegExp;
   UseWholeWord.Checked := Prefs.WholeWord;
+  UseRecursive.Checked := Prefs.SAllRecursive;
   case Prefs.SearchAllMode of
     0: ChooseOpenFiles.Checked := True;
     1: ChooseDirectory.Checked := True;
-    //2: ChooseProject.Checked:= True;
+      //2: ChooseProject.Checked:= True;
     else
       ChooseOpenFiles.Checked := True;
   end;
   DirPanel.Enabled := ChooseDirectory.Checked;
   if SearchReplaceWin.Visible then
     SearchReplaceWin.Close;
+  if SAllHistoryBox.Items.Count = 0 then
+    SAllHistoryBox.Items.Assign(SearchReplaceWin.SearchHist);
 end;
 
-procedure TSearchAllForm.HistoryBoxDblClick(Sender: TObject);
+procedure TSearchAllForm.SAllHistoryBoxDblClick(Sender: TObject);
 begin
-  if (HistoryBox.ItemIndex >= 0) and (HistoryBox.ItemIndex < HistoryBox.Items.Count) then
+  if (SAllHistoryBox.ItemIndex >= 0) and (SAllHistoryBox.ItemIndex < SAllHistoryBox.Items.Count) then
   begin
-    SearchEdit.Text := HistoryBox.Items[HistoryBox.ItemIndex];
+    SearchEdit.Text := SAllHistoryBox.Items[SAllHistoryBox.ItemIndex];
   end;
 end;
 
@@ -167,18 +176,19 @@ begin
   DirPanel.Enabled := ChooseDirectory.Checked;
 end;
 
-procedure TSearchAllForm.FormClose(Sender: TObject;
-  var CloseAction: TCloseAction);
+procedure TSearchAllForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  Prefs.SearchFilePattern := FilePattern.Text;
   Prefs.CaseSens := UseCaseSen.Checked;
   Prefs.RegExp := UseRegExp.Checked;
   Prefs.WholeWord := UseWholeWord.Checked;
+  Prefs.SAllRecursive := UseRecursive.Checked;
   if ChooseOpenFiles.Checked then
     Prefs.SearchAllMode := 0;
   if ChooseDirectory.Checked then
     Prefs.SearchAllMode := 1;
-//  if ChooseProject.Checked then
-//    Prefs.SearchAllMode := 2;
+  //  if ChooseProject.Checked then
+  //    Prefs.SearchAllMode := 2;
 end;
 
 procedure TSearchAllForm.SearchOpenEditors;
@@ -251,17 +261,20 @@ var
   var
     Rslt: TSearchRec;
   begin
-    if FindFirst(Dirname + AllFilesMask, faDirectory, Rslt) = 0 then
+    if UseRecursive.Checked then
     begin
-      repeat
-        if (Rslt.Attr and faDirectory) = faDirectory then
-        begin  // its a Directory
-          if not ((Rslt.Name = '.') or (Rslt.Name = '..')) then
-            Dirs.Add(Dirname + Rslt.Name);
-        end;
-      until FindNext(Rslt) <> 0;
+      if FindFirst(Dirname + AllFilesMask, faDirectory, Rslt) = 0 then
+      begin
+        repeat
+          if (Rslt.Attr and faDirectory) = faDirectory then
+          begin  // its a Directory
+            if not ((Rslt.Name = '.') or (Rslt.Name = '..')) then
+              Dirs.Add(Dirname + Rslt.Name);
+          end;
+        until FindNext(Rslt) <> 0;
+      end;
+      FindClose(Rslt);
     end;
-    FindClose(Rslt);
     if FindFirst(Dirname + Pattern, faAnyFile, Rslt) = 0 then
     begin
       repeat
@@ -326,7 +339,8 @@ begin
       end;
       NewText.Free;
     end;
-    SearchResultsWin.ResultTabs.AddTab(-1, fTSearch.Pattern + '(' + IntToStr(NewResultList.Count) + ')', NewResultList);
+    SearchResultsWin.ResultTabs.AddTab(-1, fTSearch.Pattern + '(' +
+      IntToStr(NewResultList.Count) + ')', NewResultList);
     SearchResultsWin.ResultTabs.TabIndex := SearchResultsWin.ResultTabs.TabCount - 1;
     SearchResultsWin.Show;
   finally

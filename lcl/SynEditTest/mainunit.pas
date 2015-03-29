@@ -9,13 +9,13 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,
   Graphics, Dialogs, Menus, ExtCtrls, SynHighlighterCpp, FrameUnit, LCLIntf,
   {$ifdef HASAMIGA}
-  Workbench, muiformsunit, LCLMessageGlue,
+  Workbench, muiformsunit,
   {$endif}
   synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, Math, ATTabs,
   MikroStatUnit;
 
 const
-  VERSION = '$VER: EdiSyn 0.33 (27.03.2015)';
+  VERSION = '$VER: EdiSyn 0.34 (29.03.2015)';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -1061,8 +1061,13 @@ begin
     if Res <> mrYes then
       Exit;
   end;
+  try
+    CurEditor.Lines.LoadFromFile(AFilename);
+  except
+    Showmessage('Cannot open File: "'+AFilename+'"');
+    Exit;
+  end;
   CurFrame.Filename := AFileName;
-  CurEditor.Lines.LoadFromFile(CurFrame.Filename);
   AutoHighlighter;
   UpdateTitlebar;
   AddNewRecent(CurFrame.Filename);

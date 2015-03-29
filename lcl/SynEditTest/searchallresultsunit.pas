@@ -6,6 +6,9 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  {$ifdef HASAMIGA}
+  Workbench, muiformsunit,
+  {$endif}
   ATTabs, fgl, SynEdit, FrameUnit, MainUnit;
 
 type
@@ -23,6 +26,7 @@ type
 
   TSearchResultsWin = class(TForm)
     ListBox: TListBox;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ListBoxDblClick(Sender: TObject);
@@ -49,14 +53,6 @@ uses
 
 procedure TSearchResultsWin.FormCreate(Sender: TObject);
 begin
-  {$ifdef AROS}
-  // dirty hack to get the window position again ;)
-  if HandleAllocated and (TObject(Handle) is TMUIWindow) then
-  begin
-    Left := TMUIWindow(Handle).Left;
-    Top := TMUIWindow(Handle).Top
-  end;
-  {$endif}
   Left := Prefs.SAllXPos;
   Top := Prefs.SAllYPos;
   Width := Prefs.SAllWidth;
@@ -96,12 +92,26 @@ begin
   ResultTabs.OnTabClick:=@TabClickEvent;
 end;
 
-procedure TSearchResultsWin.FormDestroy(Sender: TObject);
+procedure TSearchResultsWin.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
 begin
+  {$ifdef AROS}
+  // dirty hack to get the window position again ;)
+  if HandleAllocated and (TObject(Handle) is TMUIWindow) then
+  begin
+    Left := TMUIWindow(Handle).Left;
+    Top := TMUIWindow(Handle).Top
+  end;
+  {$endif}
   Prefs.SAllXPos := Left;
   Prefs.SAllYPos := Top;
   Prefs.SAllWidth := Width;
   Prefs.SAllHeight := Height;
+end;
+
+procedure TSearchResultsWin.FormDestroy(Sender: TObject);
+begin
+  //
 end;
 
 procedure TSearchResultsWin.ListBoxDblClick(Sender: TObject);
@@ -256,4 +266,3 @@ begin
 end;
 
 end.
-

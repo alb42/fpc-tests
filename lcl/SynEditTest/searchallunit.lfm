@@ -116,14 +116,14 @@ object SearchAllForm: TSearchAllForm
       Caption = 'Search History'
       TabOrder = 0
     end
-    object HistoryBox: TListBox
+    object SAllHistoryBox: TListBox
       Left = 1
       Height = 275
       Top = 27
       Width = 168
       Align = alClient
       ItemHeight = 0
-      OnDblClick = HistoryBoxDblClick
+      OnDblClick = SAllHistoryBoxDblClick
       ScrollWidth = 166
       TabOrder = 1
       TopIndex = -1

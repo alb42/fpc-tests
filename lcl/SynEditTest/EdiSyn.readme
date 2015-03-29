@@ -25,6 +25,7 @@ Ctrl + PgUp/PgDown         Set Cursor to Start/End of Text in the current View
 Ctrl + Shift + B           Jump with Cursor to the matching Bracket
 Ctrl + I                   Jump to line (requester)
 Ctrl + F                   Find
+Ctrl + Shift + F           Find in all Files
 F3                         Find again
 Shift + F3                 Find again backwards
 Ctrl + Shift + 0..9        Set/Clear Bookmark at current Position
@@ -73,6 +74,13 @@ Ctrl + B                   Open a new empty Tab
 Ctrl + G                   Close Current Tab
 
 History:
+
+0.34
+
+  FIX: Warning for reopen file in same Tab removed
+  FIX: Errormessage if a file cannot be open
+  ADD: Search All requester (directory, open files)
+  ADD: Search All result window with highlighting
 
 0.33
 

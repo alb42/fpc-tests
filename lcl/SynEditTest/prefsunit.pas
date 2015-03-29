@@ -37,8 +37,10 @@ type
     function GetPromptReplace: boolean;
     function GetRecFile(Idx: integer): string;
     function GetRegExp: boolean;
+    function GetSAllRecursive: boolean;
     function GetSearchAllMode: Integer;
     function GetSearchBegin: boolean;
+    function GetSearchFilePattern: string;
     function GetSearchFwd: boolean;
     function GetSearchGlobal: boolean;
     function GetWholeWord: boolean;
@@ -60,8 +62,10 @@ type
     procedure SetPromptReplace(AValue: boolean);
     procedure SetRecFile(Idx: integer; AValue: string);
     procedure SetRegExp(AValue: boolean);
+    procedure SetSAllRecursive(AValue: boolean);
     procedure SetSearchAllMode(AValue: Integer);
     procedure SetSearchBegin(AValue: boolean);
+    procedure SetSearchFilePattern(AValue: string);
     procedure SetSearchFwd(AValue: boolean);
     procedure SetSearchGlobal(AValue: boolean);
     procedure SetWholeWord(AValue: boolean);
@@ -104,6 +108,8 @@ type
     property SAllYPos: integer read GetSAllYPos write SetSAllYPos;
     property SAllWidth: integer read GetSAllWidth write SetSAllWidth;
     property SAllHeight: integer read GetSAllHeight write SetSAllHeight;
+    property SAllRecursive: boolean read GetSAllRecursive write SetSAllRecursive;
+    property SearchFilePattern: string read GetSearchFilePattern write SetSearchFilePattern;
   end;
 
 var
@@ -204,6 +210,11 @@ begin
   IniFile.WriteBool(SECTION_SEARCH, 'RegularExpression', AValue);
 end;
 
+procedure TPrefs.SetSAllRecursive(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_SEARCH, 'RecursiveSearch', AValue);
+end;
+
 procedure TPrefs.SetSearchAllMode(AValue: Integer);
 begin
   IniFile.WriteInteger(SECTION_SEARCH, 'SearchAllMode', AValue);
@@ -212,6 +223,11 @@ end;
 procedure TPrefs.SetSearchBegin(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'FromBegin', AValue);
+end;
+
+procedure TPrefs.SetSearchFilePattern(AValue: string);
+begin
+  IniFile.WriteString(SECTION_SEARCH, 'FilePattern', AValue);
 end;
 
 procedure TPrefs.SetSearchFwd(AValue: boolean);
@@ -251,7 +267,7 @@ end;
 
 function TPrefs.GetSAllYPos: integer;
 begin
-  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllYPos', 525);
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllYPos', 550);
 end;
 
 function TPrefs.GetSAllWidth: integer;
@@ -314,6 +330,11 @@ begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'RegularExpression', False);
 end;
 
+function TPrefs.GetSAllRecursive: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_SEARCH, 'RecursiveSearch', True);
+end;
+
 function TPrefs.GetSearchAllMode: Integer;
 begin
   Result := IniFile.ReadInteger(SECTION_SEARCH, 'SearchAllMode', 0);
@@ -322,6 +343,11 @@ end;
 function TPrefs.GetSearchBegin: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'FromBegin', True);
+end;
+
+function TPrefs.GetSearchFilePattern: string;
+begin
+  Result := IniFile.ReadString(SECTION_SEARCH, 'FilePattern', '*.pas|*.pp|*.inc|*.h|*.c');
 end;
 
 function TPrefs.GetSearchFwd: boolean;
@@ -341,7 +367,7 @@ end;
 
 function TPrefs.GetYPos: integer;
 begin
-  Result := IniFile.ReadInteger(SECTION_GENERAL, 'YPos', 70);
+  Result := IniFile.ReadInteger(SECTION_GENERAL, 'YPos', 25);
 end;
 
 constructor TPrefs.Create;

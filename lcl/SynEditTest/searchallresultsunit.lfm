@@ -1,12 +1,13 @@
 object SearchResultsWin: TSearchResultsWin
-  Left = 61
+  Left = 27
   Height = 248
-  Top = 573
+  Top = 803
   Width = 632
   Caption = 'Search Results'
   ClientHeight = 248
   ClientWidth = 632
   Color = 16578029
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   LCLVersion = '1.0.10.0'

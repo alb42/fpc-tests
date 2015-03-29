@@ -28,11 +28,12 @@ object MainWindow: TMainWindow
     ParentFont = False
     TabOrder = 0
     object CoordPanel: TPanel
-      Left = 0
-      Height = 28
-      Top = 0
+      Left = 2
+      Height = 24
+      Top = 2
       Width = 130
       Align = alLeft
+      BorderSpacing.Around = 2
       BevelInner = bvLowered
       Caption = '0, 0'
       Font.Height = -17
