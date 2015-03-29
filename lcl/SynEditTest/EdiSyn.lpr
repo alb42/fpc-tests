@@ -8,18 +8,21 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms, MainUnit, GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit,
-  FrameUnit, MikroStatUnit, AboutUnit, ATTabs;
+  FrameUnit, MikroStatUnit, AboutUnit, ATTabs, SearchAllUnit, 
+SearchAllResultsUnit;
 
 {$R *.res}
 
 begin
   RequireDerivedFormResource := True;
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainWindow, MainWindow);
   Application.CreateForm(TGoToLineWin, GoToLineWin);
   Application.CreateForm(TSearchReplaceWin, SearchReplaceWin);
   Application.CreateForm(TReplaceRequest, ReplaceRequest);
   Application.CreateForm(TAboutForm, AboutForm);
+  Application.CreateForm(TSearchAllForm, SearchAllForm);
+  Application.CreateForm(TSearchResultsWin, SearchResultsWin);
   Application.Run;
 end.
 

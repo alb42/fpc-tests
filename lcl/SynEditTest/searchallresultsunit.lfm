@@ -1,0 +1,27 @@
+object SearchResultsWin: TSearchResultsWin
+  Left = 61
+  Height = 248
+  Top = 573
+  Width = 632
+  Caption = 'Search Results'
+  ClientHeight = 248
+  ClientWidth = 632
+  Color = 16578029
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.0.10.0'
+  object ListBox: TListBox
+    Left = 0
+    Height = 248
+    Top = 0
+    Width = 632
+    Align = alClient
+    Font.Name = 'Courier'
+    ItemHeight = 0
+    OnDblClick = ListBoxDblClick
+    ParentFont = False
+    ScrollWidth = 630
+    TabOrder = 0
+    TopIndex = -1
+  end
+end

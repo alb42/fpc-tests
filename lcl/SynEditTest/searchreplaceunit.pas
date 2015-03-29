@@ -59,8 +59,10 @@ type
     RHToggle: TToggleBox;
     UseRegExp: TCheckBox;
     procedure CancelButtonClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure HistoryBoxDblClick(Sender: TObject);
     procedure SearchAgainClick(Sender: TObject);
     procedure SearchBackClick(Sender: TObject);
@@ -69,7 +71,6 @@ type
     procedure SHToggleClick(Sender: TObject);
     procedure RHToggleChange(Sender: TObject);
   private
-    SearchHist: TStringList;
     ReplaceHist: TStringList;
     SearchString: string;
     ReplaceString: string;
@@ -79,6 +80,7 @@ type
     procedure GetSearchSettings;
     procedure MyBeep;
   public
+    SearchHist: TStringList;
     procedure StartReq(AsReplace: Boolean);
   end;
 
@@ -88,7 +90,7 @@ var
 implementation
 
 uses
-  MainUnit;
+  MainUnit, SearchAllUnit;
 
 {$R *.lfm}
 
@@ -108,8 +110,11 @@ begin
   ResultPanel.caption := '';
   GetSearchSettings;
   SearchString := SearchEdit.Text;
+  SearchAllUnit.SearchAllForm.SearchEdit.Text := SearchString;
   if SearchHist.IndexOf(SearchString) < 0 then
     SearchHist.Insert(0, SearchString);
+  while SearchHist.Count > 100 do
+      SearchHist.Delete(SearchHist.Count - 1);
   if ReplaceMode then
   begin
     ReplaceString := ReplaceEdit.Text;
@@ -119,7 +124,7 @@ begin
       ReplaceHist.Delete(ReplaceHist.Count - 1);
   end;
   Close;
-  Res := Form1.CurEditor.SearchReplace(SearchString, ReplaceString, SearchSett);
+  Res := MainWindow.CurEditor.SearchReplace(SearchString, ReplaceString, SearchSett);
   if Res <= 0 then
   begin
     MyBeep;
@@ -205,7 +210,7 @@ var
   Res: Integer;
 begin
   Exclude(SearchSett, ssoEntireScope);
-  Res := Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoFindContinue]);
+  Res := MainWindow.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoFindContinue]);
   if Res <= 0 then
     MyBeep;
 end;
@@ -244,6 +249,18 @@ begin
   Close;
 end;
 
+procedure TSearchReplaceWin.FormClose(Sender: TObject;
+  var CloseAction: TCloseAction);
+begin
+  Prefs.CaseSens := UseCaseSen.Checked;
+  Prefs.WholeWord := UseWholeWord.Checked;
+  Prefs.RegExp := UseRegExp.Checked;
+  Prefs.SearchFwd := ChooseForward.Checked;
+  Prefs.SearchBegin := ChooseBegin.Checked;
+  Prefs.SearchGlobal := ChooseGlobal.Checked;
+  Prefs.PromptReplace := ChoosePrompt.Checked;
+end;
+
 procedure TSearchReplaceWin.FormDestroy(Sender: TObject);
 begin
   Prefs.CaseSens := UseCaseSen.Checked;
@@ -259,9 +276,20 @@ begin
   ReplaceHist.Free;
 end;
 
+procedure TSearchReplaceWin.FormShow(Sender: TObject);
+begin
+  UseCaseSen.Checked := Prefs.CaseSens;
+  UseWholeWord.Checked := Prefs.WholeWord;
+  UseRegExp.Checked := Prefs.RegExp;
+  ChooseForward.Checked := Prefs.SearchFwd;
+  ChooseBegin.Checked := Prefs.SearchBegin;
+  ChooseGlobal.Checked := Prefs.SearchGlobal;
+  ChoosePrompt.Checked := Prefs.PromptReplace;
+end;
+
 procedure TSearchReplaceWin.SearchBackClick(Sender: TObject);
 begin
-  if Form1.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]) <= 0 then
+  if MainWindow.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]) <= 0 then
     MyBeep;
 end;
 

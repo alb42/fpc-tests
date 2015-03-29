@@ -42,7 +42,7 @@ procedure TGoToLineWin.FormShow(Sender: TObject);
 begin
   AimLine.SetFocus;
   AimLine.Text := '';
-  NewLine := Form1.CurEditor.CaretY;
+  NewLine := MainWindow.CurEditor.CaretY;
 end;
 
 procedure TGoToLineWin.OkButtonClick(Sender: TObject);
@@ -64,13 +64,13 @@ begin
   end else
   begin
     OldText := NewText;
-    Form1.CurEditor.CaretY := NewLine;
+    MainWindow.CurEditor.CaretY := NewLine;
   end;
 end;
 
 procedure TGoToLineWin.AimLineEditingDone(Sender: TObject);
 begin
-  Form1.CurEditor.CaretY := Min(Form1.CurEditor.Lines.Count, NewLine);
+  MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, NewLine);
   Close;
 end;
 
@@ -79,7 +79,7 @@ procedure TGoToLineWin.AimLineKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_RETURN then
   begin
-    Form1.CurEditor.CaretY := Min(Form1.CurEditor.Lines.Count, NewLine);
+    MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, NewLine);
     Close;
   end;
 end;

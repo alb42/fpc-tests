@@ -37,6 +37,7 @@ type
     function GetPromptReplace: boolean;
     function GetRecFile(Idx: integer): string;
     function GetRegExp: boolean;
+    function GetSearchAllMode: Integer;
     function GetSearchBegin: boolean;
     function GetSearchFwd: boolean;
     function GetSearchGlobal: boolean;
@@ -44,6 +45,10 @@ type
     function GetWidth: integer;
     function GetXPos: integer;
     function GetYPos: integer;
+    function GetSAllHeight: integer;
+    function GetSAllWidth: integer;
+    function GetSAllXPos: integer;
+    function GetSAllYPos: integer;
     procedure SetAutoHighlighter(AValue: boolean);
     procedure SetBookmarks(AValue: boolean);
     procedure SetCaseSens(AValue: boolean);
@@ -55,6 +60,7 @@ type
     procedure SetPromptReplace(AValue: boolean);
     procedure SetRecFile(Idx: integer; AValue: string);
     procedure SetRegExp(AValue: boolean);
+    procedure SetSearchAllMode(AValue: Integer);
     procedure SetSearchBegin(AValue: boolean);
     procedure SetSearchFwd(AValue: boolean);
     procedure SetSearchGlobal(AValue: boolean);
@@ -62,6 +68,10 @@ type
     procedure SetWidth(AValue: integer);
     procedure SetXPos(AValue: integer);
     procedure SetYPos(AValue: integer);
+    procedure SetSAllHeight(AValue: integer);
+    procedure SetSAllWidth(AValue: integer);
+    procedure SetSAllXPos(AValue: integer);
+    procedure SetSAllYPos(AValue: integer);
   public
     constructor Create;
     destructor Destroy; override;
@@ -88,6 +98,12 @@ type
     property SearchGlobal: boolean read GetSearchGlobal write SetSearchGlobal;
     property PromptReplace: boolean read GetPromptReplace write SetPromptReplace;
     property FullPath: boolean read GetFullPath write SetFullPath;
+    // SearchAll Requester
+    property SearchAllMode: Integer read GetSearchAllMode write SetSearchAllMode;
+    property SAllXPos: integer read GetSAllXPos write SetSAllXPos;
+    property SAllYPos: integer read GetSAllYPos write SetSAllYPos;
+    property SAllWidth: integer read GetSAllWidth write SetSAllWidth;
+    property SAllHeight: integer read GetSAllHeight write SetSAllHeight;
   end;
 
 var
@@ -115,6 +131,26 @@ end;
 procedure TPrefs.SetHeight(AValue: integer);
 begin
   IniFile.WriteInteger(SECTION_GENERAL, 'Height', AValue);
+end;
+
+procedure TPrefs.SetSAllXPos(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_SEARCH, 'SAllXPos', AValue);
+end;
+
+procedure TPrefs.SetSAllYPos(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_SEARCH, 'SAllYPos', AValue);
+end;
+
+procedure TPrefs.SetSAllWidth(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_SEARCH, 'SAllWidth', AValue);
+end;
+
+procedure TPrefs.SetSAllHeight(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_SEARCH, 'SAllHeight', AValue);
 end;
 
 procedure TPrefs.SetHighlighter(AValue: integer);
@@ -168,6 +204,11 @@ begin
   IniFile.WriteBool(SECTION_SEARCH, 'RegularExpression', AValue);
 end;
 
+procedure TPrefs.SetSearchAllMode(AValue: Integer);
+begin
+  IniFile.WriteInteger(SECTION_SEARCH, 'SearchAllMode', AValue);
+end;
+
 procedure TPrefs.SetSearchBegin(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'FromBegin', AValue);
@@ -201,6 +242,26 @@ end;
 function TPrefs.GetHeight: integer;
 begin
   Result := IniFile.ReadInteger(SECTION_GENERAL, 'Height', 500);
+end;
+
+function TPrefs.GetSAllXPos: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllXPos', 25);
+end;
+
+function TPrefs.GetSAllYPos: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllYPos', 525);
+end;
+
+function TPrefs.GetSAllWidth: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllWidth', 800);
+end;
+
+function TPrefs.GetSAllHeight: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SAllHeight', 200);
 end;
 
 function TPrefs.GetInitialDir: string;
@@ -251,6 +312,11 @@ end;
 function TPrefs.GetRegExp: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'RegularExpression', False);
+end;
+
+function TPrefs.GetSearchAllMode: Integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_SEARCH, 'SearchAllMode', 0);
 end;
 
 function TPrefs.GetSearchBegin: boolean;

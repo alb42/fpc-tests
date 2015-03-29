@@ -1,9 +1,9 @@
-object Form1: TForm1
+object MainWindow: TMainWindow
   Left = 0
   Height = 514
   Top = 240
   Width = 801
-  Caption = 'Form1'
+  Caption = 'MainWindow'
   ClientHeight = 491
   ClientWidth = 801
   Color = 16578029
@@ -217,6 +217,10 @@ object Form1: TForm1
         Caption = 'Search'
         OnClick = SearchMenuClick
       end
+      object SearchAllMenu: TMenuItem
+        Caption = 'Search All'
+        OnClick = SearchAllMenuClick
+      end
       object ReplaceMenu: TMenuItem
         Caption = 'Replace'
         OnClick = ReplaceMenuClick
@@ -235,6 +239,13 @@ object Form1: TForm1
     end
     object ViewMenu: TMenuItem
       Caption = 'View'
+      object WindowMenu: TMenuItem
+        Caption = 'Windows'
+        object SearchAllWindowMenu: TMenuItem
+          Caption = 'Search All Results'
+          OnClick = SearchAllWindowMenuClick
+        end
+      end
       object BookMarkMenu: TMenuItem
         AutoCheck = True
         Caption = 'Bookmarks'

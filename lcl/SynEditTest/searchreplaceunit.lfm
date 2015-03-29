@@ -7,8 +7,10 @@ object SearchReplaceWin: TSearchReplaceWin
   ClientHeight = 310
   ClientWidth = 464
   Color = 16578029
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   LCLVersion = '1.0.10.0'
   object SearchPanel: TPanel
     Left = 0

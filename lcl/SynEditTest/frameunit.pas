@@ -56,10 +56,10 @@ end;
 constructor TEditorFrame.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
-  Editor.OnProcessCommand := @(MainUnit.Form1.SynEdit1ProcessCommand);
-  Editor.OnReplaceText:=@MainUnit.Form1.SynEdit1ReplaceText;
-  Editor.OnStatusChange:=@MainUnit.Form1.SynEdit1StatusChange;
-  Editor.BookMarkOptions.BookmarkImages := MainUnit.Form1.BookmarkImages;
+  Editor.OnProcessCommand := @(MainUnit.MainWindow.SynEdit1ProcessCommand);
+  Editor.OnReplaceText:=@MainUnit.MainWindow.SynEdit1ReplaceText;
+  Editor.OnStatusChange:=@MainUnit.MainWindow.SynEdit1StatusChange;
+  Editor.BookMarkOptions.BookmarkImages := MainUnit.MainWindow.BookmarkImages;
 end;
 
 {$R *.lfm}

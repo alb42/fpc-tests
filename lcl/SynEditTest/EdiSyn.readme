@@ -72,5 +72,51 @@ Esc                        Quit
 Ctrl + B                   Open a new empty Tab
 Ctrl + G                   Close Current Tab
 
+History:
+
+0.33
+
+  FIX: Beep also when searching backwards (Shift F3)
+  ADD: Warn if a file is already open in the editor, jump to this tab
+  ADD: Show full path in Window title.
+  FIX: crash for un/checking TRadiobox
+  ADD: About Box
+
+0.32
+
+  ADD: Call Search dialog with selection -> used as search text
+  ADD: Search Dialog improved
+  ADD: Search and replace history
+  ADD: Search Settings saved/restored
+  FIX: Not Call Application to redraw
+ 
+0.31
+
+  ADD: Bookmarks (Ctrl + Shift + 0..9 for set, Ctrl + 0..9 for jump to bookmark) in the picture Bookmark 5 is set.
+  ADD: Bookmark bar can be switched on/off
+  FIX: Crash when close a Tab via key removed (Focus issue)
+  FIX: Better/faster creation of new Editor pages
+  CHG: Show only every 5th line number, looks not so crowded
+  FIX: TabStop setting for Replace Dialog (use tab from search to Replace edit field)
+  CHG: Use MUI Requesters instead of EasyRequest -> looks nicer and the Window behind gets redraw events.
+
+0.30
+
+  ADD: Tabs
+  CHG: nicer Colors
+  ADD: better Statusbar (extendable)
+  FIX: many Bugfixes (focus, keys ....)
+  
+0.20
+
+  ADD: Name, Icon, Readme
+  ADD: Search, Replace (not complete)
+  ADD: Close Question
+  ADD: Autoselect Highlighter by Extension
+  ADD: Show/Hide Line numbers
+  ADD Save Size and position
+  ADD: Recent Files list
+  FIX: too long scrollbar fixed
+  FIX: scrolling with selection changed
 
 

@@ -40,7 +40,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="10">
+    <Units Count="12">
       <Unit0>
         <Filename Value="EdiSyn.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -49,7 +49,7 @@
       <Unit1>
         <Filename Value="mainunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="MainWindow"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="MainUnit"/>
@@ -112,6 +112,22 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="AboutUnit"/>
       </Unit9>
+      <Unit10>
+        <Filename Value="searchallunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SearchAllForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="SearchAllUnit"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="searchallresultsunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="SearchResultsWin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="SearchAllResultsUnit"/>
+      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
