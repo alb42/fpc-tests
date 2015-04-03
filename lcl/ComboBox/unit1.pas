@@ -15,6 +15,7 @@ type
     Button1: TButton;
     Button2: TButton;
     ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
     StaticText1: TStaticText;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -45,20 +46,27 @@ begin
   ComboBox1.Items.add('number 5');
   ComboBox1.Items.add('number 6');
   ComboBox1.Items.EndUpdate;
+  ComboBox2.Items.Assign(ComboBox1.Items);
   StaticText1.Caption:='Entries changed';
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   ComboBox1.ItemIndex := 2;
+  ComboBox2.ItemIndex := 2;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
+var
+  cbx: TComboBox;
 begin
-  if (ComboBox1.ItemIndex <= 0) or (ComboBox1.ItemIndex >= ComboBox1.items.Count) then
-    StaticText1.Caption:='Change: ' + IntToStr(ComboBox1.ItemIndex) + ' -> ' + ComboBox1.Text
+  if not (Sender is TComboBox) then
+    Exit;
+  Cbx := TComboBox(Sender);
+  if (cbx.ItemIndex < 0) or (cbx.ItemIndex >= cbx.items.Count) then
+    StaticText1.Caption:= cbx.Name +' Change nok: ' + IntToStr(cbx.ItemIndex) + ' -> ' + cbx.Text
   else
-    StaticText1.Caption:='Change: ' + IntToStr(ComboBox1.ItemIndex) + ' -> ' + ComboBox1.Text + ' -> ' + ComboBox1.items.Strings[Combobox1.itemindex];
+    StaticText1.Caption:=cbx.Name+ ' Change ok: ' + IntToStr(cbx.ItemIndex) + ' -> ' + cbx.Text + ' -> ' + cbx.items.Strings[cbx.itemindex];
 end;
 
 end.
