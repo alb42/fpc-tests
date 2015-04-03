@@ -13,7 +13,10 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    Button1: TButton;
+    CheckBox1: TCheckBox;
     GroupBox1: TGroupBox;
+    Label1: TLabel;
     Panel1: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
