@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  ExtCtrls;
+  ExtCtrls, ColorBox;
 
 type
 
@@ -14,7 +14,10 @@ type
 
   TForm1 = class(TForm)
     Button1: TButton;
+    ColorBox1: TColorBox;
+    ColorButton1: TColorButton;
     ColorDialog1: TColorDialog;
+    ColorListBox1: TColorListBox;
     Panel1: TPanel;
     procedure Button1Click(Sender: TObject);
   private

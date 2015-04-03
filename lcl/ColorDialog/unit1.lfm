@@ -8,21 +8,48 @@ object Form1: TForm1
   ClientWidth = 320
   LCLVersion = '1.0.10.0'
   object Button1: TButton
-    Left = 104
+    Left = 231
     Height = 25
-    Top = 16
+    Top = 176
     Width = 75
     Caption = 'Button1'
     OnClick = Button1Click
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 104
+    Left = 176
     Height = 112
     Top = 56
     Width = 130
     Caption = 'Panel1'
     TabOrder = 1
+  end
+  object ColorBox1: TColorBox
+    Left = 192
+    Height = 31
+    Top = 10
+    Width = 120
+    Selected = clAqua
+    ItemHeight = 0
+    TabOrder = 2
+  end
+  object ColorListBox1: TColorListBox
+    Left = 8
+    Height = 182
+    Top = 10
+    Width = 144
+    ItemHeight = 0
+    TabOrder = 3
+  end
+  object ColorButton1: TColorButton
+    Left = 136
+    Height = 25
+    Top = 208
+    Width = 75
+    BorderWidth = 0
+    ButtonColorSize = 10
+    ButtonColor = clBlack
+    Margin = 5
   end
   object ColorDialog1: TColorDialog
     Color = clGreen
@@ -48,7 +75,7 @@ object Form1: TForm1
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    left = 48
-    top = 80
+    left = 200
+    top = 48
   end
 end
