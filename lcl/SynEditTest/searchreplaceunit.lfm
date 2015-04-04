@@ -1,10 +1,10 @@
 object SearchReplaceWin: TSearchReplaceWin
   Left = 177
-  Height = 310
+  Height = 299
   Top = 284
   Width = 464
   Caption = 'Search & Replace'
-  ClientHeight = 310
+  ClientHeight = 299
   ClientWidth = 464
   Color = 16578029
   OnClose = FormClose
@@ -14,17 +14,17 @@ object SearchReplaceWin: TSearchReplaceWin
   LCLVersion = '1.0.10.0'
   object SearchPanel: TPanel
     Left = 0
-    Height = 310
+    Height = 299
     Top = 0
     Width = 304
     Align = alLeft
-    ClientHeight = 310
+    ClientHeight = 299
     ClientWidth = 304
     TabOrder = 0
     object CancelButton: TButton
       Left = 216
       Height = 27
-      Top = 248
+      Top = 239
       Width = 75
       Caption = 'Cancel'
       OnClick = CancelButtonClick
@@ -64,249 +64,32 @@ object SearchReplaceWin: TSearchReplaceWin
     object SearchButton: TButton
       Left = 128
       Height = 27
-      Top = 248
+      Top = 239
       Width = 75
       Caption = 'Search'
       OnClick = SearchButtonClick
       TabOrder = 3
     end
-    object SearchSettings: TPanel
-      Left = 8
-      Height = 98
-      Top = 80
-      Width = 144
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      ClientHeight = 98
-      ClientWidth = 144
-      TabOrder = 4
-      object UseRegExp: TCheckBox
-        Left = 8
-        Height = 24
-        Top = 68
-        Width = 24
-        TabOrder = 0
-      end
-      object Label4: TLabel
-        Left = 33
-        Height = 18
-        Top = 72
-        Width = 80
-        Caption = 'Regular Exp'
-        ParentColor = False
-      end
-      object UseCaseSen: TCheckBox
-        Left = 8
-        Height = 24
-        Top = 19
-        Width = 24
-        TabOrder = 1
-      end
-      object Label2: TLabel
-        Left = 33
-        Height = 18
-        Top = 22
-        Width = 95
-        Caption = 'Case sensitive'
-        ParentColor = False
-      end
-      object Label3: TLabel
-        Left = 33
-        Height = 18
-        Top = 46
-        Width = 82
-        Caption = 'Whole word'
-        ParentColor = False
-      end
-      object UseWholeWord: TCheckBox
-        Left = 8
-        Height = 24
-        Top = 43
-        Width = 24
-        TabOrder = 2
-      end
-      object Label15: TLabel
-        Left = 8
-        Height = 18
-        Top = 2
-        Width = 56
-        Caption = 'Settings'
-        ParentColor = False
-      end
-    end
     object ResultPanel: TPanel
       Left = 1
       Height = 26
-      Top = 283
+      Top = 272
       Width = 302
       Align = alBottom
       BevelInner = bvLowered
       Caption = 'ResultPanel'
-      TabOrder = 5
+      TabOrder = 4
     end
-    object OriginPanel: TPanel
-      Left = 152
-      Height = 64
-      Top = 80
-      Width = 147
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      ClientHeight = 64
-      ClientWidth = 147
-      TabOrder = 6
-      object Label5: TLabel
-        Left = 8
-        Height = 18
-        Top = 2
-        Width = 42
-        Caption = 'Origin'
-        ParentColor = False
-      end
-      object ChooseCursor: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 17
-        Width = 24
-        TabOrder = 0
-      end
-      object ChooseBegin: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 39
-        Width = 24
-        Checked = True
-        TabOrder = 1
-        TabStop = True
-      end
-      object Label6: TLabel
-        Left = 34
-        Height = 18
-        Top = 21
-        Width = 83
-        Caption = 'From cursor'
-        ParentColor = False
-      end
-      object Label7: TLabel
-        Left = 34
-        Height = 18
-        Top = 42
-        Width = 105
-        Caption = 'From beginning'
-        ParentColor = False
-      end
-    end
-    object OriginPanel1: TPanel
-      Left = 152
-      Height = 69
-      Top = 144
-      Width = 147
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      ClientHeight = 69
-      ClientWidth = 147
-      TabOrder = 7
-      object Label8: TLabel
-        Left = 8
-        Height = 18
-        Top = 4
-        Width = 42
-        Caption = 'Scope'
-        ParentColor = False
-      end
-      object ChooseSel: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 19
-        Width = 24
-        TabOrder = 0
-      end
-      object ChooseGlobal: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 41
-        Width = 24
-        Checked = True
-        TabOrder = 1
-        TabStop = True
-      end
-      object Label9: TLabel
-        Left = 34
-        Height = 18
-        Top = 23
-        Width = 91
-        Caption = 'Selected Text'
-        ParentColor = False
-      end
-      object Label10: TLabel
-        Left = 34
-        Height = 18
-        Top = 44
-        Width = 45
-        Caption = 'Global'
-        ParentColor = False
-      end
-    end
-    object OriginPanel2: TPanel
-      Left = 8
-      Height = 64
-      Top = 178
+    object Panel1: TPanel
+      Left = 155
+      Height = 26
+      Top = 207
       Width = 144
       BevelInner = bvRaised
       BevelOuter = bvLowered
-      ClientHeight = 64
+      ClientHeight = 26
       ClientWidth = 144
-      TabOrder = 8
-      object Label11: TLabel
-        Left = 5
-        Height = 18
-        Top = 3
-        Width = 111
-        Caption = 'Search Direction'
-        ParentColor = False
-      end
-      object ChooseBackward: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 18
-        Width = 24
-        TabOrder = 0
-      end
-      object ChooseForward: TRadioButton
-        Left = 8
-        Height = 24
-        Top = 40
-        Width = 24
-        Checked = True
-        TabOrder = 1
-        TabStop = True
-      end
-      object Label12: TLabel
-        Left = 34
-        Height = 18
-        Top = 22
-        Width = 67
-        Caption = 'Backward'
-        ParentColor = False
-      end
-      object Label13: TLabel
-        Left = 34
-        Height = 18
-        Top = 43
-        Width = 58
-        Caption = 'Forward'
-        ParentColor = False
-      end
-    end
-    object Panel1: TPanel
-      Left = 152
-      Height = 29
-      Top = 213
-      Width = 147
-      BevelInner = bvRaised
-      BevelOuter = bvLowered
-      ClientHeight = 29
-      ClientWidth = 147
-      TabOrder = 9
+      TabOrder = 5
       object PromptReplaceLabel: TLabel
         Left = 31
         Height = 18
@@ -330,7 +113,7 @@ object SearchReplaceWin: TSearchReplaceWin
       Width = 40
       Caption = 'H >'
       OnClick = SHToggleClick
-      TabOrder = 10
+      TabOrder = 6
     end
     object RHToggle: TToggleBox
       Left = 256
@@ -339,27 +122,209 @@ object SearchReplaceWin: TSearchReplaceWin
       Width = 40
       Caption = 'H >'
       OnChange = RHToggleChange
+      TabOrder = 7
+    end
+    object SearchSettingsPanel: TGroupBox
+      Left = 5
+      Height = 97
+      Top = 73
+      Width = 144
+      Caption = 'Settings'
+      ClientHeight = 78
+      ClientWidth = 140
+      TabOrder = 8
+      object UseRegExp: TCheckBox
+        Left = 4
+        Height = 24
+        Top = 52
+        Width = 24
+        TabOrder = 0
+      end
+      object Label4: TLabel
+        Left = 29
+        Height = 18
+        Top = 56
+        Width = 80
+        Caption = 'Regular Exp'
+        ParentColor = False
+      end
+      object UseCaseSen: TCheckBox
+        Left = 4
+        Height = 24
+        Top = 3
+        Width = 24
+        TabOrder = 1
+      end
+      object Label2: TLabel
+        Left = 29
+        Height = 18
+        Top = 6
+        Width = 95
+        Caption = 'Case sensitive'
+        ParentColor = False
+      end
+      object Label3: TLabel
+        Left = 29
+        Height = 18
+        Top = 30
+        Width = 82
+        Caption = 'Whole word'
+        ParentColor = False
+      end
+      object UseWholeWord: TCheckBox
+        Left = 4
+        Height = 24
+        Top = 27
+        Width = 24
+        TabOrder = 2
+      end
+    end
+    object OriginPanel: TGroupBox
+      Left = 155
+      Height = 66
+      Top = 73
+      Width = 145
+      Caption = 'Origin'
+      ClientHeight = 47
+      ClientWidth = 141
+      TabOrder = 9
+      object ChooseCursor: TRadioButton
+        Left = 4
+        Height = 24
+        Top = 3
+        Width = 24
+        TabOrder = 0
+      end
+      object ChooseBegin: TRadioButton
+        Left = 4
+        Height = 24
+        Top = 25
+        Width = 24
+        Checked = True
+        TabOrder = 1
+        TabStop = True
+      end
+      object Label6: TLabel
+        Left = 30
+        Height = 18
+        Top = 7
+        Width = 83
+        Caption = 'From cursor'
+        ParentColor = False
+      end
+      object Label7: TLabel
+        Left = 30
+        Height = 18
+        Top = 28
+        Width = 105
+        Caption = 'From beginning'
+        ParentColor = False
+      end
+    end
+    object ScopePanel: TGroupBox
+      Left = 155
+      Height = 64
+      Top = 139
+      Width = 144
+      Caption = 'Scope'
+      ClientHeight = 45
+      ClientWidth = 140
+      TabOrder = 10
+      object ChooseSel: TRadioButton
+        Left = 4
+        Height = 24
+        Top = 1
+        Width = 24
+        TabOrder = 0
+      end
+      object ChooseGlobal: TRadioButton
+        Left = 4
+        Height = 24
+        Top = 23
+        Width = 24
+        Checked = True
+        TabOrder = 1
+        TabStop = True
+      end
+      object Label9: TLabel
+        Left = 30
+        Height = 18
+        Top = 5
+        Width = 91
+        Caption = 'Selected Text'
+        ParentColor = False
+      end
+      object Label10: TLabel
+        Left = 30
+        Height = 18
+        Top = 26
+        Width = 45
+        Caption = 'Global'
+        ParentColor = False
+      end
+    end
+    object GroupBox1: TGroupBox
+      Left = 5
+      Height = 62
+      Top = 171
+      Width = 144
+      Caption = 'Direction'
+      ClientHeight = 43
+      ClientWidth = 140
       TabOrder = 11
+      object ChooseBackward: TRadioButton
+        Left = 4
+        Height = 24
+        Top = -2
+        Width = 24
+        TabOrder = 0
+      end
+      object ChooseForward: TRadioButton
+        Left = 4
+        Height = 24
+        Top = 20
+        Width = 24
+        Checked = True
+        TabOrder = 1
+        TabStop = True
+      end
+      object Label12: TLabel
+        Left = 30
+        Height = 18
+        Top = 2
+        Width = 67
+        Caption = 'Backward'
+        ParentColor = False
+      end
+      object Label13: TLabel
+        Left = 30
+        Height = 18
+        Top = 23
+        Width = 58
+        Caption = 'Forward'
+        ParentColor = False
+      end
     end
   end
   object HistoryPanel: TPanel
-    Left = 304
-    Height = 310
+    Left = 306
+    Height = 299
     Top = 0
-    Width = 160
+    Width = 158
     Align = alClient
-    ClientHeight = 310
-    ClientWidth = 160
+    BorderSpacing.Left = 2
+    ClientHeight = 299
+    ClientWidth = 158
     TabOrder = 1
     object HistoryBox: TListBox
       Left = 1
-      Height = 282
+      Height = 271
       Top = 27
-      Width = 158
+      Width = 156
       Align = alClient
       ItemHeight = 0
       OnDblClick = HistoryBoxDblClick
-      ScrollWidth = 156
+      ScrollWidth = 154
       TabOrder = 0
       TopIndex = -1
     end
@@ -367,7 +332,7 @@ object SearchReplaceWin: TSearchReplaceWin
       Left = 1
       Height = 26
       Top = 1
-      Width = 158
+      Width = 156
       Align = alTop
       Caption = 'Search History'
       TabOrder = 1

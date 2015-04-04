@@ -215,9 +215,9 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
     procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    {$ifdef windows}
+    {.$ifdef windows}
     procedure WMEraseBkgnd(var Message: TMessage); message WM_ERASEBKGND;
-    {$endif}
+    {.$endif}
   published
     //colors
     property ColorBg: TColor read FColorBg write FColorBg;
@@ -1297,13 +1297,13 @@ begin
     Result:= nil;
 end;
 
-{$ifdef windows}
+{.$ifdef windows}
 //needed to remove flickering on resize and mouse-over
 procedure TATTabs.WMEraseBkgnd(var Message: TMessage);
 begin
   Message.Result:= 1;
 end;
-{$endif}
+{.$endif}
 
 procedure TATTabs.DoPaintArrowTo(C: TCanvas; ATyp: TATTriType; ARect: TRect;
   AColorArr, AColorBg: TColor);

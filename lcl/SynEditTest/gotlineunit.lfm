@@ -10,18 +10,6 @@ object GoToLineWin: TGoToLineWin
   Color = 16578029
   OnShow = FormShow
   LCLVersion = '1.0.10.0'
-  object AimLine: TEdit
-    Left = 90
-    Height = 27
-    Top = 12
-    Width = 80
-    Alignment = taRightJustify
-    OnChange = AimLineChange
-    OnEditingDone = AimLineEditingDone
-    OnKeyDown = AimLineKeyDown
-    TabOrder = 0
-    Text = '1'
-  end
   object Label1: TLabel
     Left = 8
     Height = 18
@@ -31,13 +19,24 @@ object GoToLineWin: TGoToLineWin
     ParentColor = False
   end
   object OkButton: TButton
-    Left = 176
+    Left = 184
     Height = 27
     Top = 12
     Width = 75
     Caption = 'Close'
     ModalResult = 1
     OnClick = OkButtonClick
+    TabOrder = 0
+  end
+  object AimLine: TSpinEdit
+    Left = 88
+    Height = 27
+    Top = 12
+    Width = 88
+    MaxValue = 10000000
+    OnChange = AimLineChange
+    OnEditingDone = AimLineEditingDone
     TabOrder = 1
+    Value = 1
   end
 end

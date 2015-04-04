@@ -16,6 +16,7 @@ object EditorFrame: TEditorFrame
     Top = 0
     Width = 107
     Align = alClient
+    Font.Color = clBlack
     Font.Height = -15
     Font.Name = 'Courier'
     Font.Pitch = fpFixed
@@ -23,6 +24,7 @@ object EditorFrame: TEditorFrame
     ParentColor = False
     ParentFont = False
     TabOrder = 0
+    BorderStyle = bsNone
     Gutter.Color = 16578029
     Gutter.Width = 59
     Gutter.MouseActions = <>
@@ -508,8 +510,8 @@ object EditorFrame: TEditorFrame
       ''
     )
     MaxLeftChar = 80
-    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces, eoTrimTrailingSpaces, eoDragDropEditing]
-    Options2 = [eoEnhanceEndKey, eoFoldedCopyPaste, eoOverwriteBlock]
+    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabIndent, eoTabsToSpaces, eoTrimTrailingSpaces, eoDragDropEditing]
+    Options2 = [eoAlwaysVisibleCaret, eoEnhanceEndKey, eoFoldedCopyPaste, eoOverwriteBlock]
     MouseOptions = [emDragDropEditing]
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
     SelectedColor.BackPriority = 50
@@ -597,7 +599,6 @@ object EditorFrame: TEditorFrame
     CommentAttri.Foreground = clGreen
     CommentAttri.FrameEdges = sfeAround
     IDEDirectiveAttri.FrameEdges = sfeAround
-    IdentifierAttri.Background = clWhite
     IdentifierAttri.Foreground = clBlack
     IdentifierAttri.FrameEdges = sfeAround
     KeyAttri.Foreground = clBlue

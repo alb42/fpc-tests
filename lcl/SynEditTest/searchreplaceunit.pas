@@ -17,6 +17,10 @@ type
 
   TSearchReplaceWin = class(TForm)
     CancelButton: TButton;
+    GroupBox1: TGroupBox;
+    ScopePanel: TGroupBox;
+    OriginPanel: TGroupBox;
+    SearchSettingsPanel: TGroupBox;
     UseCaseSen: TCheckBox;
     UseWholeWord: TCheckBox;
     ChoosePrompt: TCheckBox;
@@ -28,24 +32,17 @@ type
     ChooseSel: TRadioButton;
     Label1: TLabel;
     Label10: TLabel;
-    Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
     HistoryBox: TListBox;
     HistoryLabel: TPanel;
     PromptReplaceLabel: TLabel;
-    Label15: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
-    Label8: TLabel;
     Label9: TLabel;
-    OriginPanel: TPanel;
-    OriginPanel1: TPanel;
-    OriginPanel2: TPanel;
     Panel1: TPanel;
     HistoryPanel: TPanel;
     SearchPanel: TPanel;
@@ -54,7 +51,6 @@ type
     ResultPanel: TPanel;
     SearchButton: TButton;
     SearchEdit: TEdit;
-    SearchSettings: TPanel;
     SHToggle: TToggleBox;
     RHToggle: TToggleBox;
     UseRegExp: TCheckBox;

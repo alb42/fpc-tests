@@ -14,6 +14,8 @@ type
 
   TSearchAllForm = class(TForm)
     FilePattern: TEdit;
+    SettingsPanel: TGroupBox;
+    ScopPanel: TGroupBox;
     Label8: TLabel;
     Label9: TLabel;
     UseRecursive: TCheckBox;
@@ -26,7 +28,6 @@ type
     SAllHistoryBox: TListBox;
     HistoryLabel: TPanel;
     Label1: TLabel;
-    Label15: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -37,8 +38,6 @@ type
     ChooseOpenFiles: TRadioButton;
     Panel2: TPanel;
     SearchEdit: TEdit;
-    SearchAllSettings: TPanel;
-    SearchAllSource: TPanel;
     UseCaseSen: TCheckBox;
     UseRegExp: TCheckBox;
     UseWholeWord: TCheckBox;
@@ -149,8 +148,8 @@ begin
   DirPanel.Enabled := ChooseDirectory.Checked;
   if SearchReplaceWin.Visible then
     SearchReplaceWin.Close;
-  if SAllHistoryBox.Items.Count = 0 then
-    SAllHistoryBox.Items.Assign(SearchReplaceWin.SearchHist);
+  //if SAllHistoryBox.Items.Count = 0 then
+  SAllHistoryBox.Items.Assign(SearchReplaceWin.SearchHist);
 end;
 
 procedure TSearchAllForm.SAllHistoryBoxDblClick(Sender: TObject);

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  SynEdit, LCLType, Math;
+  SynEdit, LCLType, Spin, Math;
 
 type
 
@@ -14,16 +14,14 @@ type
 
   TGoToLineWin = class(TForm)
     OkButton: TButton;
-    AimLine: TEdit;
     Label1: TLabel;
+    AimLine: TSpinEdit;
     procedure AimLineChange(Sender: TObject);
     procedure AimLineEditingDone(Sender: TObject);
     procedure AimLineKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
   private
-    OldText: string;
-    NewLine: Integer;
   public
   end;
 
@@ -41,8 +39,7 @@ uses
 procedure TGoToLineWin.FormShow(Sender: TObject);
 begin
   AimLine.SetFocus;
-  AimLine.Text := '';
-  NewLine := MainWindow.CurEditor.CaretY;
+  AimLine.Value := 0;
 end;
 
 procedure TGoToLineWin.OkButtonClick(Sender: TObject);
@@ -51,26 +48,14 @@ begin
 end;
 
 procedure TGoToLineWin.AimLineChange(Sender: TObject);
-var
-  NewText: string;
 begin
-  NewText := AimLine.Text;
-  if NewText = OldText then
-    Exit;
-  NewLine := StrToIntDef(NewText, -1);
-  if NewLine < 0 then
-  begin
-    AimLine.Text := OldText;
-  end else
-  begin
-    OldText := NewText;
-    MainWindow.CurEditor.CaretY := NewLine;
-  end;
+  if AimLine.Value < MainWindow.CurEditor.Lines.Count then
+    MainWindow.CurEditor.CaretY := AimLine.Value;
 end;
 
 procedure TGoToLineWin.AimLineEditingDone(Sender: TObject);
 begin
-  MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, NewLine);
+  MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, AimLine.Value);
   Close;
 end;
 
@@ -79,7 +64,7 @@ procedure TGoToLineWin.AimLineKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_RETURN then
   begin
-    MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, NewLine);
+    MainWindow.CurEditor.CaretY := Min(MainWindow.CurEditor.Lines.Count, AimLine.Value);
     Close;
   end;
 end;

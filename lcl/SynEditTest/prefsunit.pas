@@ -5,7 +5,7 @@ unit PrefsUnit;
 interface
 
 uses
-  Classes, SysUtils, IniFiles, Forms;
+  Classes, SysUtils, IniFiles, Forms, Graphics;
 
 const
   SECTION_GENERAL = 'General';
@@ -14,6 +14,8 @@ const
   SECTION_SEARCH = 'Search';
   SECTION_SEARCHHIST = 'SearchHistory';
   SECTION_REPLACEHIST = 'ReplaceHistory';
+  SECTION_COLORS = 'Colors';
+  SECTION_SHORTCUTS = 'ShortCuts';
 
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
@@ -25,15 +27,26 @@ type
 
   TPrefs = class
   private
-    IniFile: TIniFile;
+
     function GetAutoHighlighter: boolean;
+    function GetAutoIndent: boolean;
+    function GetBlockOverwrite: Boolean;
     function GetBookmarks: boolean;
+    function GetBracketColor: TColor;
     function GetCaseSens: boolean;
+    function GetChangeIndicator: boolean;
+    function GetDblSelLine: Boolean;
     function GetDefHighlighter: integer;
+    function GetEdBgColor: TColor;
+    function GetEdTextColor: TColor;
     function GetFullPath: boolean;
     function GetHeight: integer;
+    function GetIndentWidth: Integer;
     function GetInitialDir: string;
     function GetLineNumbers: boolean;
+    function GetLineSkipNum: integer;
+    function GetOpenNewTab: Boolean;
+    function GetPersistentBlock: Boolean;
     function GetPromptReplace: boolean;
     function GetRecFile(Idx: integer): string;
     function GetRegExp: boolean;
@@ -43,6 +56,10 @@ type
     function GetSearchFilePattern: string;
     function GetSearchFwd: boolean;
     function GetSearchGlobal: boolean;
+    function GetTabIndent: Boolean;
+    function GetTabsToSpaces: boolean;
+    function GetTabWidth: Integer;
+    function GetTrimSpaces: boolean;
     function GetWholeWord: boolean;
     function GetWidth: integer;
     function GetXPos: integer;
@@ -52,13 +69,24 @@ type
     function GetSAllXPos: integer;
     function GetSAllYPos: integer;
     procedure SetAutoHighlighter(AValue: boolean);
+    procedure SetAutoIndent(AValue: boolean);
+    procedure SetBlockOverwrite(AValue: Boolean);
     procedure SetBookmarks(AValue: boolean);
+    procedure SetBracketColor(AValue: TColor);
     procedure SetCaseSens(AValue: boolean);
+    procedure SetChangeIndicator(AValue: boolean);
+    procedure SetDblSelLine(AValue: Boolean);
+    procedure SetEdBgColor(AValue: TColor);
+    procedure SetEdTextColor(AValue: TColor);
     procedure SetFullPath(AValue: boolean);
     procedure SetHeight(AValue: integer);
     procedure SetHighlighter(AValue: integer);
+    procedure SetIndentWidth(AValue: Integer);
     procedure SetInitialDir(AValue: string);
     procedure SetLineNumbers(AValue: boolean);
+    procedure SetLineSkipNum(AValue: integer);
+    procedure SetOpenNewTab(AValue: Boolean);
+    procedure SetPersistentBlock(AValue: Boolean);
     procedure SetPromptReplace(AValue: boolean);
     procedure SetRecFile(Idx: integer; AValue: string);
     procedure SetRegExp(AValue: boolean);
@@ -68,6 +96,10 @@ type
     procedure SetSearchFilePattern(AValue: string);
     procedure SetSearchFwd(AValue: boolean);
     procedure SetSearchGlobal(AValue: boolean);
+    procedure SetTabIndent(AValue: Boolean);
+    procedure SetTabsToSpaces(AValue: boolean);
+    procedure SetTabWidth(AValue: Integer);
+    procedure SetTrimSpaces(AValue: boolean);
     procedure SetWholeWord(AValue: boolean);
     procedure SetWidth(AValue: integer);
     procedure SetXPos(AValue: integer);
@@ -77,6 +109,7 @@ type
     procedure SetSAllXPos(AValue: integer);
     procedure SetSAllYPos(AValue: integer);
   public
+    IniFile: TIniFile;
     constructor Create;
     destructor Destroy; override;
 
@@ -89,9 +122,27 @@ type
     property Height: integer read GetHeight write SetHeight;
     property RecentFiles[Idx: integer]: string read GetRecFile write SetRecFile;
     property AutoHighlighter: boolean read GetAutoHighlighter write SetAutoHighlighter;
+    property DefHighlighter: integer read GetDefHighlighter write SetHighlighter;
+
+    property TabsToSpaces: boolean read GetTabsToSpaces write SetTabsToSpaces;
+    property TabWidth: Integer read GetTabWidth write SetTabWidth;
+    property TabIndent: boolean read GetTabIndent write SetTabIndent;
+    property AutoIndent: boolean read GetAutoIndent write SetAutoIndent;
+    property IndentWidth: Integer read GetIndentWidth write SetIndentWidth;
+    property TrimSpaces: boolean read GetTrimSpaces write SetTrimSpaces;
+    // sidebar
     property LineNumbers: boolean read GetLineNumbers write SetLineNumbers;
     property Bookmarks: boolean read GetBookmarks write SetBookmarks;
-    property DefHighlighter: integer read GetDefHighlighter write SetHighlighter;
+    property LineSkipNum: integer read GetLineSkipNum write SetLineSkipNum;
+    property ChangeIndicator: boolean read GetChangeIndicator write SetChangeIndicator;
+    // File Handling
+    property FullPath: boolean read GetFullPath write SetFullPath;
+    property OpenNewTab: Boolean read GetOpenNewTab write SetOpenNewTab;
+    // Selection
+    property DblSelLine: Boolean read GetDblSelLine write SetDblSelLine;
+    property BlockOverwrite: Boolean read GetBlockOverwrite write SetBlockOverwrite;
+    property PersistentBlock: Boolean read GetPersistentBlock write SetPersistentBlock;
+    //
     property InitialDir: string read GetInitialDir write SetInitialDir;
     // Search requester
     property CaseSens: boolean read GetCaseSens write SetCaseSens;
@@ -101,7 +152,7 @@ type
     property SearchBegin: boolean read GetSearchBegin write SetSearchBegin;
     property SearchGlobal: boolean read GetSearchGlobal write SetSearchGlobal;
     property PromptReplace: boolean read GetPromptReplace write SetPromptReplace;
-    property FullPath: boolean read GetFullPath write SetFullPath;
+
     // SearchAll Requester
     property SearchAllMode: Integer read GetSearchAllMode write SetSearchAllMode;
     property SAllXPos: integer read GetSAllXPos write SetSAllXPos;
@@ -110,6 +161,10 @@ type
     property SAllHeight: integer read GetSAllHeight write SetSAllHeight;
     property SAllRecursive: boolean read GetSAllRecursive write SetSAllRecursive;
     property SearchFilePattern: string read GetSearchFilePattern write SetSearchFilePattern;
+    // Colors
+    property EdBgColor: TColor read GetEdBgColor write SetEdBgColor;
+    property EdTextColor: TColor read GetEdTextColor write SetEdTextColor;
+    property BracketColor: TColor read GetBracketColor write SetBracketColor;
   end;
 
 var
@@ -164,6 +219,11 @@ begin
   IniFile.WriteInteger(SECTION_HIGHLIGHTER, 'Default', AValue);
 end;
 
+procedure TPrefs.SetIndentWidth(AValue: Integer);
+begin
+  IniFile.WriteInteger(SECTION_GENERAL, 'IndentWidth', AValue);
+end;
+
 procedure TPrefs.SetInitialDir(AValue: string);
 begin
   if AValue <> '' then
@@ -173,6 +233,21 @@ end;
 procedure TPrefs.SetLineNumbers(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_GENERAL, 'LineNumbers', AValue);
+end;
+
+procedure TPrefs.SetLineSkipNum(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_GENERAL, 'LineSkipNum', AValue);
+end;
+
+procedure TPrefs.SetOpenNewTab(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'OpenNewTab', AValue);
+end;
+
+procedure TPrefs.SetPersistentBlock(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'PersistentBlock', AValue);
 end;
 
 procedure TPrefs.SetPromptReplace(AValue: boolean);
@@ -185,14 +260,49 @@ begin
   IniFile.WriteBool(SECTION_HIGHLIGHTER, 'Auto', AValue);
 end;
 
+procedure TPrefs.SetAutoIndent(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'AutoIndent', AValue);
+end;
+
+procedure TPrefs.SetBlockOverwrite(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'BlockOverwrite', AValue);
+end;
+
 procedure TPrefs.SetBookmarks(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_GENERAL, 'Bookmarks', AValue);
 end;
 
+procedure TPrefs.SetBracketColor(AValue: TColor);
+begin
+  IniFile.WriteInteger(SECTION_COLORS, 'Bracket', AValue);
+end;
+
 procedure TPrefs.SetCaseSens(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'CaseSensitive', AValue);
+end;
+
+procedure TPrefs.SetChangeIndicator(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'ChangeIndicator', AValue);
+end;
+
+procedure TPrefs.SetDblSelLine(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'DblClickSelLine', AValue);
+end;
+
+procedure TPrefs.SetEdBgColor(AValue: TColor);
+begin
+  IniFile.WriteInteger(SECTION_COLORS, 'EditorBackground', AValue);
+end;
+
+procedure TPrefs.SetEdTextColor(AValue: TColor);
+begin
+  IniFile.WriteInteger(SECTION_COLORS, 'EditorText', AValue);
 end;
 
 procedure TPrefs.SetFullPath(AValue: boolean);
@@ -240,6 +350,26 @@ begin
   IniFile.WriteBool(SECTION_SEARCH, 'Global', AValue);
 end;
 
+procedure TPrefs.SetTabIndent(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'TabIndent', AValue);
+end;
+
+procedure TPrefs.SetTabsToSpaces(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'TabsToSpaces', AValue);
+end;
+
+procedure TPrefs.SetTabWidth(AValue: Integer);
+begin
+  IniFile.WriteInteger(SECTION_GENERAL, 'TabWidth', AValue);
+end;
+
+procedure TPrefs.SetTrimSpaces(AValue: boolean);
+begin
+  IniFile.WriteBool(SECTION_GENERAL, 'TrimSpaces', AValue);
+end;
+
 procedure TPrefs.SetWholeWord(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'WholeWord', AValue);
@@ -258,6 +388,11 @@ end;
 function TPrefs.GetHeight: integer;
 begin
   Result := IniFile.ReadInteger(SECTION_GENERAL, 'Height', 500);
+end;
+
+function TPrefs.GetIndentWidth: Integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_GENERAL, 'IndentWidth', 2);
 end;
 
 function TPrefs.GetSAllXPos: integer;
@@ -290,6 +425,21 @@ begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'LineNumbers', True);
 end;
 
+function TPrefs.GetLineSkipNum: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_GENERAL, 'LineSkipNum', 10);
+end;
+
+function TPrefs.GetOpenNewTab: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'OpenNewTab', True);
+end;
+
+function TPrefs.GetPersistentBlock: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'PersistentBlock', False);
+end;
+
 function TPrefs.GetPromptReplace: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'PromptReplace', True);
@@ -300,9 +450,24 @@ begin
   Result := IniFile.ReadBool(SECTION_HIGHLIGHTER, 'Auto', True);
 end;
 
+function TPrefs.GetAutoIndent: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'AutoIndent', True);
+end;
+
+function TPrefs.GetBlockOverwrite: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'BlockOverwrite', True);
+end;
+
 function TPrefs.GetBookmarks: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'Bookmarks', True);
+end;
+
+function TPrefs.GetBracketColor: TColor;
+begin
+  Result := IniFile.ReadInteger(SECTION_COLORS, 'Bracket', clYellow);
 end;
 
 function TPrefs.GetCaseSens: boolean;
@@ -310,9 +475,29 @@ begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'CaseSensitive', False);
 end;
 
+function TPrefs.GetChangeIndicator: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'ChangeIndicator', True);
+end;
+
+function TPrefs.GetDblSelLine: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'DblClickSelLine', False);
+end;
+
 function TPrefs.GetDefHighlighter: integer;
 begin
   Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
+end;
+
+function TPrefs.GetEdBgColor: TColor;
+begin
+  Result := IniFile.ReadInteger(SECTION_COLORS, 'EditorBackground', $FFFFFF);
+end;
+
+function TPrefs.GetEdTextColor: TColor;
+begin
+  Result := IniFile.ReadInteger(SECTION_COLORS, 'EditorText', $000000);
 end;
 
 function TPrefs.GetFullPath: boolean;
@@ -360,6 +545,26 @@ begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'Global', True);
 end;
 
+function TPrefs.GetTabIndent: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'TabIndent', True);
+end;
+
+function TPrefs.GetTabsToSpaces: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'TabsToSpaces', True);
+end;
+
+function TPrefs.GetTabWidth: Integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_GENERAL, 'TabWidth', 2);
+end;
+
+function TPrefs.GetTrimSpaces: boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_GENERAL, 'TrimSpaces', True);
+end;
+
 function TPrefs.GetWholeWord: Boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'WholeWord', False);
@@ -373,10 +578,12 @@ end;
 constructor TPrefs.Create;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.prefs'));
+  IniFile.CacheUpdates := True;
 end;
 
 destructor TPrefs.Destroy;
 begin
+  IniFile.UpdateFile;
   IniFile.Free;
   inherited Destroy;
 end;

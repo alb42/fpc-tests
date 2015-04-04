@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, MainUnit, GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit,
   FrameUnit, MikroStatUnit, AboutUnit, ATTabs, SearchAllUnit, 
-SearchAllResultsUnit;
+SearchAllResultsUnit, PrefsWinUnit;
 
 {$R *.res}
 
@@ -23,6 +23,7 @@ begin
   Application.CreateForm(TAboutForm, AboutForm);
   Application.CreateForm(TSearchAllForm, SearchAllForm);
   Application.CreateForm(TSearchResultsWin, SearchResultsWin);
+  Application.CreateForm(TPrefsWin, PrefsWin);
   Application.Run;
 end.
 

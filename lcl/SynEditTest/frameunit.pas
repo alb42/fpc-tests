@@ -28,7 +28,7 @@ type
 implementation
 
 uses
-  MainUnit;
+  MainUnit, PrefsWinUnit;
 
 { TEditorFrame }
 
@@ -60,6 +60,7 @@ begin
   Editor.OnReplaceText:=@MainUnit.MainWindow.SynEdit1ReplaceText;
   Editor.OnStatusChange:=@MainUnit.MainWindow.SynEdit1StatusChange;
   Editor.BookMarkOptions.BookmarkImages := MainUnit.MainWindow.BookmarkImages;
+  PrefsWin.PrefsToEditor(Self);
 end;
 
 {$R *.lfm}

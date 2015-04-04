@@ -9,13 +9,13 @@ uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,
   Graphics, Dialogs, Menus, ExtCtrls, SynHighlighterCpp, FrameUnit, LCLIntf,
   {$ifdef HASAMIGA}
-  Workbench, muiformsunit,
+  Workbench, muiformsunit, amigaDos,
   {$endif}
   synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, Math, ATTabs,
   MikroStatUnit;
 
 const
-  VERSION = '$VER: EdiSyn 0.34 (29.03.2015)';
+  VERSION = '$VER: EdiSyn 0.40 ('+{$I %DATE%}+')';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -132,16 +132,16 @@ type
     CopyMenu: TMenuItem;
     CutMenu: TMenuItem;
     BookmarkImages: TImageList;
+    Image1: TImage;
     MenuItem1: TMenuItem;
     GoToLineMenu: TMenuItem;
     AutoMenu: TMenuItem;
     EditorPanel: TPanel;
     CloseTabMenu: TMenuItem;
     CloseAllMenu: TMenuItem;
-    BookMarkMenu: TMenuItem;
-    FullPathMenu: TMenuItem;
     AboutMainMenu: TMenuItem;
     AboutMenu: TMenuItem;
+    PrefsMenu: TMenuItem;
     SearchAllWindowMenu: TMenuItem;
     WindowMenu: TMenuItem;
     SearchAllMenu: TMenuItem;
@@ -149,7 +149,6 @@ type
     NewTabMenu: TMenuItem;
     MikroStat: TMikroStatus;
     SetDefHighMenu: TMenuItem;
-    ShowNumMenu: TMenuItem;
     DestroyTabTimer: TTimer;
     ViewMenu: TMenuItem;
     RecMenu5: TMenuItem;
@@ -196,7 +195,6 @@ type
     SynExporterHTML1: TSynExporterHTML;
     procedure AboutMenuClick(Sender: TObject);
     procedure AutoMenuClick(Sender: TObject);
-    procedure BookMarkMenuClick(Sender: TObject);
     procedure CloseAllMenuClick(Sender: TObject);
     procedure CloseTabMenuClick(Sender: TObject);
     procedure CMenuClick(Sender: TObject);
@@ -208,12 +206,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FullPathMenuClick(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
     procedure NoneMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
+    procedure PrefsMenuClick(Sender: TObject);
     procedure RecMenu1Click(Sender: TObject);
     procedure RedoMenuClick(Sender: TObject);
     procedure ReplaceMenuClick(Sender: TObject);
@@ -229,7 +227,6 @@ type
     procedure SaveAsMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
     procedure SetDefHighMenuClick(Sender: TObject);
-    procedure ShowNumMenuClick(Sender: TObject);
     procedure SynEdit1ProcessCommand(Sender: TObject;
       var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
     procedure SynEdit1ReplaceText(Sender: TObject; const ASearch,
@@ -258,6 +255,7 @@ type
     function AbsCount: Integer;
     function CurEditor: TSynEdit;
     function CurFrame: TEditorFrame;
+    procedure HandleExceptions(Sender: TObject; E : Exception);
     { public declarations }
   end;
 
@@ -268,7 +266,7 @@ implementation
 
 uses
   GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit, AboutUnit,
-  SearchAllUnit, SearchAllResultsUnit;
+  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit;
 
 {$R *.lfm}
 
@@ -327,18 +325,53 @@ begin
   {$endif}
 end;
 
+
+{$ifdef AROS}
+function GetWBArg(Idx: Integer): string;
+var
+  startup: PWBStartup;
+  wbarg: PWBArgList;
+  Path: array[0..254] of Char;
+  strPath: string;
+  Len: Integer;
+begin
+  GetWBArg := '';
+  strPath := '';
+  FillChar(Path[0],255,#0);
+  Startup := PWBStartup(AOS_wbMsg);
+  if Startup <> nil then
+  begin
+    //if (Idx >= 0) and (Idx < Startup^.sm_NumArgs) then
+    begin
+      wbarg := Startup^.sm_ArgList;
+      if NameFromLock(wbarg^[Idx + 1].wa_Lock,@Path[0],255) then
+      begin
+        Len := 0;
+        while (Path[Len] <> #0) and (Len < 254) do
+          Inc(Len);
+        if Len > 0 then
+          if (Path[Len - 1] <> ':') and (Path[Len - 1] <> '/') then
+            Path[Len] := '/';
+        strPath := Path;
+      end;
+      Result := strPath + wbarg^[Idx + 1].wa_Name;
+    end;
+  end;
+end;
+{$endif}
+
 procedure TMainWindow.FormCreate(Sender: TObject);
 var
   i: Integer;
   NFile: string;
   NewFrame: TEditorFrame;
 begin
+  application.OnException := @HandleExceptions;
   // Counter for Editornames ;)
   FAbsCount := 0;
   // Tab control initial Values
   Tabs := TATTabs.create(Self);
   Tabs.Align:= alTop;
-  Tabs.Font.Size:= 8;
   Tabs.Height:= 42;
   Tabs.TabAngle:= 0;
   Tabs.TabIndentInter:= 2;
@@ -390,12 +423,6 @@ begin
       NoneMenuClick(Sender);
     end;
   end;
-  // LineNumbers
-  ShowNumMenu.Checked := Prefs.LineNumbers;
-  BookMarkMenu.Checked := Prefs.Bookmarks;
-  CurEditor.Gutter.Parts[0].Visible:= BookMarkMenu.Checked;
-  CurEditor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
-  FullPathMenu.Checked := Prefs.FullPath;
   // Recent Files up to 10
   RecFileList := TStringList.Create;
   RecMenuList[0] := RecMenu1;
@@ -418,25 +445,26 @@ begin
     RecMenuList[i].Tag := i;
   end;
   // Load file if there is a parameter list
-  CurFrame.Filename := '';
+  NewFrame.Filename := '';
   if Paramcount > 0 then
   begin
+    //writeln('paramcount ' ,Paramcount, ' file ', GetWBArg(1) );
     try
       LoadFile(ParamStr(1)); // Try to load the file will set CurFrame.Filename
     except
-      CurFrame.Filename := '';
+      NewFrame.Filename := '';
     end;
   end;
   {$ifdef HASAMIGA}
   // Some AROS Quirks when started via icon from a TextFile
-  if (CurFrame.Filename = '') and Assigned(AOS_WBMsg) then
+  if (NewFrame.Filename = '') and Assigned(AOS_WBMsg) then
   begin
     if PWBStartup(AOS_WBMsg)^.sm_NumArgs > 1 then
     begin
       try
-        LoadFile(PWBStartup(AOS_WBMsg)^.sm_ArgList^[2].WA_Name); // Load it
+        LoadFile(GetWBArg(1)); // Load it
       except
-        CurFrame.Filename := '';
+        NewFrame.Filename := '';
       end;
     end;
   end;
@@ -473,12 +501,6 @@ procedure TMainWindow.FormShow(Sender: TObject);
 begin
   // Move/Size the window to the previous saved parameters
   SetBounds(Prefs.XPos, Prefs.YPos, Prefs.Width, Prefs.Height);
-end;
-
-procedure TMainWindow.FullPathMenuClick(Sender: TObject);
-begin
-  UpdateTitlebar;
-  Prefs.FullPath := FullPathMenu.Checked;
 end;
 
 procedure TMainWindow.GoToLineMenuClick(Sender: TObject);
@@ -518,6 +540,23 @@ procedure TMainWindow.PasteMenuClick(Sender: TObject);
 begin
   // Paste
   CurEditor.PasteFromClipboard;
+end;
+
+procedure TMainWindow.PrefsMenuClick(Sender: TObject);
+var
+  i: Integer;
+  EdFrame: TEditorFrame;
+begin
+  if PrefsWin.ShowModal = mrYes then
+  begin
+    for i := 0 to Tabs.TabCount - 1 do
+    begin
+      EdFrame := TEditorFrame(Tabs.GetTabData(i).TabObject);
+      PrefsWin.PrefsToEditor(EdFrame);
+    end;
+  end;
+  UpdateStatusBar;
+  UpdateTitlebar;
 end;
 
 procedure TMainWindow.RecMenu1Click(Sender: TObject);
@@ -637,19 +676,6 @@ end;
 procedure TMainWindow.AboutMenuClick(Sender: TObject);
 begin
   AboutForm.Showmodal;
-end;
-
-procedure TMainWindow.BookMarkMenuClick(Sender: TObject);
-var
-  i: Integer;
-  Editor: TSynEdit;
-begin
-  Prefs.Bookmarks := BookMarkMenu.Checked;
-  for i := 0 to Tabs.TabCount - 1 do
-  begin
-    Editor := TSynEdit(TEditorFrame(Tabs.GetTabData(i).TabObject).Editor);
-    Editor.Gutter.Parts[0].Visible := BookMarkMenu.Checked;
-  end;
 end;
 
 procedure TMainWindow.CloseAllMenuClick(Sender: TObject);
@@ -773,20 +799,6 @@ begin
     Prefs.DefHighlighter := HIGHLIGHTER_NONE;
 end;
 
-procedure TMainWindow.ShowNumMenuClick(Sender: TObject);
-var
-  Editor: TSynEdit;
-  i: Integer;
-begin
-  // Show the LineNumbers on the Left Side
-  Prefs.LineNumbers := ShowNumMenu.Checked;
-  for i := 0 to Tabs.TabCount - 1 do
-  begin
-    Editor := TSynEdit(TEditorFrame(Tabs.GetTabData(i).TabObject).Editor);
-    Editor.Gutter.Parts[1].Visible:= ShowNumMenu.Checked;
-  end;
-end;
-
 procedure TMainWindow.SynEdit1ProcessCommand(Sender: TObject;
   var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
 begin
@@ -803,7 +815,7 @@ begin
     9: DestroyTabTimer.Enabled:= True; // Ctrl + G Close Tab
     10: Tabs.SwitchTab(False);    // Ctrl + Shift + F1 previous Tab
     11: Tabs.SwitchTab(True);     // Ctrl + Shift + F2 next Tab
-    12: SearchAllForm.ShowModal;
+    12: SearchAllForm.ShowModal;  // Ctrl + Shift + F Search all
   end;
 end;
 
@@ -855,7 +867,8 @@ begin
   UpdateTitlebar;
   EditorPanel.EndUpdateBounds;
   Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
-  Frame.Editor.SetFocus;
+  if EditorPanel.Visible then
+    Frame.Editor.SetFocus;
 end;
 
 procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: Integer;
@@ -894,6 +907,7 @@ procedure TMainWindow.TabPlusClickEvent(Sender: TObject);
 var
   NewFrame: TEditorFrame;
 begin
+  EditorPanel.Visible := False;
   NewFrame := TEditorFrame.Create(Self);
   NewFrame.Editor.Parent := EditorPanel;
   NewFrame.TabLink := Tabs;
@@ -911,9 +925,15 @@ begin
     NewFrame.Editor.Highlighter := nil;
   // Add the Tab
   Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
+
+
   NewFrame.Editor.Visible := True;
-  NewFrame.Editor.SetFocus;
   Tabs.TabIndex := Tabs.TabCount - 1;
+
+  EditorPanel.Visible := True;
+  //
+  NewFrame.Editor.SetFocus;
+
 end;
 
 procedure TMainWindow.UndoMenuClick(Sender: TObject);
@@ -1025,7 +1045,7 @@ procedure TMainWindow.UpdateTitlebar;
 var
   DispName: string;
 begin
-  if FullPathMenu.Checked then
+  if Prefs.FullPath then
     DispName := CurFrame.Filename
   else
     DispName := ExtractFileName(CurFrame.Filename);
@@ -1038,7 +1058,15 @@ procedure TMainWindow.LoadFile(AFileName: string);
 var
   Res: Integer;
   i: Integer;
+  KeepSameTab: Boolean;
 begin
+  if Trim(AFilename) = '' then
+    Exit;
+  {$ifdef AROS}
+  if Pos(':',AFilename) <= 0 then
+    AFilename := IncludeTrailingPathDelimiter(GetCurrentDir) + AFilename;
+  {$endif}
+  KeepSameTab := False;
   for i := 0 to Tabs.TabCount - 1 do
   begin
     if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) = lowercase(AFilename) then
@@ -1052,14 +1080,22 @@ begin
           Tabs.TabIndex:= i;
           Exit;
         end;
-      end;
+      end else
+        KeepSameTab := True;
     end;
   end;
-  if CurEditor.Modified then
+  if Prefs.OpenNewTab and (not CurEditor.Modified) and (not KeepSameTab) then
   begin
-    Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
-    if Res <> mrYes then
-      Exit;
+    if Length(CurEditor.Lines.Text) > 1 then
+      Self.TabPlusClickEvent(nil);
+  end else
+  begin
+    if CurEditor.Modified then
+    begin
+      Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+      if Res <> mrYes then
+        Exit;
+    end;
   end;
   try
     CurEditor.Lines.LoadFromFile(AFilename);
@@ -1082,11 +1118,15 @@ begin
 end;
 
 function TMainWindow.CurEditor: TSynEdit;
+var
+  Frame: TEditorFrame;
 begin
-  REsult := nil;
+  Result := nil;
   if Tabs.TabIndex >= 0 then
   begin
-    Result := TSynEdit(CurFrame.Editor);
+    Frame := CurFrame;
+    if Assigned(Frame) then
+      Result := TSynEdit(Frame.Editor);
   end;
 end;
 
@@ -1098,6 +1138,13 @@ begin
     if Assigned(Tabs.GetTabData(Tabs.TabIndex)) then
       Result := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
   end;
+end;
+
+procedure TMainWindow.HandleExceptions(Sender: TObject; E : Exception);
+begin
+  {$ifdef AROS}
+  DebugLn('Handled Exception: '+ E.Message+ ' in '+ E.UnitName);
+  {$endif}
 end;
 
 end.

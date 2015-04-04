@@ -1,12 +1,12 @@
 object SearchAllForm: TSearchAllForm
   Left = 146
-  Height = 303
+  Height = 277
   Top = 140
-  Width = 473
+  Width = 463
   BorderStyle = bsDialog
   Caption = 'SearchAllForm'
-  ClientHeight = 303
-  ClientWidth = 473
+  ClientHeight = 277
+  ClientWidth = 463
   Color = 16578029
   OnClose = FormClose
   OnShow = FormShow
@@ -15,7 +15,7 @@ object SearchAllForm: TSearchAllForm
     Left = 106
     Height = 27
     Top = 12
-    Width = 187
+    Width = 177
     OnEditingDone = SearchEditEditingDone
     TabOrder = 0
   end
@@ -30,83 +30,17 @@ object SearchAllForm: TSearchAllForm
     ParentColor = False
     ParentFont = False
   end
-  object SearchAllSettings: TPanel
-    Left = 8
-    Height = 98
-    Top = 56
-    Width = 144
-    BevelInner = bvRaised
-    BevelOuter = bvLowered
-    ClientHeight = 98
-    ClientWidth = 144
-    TabOrder = 1
-    object UseRegExp: TCheckBox
-      Left = 8
-      Height = 24
-      Top = 68
-      Width = 24
-      OnClick = UseRegExpClick
-      TabOrder = 0
-    end
-    object Label4: TLabel
-      Left = 33
-      Height = 18
-      Top = 72
-      Width = 80
-      Caption = 'Regular Exp'
-      ParentColor = False
-    end
-    object UseCaseSen: TCheckBox
-      Left = 8
-      Height = 24
-      Top = 19
-      Width = 24
-      OnClick = UseCaseSenClick
-      TabOrder = 1
-    end
-    object Label2: TLabel
-      Left = 33
-      Height = 18
-      Top = 22
-      Width = 95
-      Caption = 'Case sensitive'
-      ParentColor = False
-    end
-    object Label3: TLabel
-      Left = 33
-      Height = 18
-      Top = 46
-      Width = 82
-      Caption = 'Whole word'
-      ParentColor = False
-    end
-    object UseWholeWord: TCheckBox
-      Left = 8
-      Height = 24
-      Top = 43
-      Width = 24
-      OnClick = UseWholeWordClick
-      TabOrder = 2
-    end
-    object Label15: TLabel
-      Left = 8
-      Height = 18
-      Top = 2
-      Width = 56
-      Caption = 'Settings'
-      ParentColor = False
-    end
-  end
   object Panel1: TPanel
-    Left = 303
-    Height = 303
+    Left = 293
+    Height = 277
     Top = 0
     Width = 170
     Align = alRight
+    BorderSpacing.Left = 5
     Caption = 'Panel1'
-    ClientHeight = 303
+    ClientHeight = 277
     ClientWidth = 170
-    TabOrder = 2
+    TabOrder = 1
     object HistoryLabel: TPanel
       Left = 1
       Height = 26
@@ -118,7 +52,7 @@ object SearchAllForm: TSearchAllForm
     end
     object SAllHistoryBox: TListBox
       Left = 1
-      Height = 275
+      Height = 249
       Top = 27
       Width = 168
       Align = alClient
@@ -129,87 +63,21 @@ object SearchAllForm: TSearchAllForm
       TopIndex = -1
     end
   end
-  object SearchAllSource: TPanel
-    Left = 160
-    Height = 98
-    Top = 56
-    Width = 144
-    BevelInner = bvRaised
-    BevelOuter = bvLowered
-    ClientHeight = 98
-    ClientWidth = 144
-    TabOrder = 3
-    object ChooseOpenFiles: TRadioButton
-      Tag = 1
-      Left = 9
-      Height = 24
-      Top = 19
-      Width = 24
-      Checked = True
-      OnClick = ChooseOpenFilesClick
-      TabOrder = 2
-      TabStop = True
-    end
-    object ChooseDirectory: TRadioButton
-      Tag = 2
-      Left = 9
-      Height = 24
-      Top = 43
-      Width = 24
-      OnClick = ChooseDirectoryClick
-      TabOrder = 0
-    end
-    object ChooseProject: TRadioButton
-      Tag = 3
-      Left = 9
-      Height = 24
-      Top = 68
-      Width = 24
-      Enabled = False
-      OnClick = ChooseProjectClick
-      TabOrder = 1
-    end
-    object Label5: TLabel
-      Left = 40
-      Height = 18
-      Top = 22
-      Width = 71
-      Caption = 'Open Files'
-      ParentColor = False
-    end
-    object Label6: TLabel
-      Left = 41
-      Height = 18
-      Top = 46
-      Width = 64
-      Caption = 'Directory'
-      ParentColor = False
-    end
-    object Label7: TLabel
-      Left = 40
-      Height = 18
-      Top = 72
-      Width = 50
-      Caption = 'Project'
-      Enabled = False
-      ParentColor = False
-    end
-  end
   object DirPanel: TPanel
     Left = 8
     Height = 96
-    Top = 160
-    Width = 296
+    Top = 144
+    Width = 275
     BevelInner = bvRaised
     BevelOuter = bvLowered
     ClientHeight = 96
-    ClientWidth = 296
-    TabOrder = 4
+    ClientWidth = 275
+    TabOrder = 2
     object DirectoryEdit1: TDirectoryEdit
       Left = 8
       Height = 27
       Top = 8
-      Width = 255
+      Width = 236
       ShowHidden = False
       ButtonWidth = 23
       NumGlyphs = 0
@@ -243,7 +111,7 @@ object SearchAllForm: TSearchAllForm
       Left = 80
       Height = 27
       Top = 63
-      Width = 208
+      Width = 185
       TabOrder = 2
       Text = '*.pas|*.pp|*.inc|*.h|*.c'
     end
@@ -251,19 +119,142 @@ object SearchAllForm: TSearchAllForm
   object SearchButton: TButton
     Left = 8
     Height = 25
-    Top = 264
+    Top = 245
     Width = 75
     Caption = 'Search'
     OnClick = SearchButtonClick
-    TabOrder = 5
+    TabOrder = 3
   end
   object Button2: TButton
     Left = 208
     Height = 25
-    Top = 264
+    Top = 245
     Width = 75
     Caption = 'Cancel'
     ModalResult = 11
+    TabOrder = 4
+  end
+  object SettingsPanel: TGroupBox
+    Left = 8
+    Height = 90
+    Top = 49
+    Width = 145
+    Caption = 'Settings'
+    ClientHeight = 71
+    ClientWidth = 141
+    TabOrder = 5
+    object UseRegExp: TCheckBox
+      Left = 6
+      Height = 24
+      Top = 47
+      Width = 24
+      OnClick = UseRegExpClick
+      TabOrder = 0
+    end
+    object Label4: TLabel
+      Left = 31
+      Height = 18
+      Top = 51
+      Width = 80
+      Caption = 'Regular Exp'
+      ParentColor = False
+    end
+    object UseCaseSen: TCheckBox
+      Left = 6
+      Height = 24
+      Top = -2
+      Width = 24
+      OnClick = UseCaseSenClick
+      TabOrder = 1
+    end
+    object Label2: TLabel
+      Left = 31
+      Height = 18
+      Top = 1
+      Width = 95
+      Caption = 'Case sensitive'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 31
+      Height = 18
+      Top = 25
+      Width = 82
+      Caption = 'Whole word'
+      ParentColor = False
+    end
+    object UseWholeWord: TCheckBox
+      Left = 6
+      Height = 24
+      Top = 22
+      Width = 24
+      OnClick = UseWholeWordClick
+      TabOrder = 2
+    end
+  end
+  object ScopPanel: TGroupBox
+    Left = 160
+    Height = 90
+    Top = 49
+    Width = 123
+    Caption = 'Scope'
+    ClientHeight = 71
+    ClientWidth = 119
     TabOrder = 6
+    object ChooseOpenFiles: TRadioButton
+      Tag = 1
+      Left = 9
+      Height = 24
+      Top = -2
+      Width = 24
+      Checked = True
+      OnClick = ChooseOpenFilesClick
+      TabOrder = 0
+      TabStop = True
+    end
+    object ChooseDirectory: TRadioButton
+      Tag = 2
+      Left = 9
+      Height = 24
+      Top = 22
+      Width = 24
+      OnClick = ChooseDirectoryClick
+      TabOrder = 1
+    end
+    object ChooseProject: TRadioButton
+      Tag = 3
+      Left = 9
+      Height = 24
+      Top = 47
+      Width = 24
+      Enabled = False
+      OnClick = ChooseProjectClick
+      TabOrder = 2
+    end
+    object Label5: TLabel
+      Left = 40
+      Height = 18
+      Top = 1
+      Width = 71
+      Caption = 'Open Files'
+      ParentColor = False
+    end
+    object Label6: TLabel
+      Left = 41
+      Height = 18
+      Top = 25
+      Width = 64
+      Caption = 'Directory'
+      ParentColor = False
+    end
+    object Label7: TLabel
+      Left = 40
+      Height = 18
+      Top = 51
+      Width = 50
+      Caption = 'Project'
+      Enabled = False
+      ParentColor = False
+    end
   end
 end
