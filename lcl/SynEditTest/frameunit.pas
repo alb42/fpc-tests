@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterCpp, SynHighlighterPas,
-  Forms, Controls, ATTabs;
+  SynHighlighterHTML, Forms, Controls, ATTabs;
 
 type
 
@@ -15,6 +15,7 @@ type
   TEditorFrame = class(TFrame)
     SynCppSyn1: TSynCppSyn;
     Editor: TSynEdit;
+    SynHTMLSyn1: TSynHTMLSyn;
     SynPasSyn1: TSynPasSyn;
   private
     FFilename: string;

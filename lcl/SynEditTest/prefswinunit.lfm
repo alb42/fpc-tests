@@ -18,10 +18,10 @@ object PrefsWin: TPrefsWin
     Height = 289
     Top = 0
     Width = 524
-    ActivePage = KeyPage
+    ActivePage = HighLightTab
     Align = alClient
     ShowTabs = False
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     object EditorTab: TTabSheet
       Caption = 'Editor'
@@ -370,15 +370,14 @@ object PrefsWin: TPrefsWin
         Top = 78
         Width = 118
         ItemHeight = 0
-        ItemIndex = 0
         Items.Strings = (
           'C/C++'
           'Pascal'
+          'HTML'
         )
         OnChange = LangSelectionChange
         Style = csDropDownList
         TabOrder = 0
-        Text = 'C/C++'
       end
       object SyntaxItems: TComboBox
         Left = 6
@@ -1229,5 +1228,25 @@ object PrefsWin: TPrefsWin
     NestedComments = False
     left = 438
     top = 238
+  end
+  object SynHTMLSyn1: TSynHTMLSyn
+    DefaultFilter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
+    Enabled = False
+    AndAttri.FrameEdges = sfeAround
+    ASPAttri.FrameEdges = sfeAround
+    CommentAttri.Foreground = clGreen
+    CommentAttri.FrameEdges = sfeAround
+    IdentifierAttri.Foreground = clTeal
+    IdentifierAttri.FrameEdges = sfeAround
+    KeyAttri.Foreground = clBlue
+    KeyAttri.FrameEdges = sfeAround
+    SpaceAttri.FrameEdges = sfeAround
+    SymbolAttri.Foreground = clNavy
+    SymbolAttri.FrameEdges = sfeAround
+    TextAttri.FrameEdges = sfeAround
+    UndefKeyAttri.FrameEdges = sfeAround
+    ValueAttri.FrameEdges = sfeAround
+    left = 256
+    top = 240
   end
 end

@@ -1,10 +1,10 @@
 object EditorFrame: TEditorFrame
   Left = 0
-  Height = 58
+  Height = 130
   Top = 0
-  Width = 107
-  ClientHeight = 58
-  ClientWidth = 107
+  Width = 191
+  ClientHeight = 130
+  ClientWidth = 191
   TabOrder = 0
   Visible = False
   DesignLeft = 52
@@ -12,9 +12,9 @@ object EditorFrame: TEditorFrame
   inline Editor: TSynEdit
     Cursor = crDefault
     Left = 0
-    Height = 58
+    Height = 130
     Top = 0
-    Width = 107
+    Width = 191
     Align = alClient
     Font.Color = clBlack
     Font.Height = -15
@@ -590,8 +590,8 @@ object EditorFrame: TEditorFrame
     StringAttri.FrameEdges = sfeAround
     SymbolAttri.Foreground = clTeal
     SymbolAttri.FrameEdges = sfeAround
-    left = 318
-    top = 210
+    left = 16
+    top = 8
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
@@ -614,7 +614,27 @@ object EditorFrame: TEditorFrame
     DirectiveAttri.FrameEdges = sfeAround
     CompilerMode = pcmDelphi
     NestedComments = False
-    left = 410
-    top = 210
+    left = 72
+    top = 8
+  end
+  object SynHTMLSyn1: TSynHTMLSyn
+    DefaultFilter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
+    Enabled = False
+    AndAttri.FrameEdges = sfeAround
+    ASPAttri.FrameEdges = sfeAround
+    CommentAttri.Foreground = clGreen
+    CommentAttri.FrameEdges = sfeAround
+    IdentifierAttri.Foreground = clTeal
+    IdentifierAttri.FrameEdges = sfeAround
+    KeyAttri.Foreground = clBlue
+    KeyAttri.FrameEdges = sfeAround
+    SpaceAttri.FrameEdges = sfeAround
+    SymbolAttri.Foreground = clNavy
+    SymbolAttri.FrameEdges = sfeAround
+    TextAttri.FrameEdges = sfeAround
+    UndefKeyAttri.FrameEdges = sfeAround
+    ValueAttri.FrameEdges = sfeAround
+    left = 8
+    top = 56
   end
 end

@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, ComCtrls, PrefsUnit, ATTabs, types, SynEdit, Syngutterlinenumber,
   SynEditHighlighter, SynHighlighterPas, SynHighlighterCpp, SynEditTypes,
-  FrameUnit, lclProc, lcltype, stringhashlist, ValEdit, SynEditkeycmds, Grids, menus;
+  FrameUnit, lclProc, lcltype, stringhashlist, ValEdit, SynEditkeycmds,
+  SynHighlighterHTML, Grids, menus;
 
 const
   PasShortText =
@@ -104,6 +105,7 @@ type
     Panel2: TPanel;
     KeyBox: TPanel;
     KeyPAnel: TPanel;
+    SynHTMLSyn1: TSynHTMLSyn;
     UseTextCol: TCheckBox;
     UseBgCol: TCheckBox;
     UseFrameCol: TCheckBox;
@@ -194,6 +196,7 @@ var
   PrefsWin: TPrefsWin;
   PasPrefsName: string;
   CPrefsName: string;
+  HTMLPrefsName: string;
   VirtualKeyStrings: TStringHashList = nil;
   CmdName: array[0..1000] of string;
   ShortCutList: array of record
@@ -219,6 +222,18 @@ const
     'Space',
     'String',
     'Symbol'
+    );
+  HTMLNames: array[0..9] of string = (
+    'And Codes',
+    'ASP',
+    'Comment',
+    'Identifier',
+    'Keyword',
+    'Space',
+    'Symbol',
+    'Text',
+    'Undef',
+    'Value'
     );
   PasNames: array[0..10] of string = (
     'Assembler',
@@ -386,6 +401,7 @@ begin
   // Highlighter
   SynPasSyn1.LoadFromFile(PasPrefsName);
   SynCppSyn1.LoadFromFile(CPrefsName);
+  SynPasSyn1.LoadFromFile(HTMLPrefsName);
   LangSelectionChange(nil);
   // ShortCuts
   KeyListEdit.BeginUpdate;
@@ -489,18 +505,28 @@ var
 begin
   SyntaxItems.Items.BeginUpdate;
   SyntaxItems.Clear;
-  if LangSelection.ItemIndex = 0 then
-  begin
-    SynEdit1.Highlighter := SynCppSyn1;
-    SynEdit1.Lines.Text := CShortText;
-    for i := 0 to High(CNames) do
-      SyntaxItems.Items.Add(CNames[i]);
-  end else
-  begin
-    SynEdit1.Highlighter := SynPasSyn1;
-    SynEdit1.Lines.Text := PasShortText;
-    for i := 0 to High(PasNames) do
-      SyntaxItems.Items.Add(PasNames[i]);
+  case LangSelection.ItemIndex of
+    0:
+    begin
+      SynEdit1.Highlighter := SynCppSyn1;
+      SynEdit1.Lines.Text := CShortText;
+      for i := 0 to High(CNames) do
+        SyntaxItems.Items.Add(CNames[i]);
+    end;
+    1:
+    begin
+      SynEdit1.Highlighter := SynPasSyn1;
+      SynEdit1.Lines.Text := PasShortText;
+      for i := 0 to High(PasNames) do
+        SyntaxItems.Items.Add(PasNames[i]);
+    end;
+    2:
+    begin
+      SynEdit1.Highlighter := SynHTMLSyn1;
+      SynEdit1.Lines.Text := HTMLText;
+      for i := 0 to High(HTMLNames) do
+        SyntaxItems.Items.Add(HTMLNames[i]);
+    end;
   end;
   SyntaxItems.Items.EndUpdate;
 end;
@@ -535,6 +561,7 @@ begin
   //
   SynPasSyn1.SaveToFile(PasPrefsName);
   SynCppSyn1.SaveToFile(CPrefsName);
+  SynHTMLSyn1.SaveToFile(HTMLPrefsName);
   // Keys
   for i := 0 to High(ShortCutList) do
   begin
@@ -601,6 +628,20 @@ begin
         8: CurAtt := SynPasSyn1.SpaceAttri;
         9: CurAtt := SynPasSyn1.StringAttri;
         10: CurAtt := SynPasSyn1.SymbolAttri;
+      end;
+    end;
+    2: begin
+      case SyntaxItems.ItemIndex of
+        0: CurAtt := SynHTMLSyn1.AndAttri;
+        1: CurAtt := SynHTMLSyn1.ASPAttri;
+        2: CurAtt := SynHTMLSyn1.CommentAttri;
+        3: CurAtt := SynHTMLSyn1.IdentifierAttri;
+        4: CurAtt := SynHTMLSyn1.KeyAttri;
+        5: CurAtt := SynHTMLSyn1.SpaceAttri;
+        6: CurAtt := SynHTMLSyn1.SymbolAttri;
+        7: CurAtt := SynHTMLSyn1.TextAttri;
+        8: CurAtt := SynHTMLSyn1.UndefKeyAttri;
+        9: CurAtt := SynHTMLSyn1.ValueAttri;
       end;
     end;
   end;
@@ -705,6 +746,7 @@ begin
   //
   EdFrame.SynCppSyn1.LoadFromFile(CPrefsName);
   EdFrame.SynPasSyn1.LoadFromFile(PasPrefsName);
+  EdFrame.SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
   // Keybindings
   for i := 0 to Ed.Keystrokes.Count - 1 do
   begin
@@ -1012,6 +1054,7 @@ end;
 initialization
   PasPrefsName := ChangeFileExt(Application.ExeName, 'Pas.prefs');
   CPrefsName := ChangeFileExt(Application.ExeName, 'C.prefs');
+  HTMLPrefsName := ChangeFileExt(Application.ExeName, 'HTML.prefs');
 finalization;
   FreeAndNil(VirtualKeyStrings);
 end.

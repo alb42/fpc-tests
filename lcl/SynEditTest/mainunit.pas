@@ -12,14 +12,15 @@ uses
   Workbench, muiformsunit, amigaDos,
   {$endif}
   synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, Math, ATTabs,
-  MikroStatUnit;
+  MikroStatUnit, SynHighlighterhtml;
 
 const
-  VERSION = '$VER: EdiSyn 0.40 ('+{$I %DATE%}+')';
+  VERSION = '$VER: EdiSyn 0.41 ('+{$I %DATE%}+')';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
   CEXT: array[0..3] of string = ('.c', '.h', '.cpp','.hpp');
+  HTMLEXT: array[0..1] of string = ('.html', '.htm');
 
   CTEXT =
     '#include <proto/exec.h>'#13#10 +
@@ -91,6 +92,14 @@ const
     ''#13#10 +
     'end.';
 
+HTMLText = '<HTML>'#13#10 +
+  '<!-- comment -->'#13#10 +
+  '<BODY bgcolor="#ffffff">'#13#10 +
+  '  Test &nbsp;'#13#10 +
+  '  <INVALID_TAG>'#13#10 +
+  '</HTML>';
+
+
 NText =
     'Sed ut perspiciatis unde omnis iste natus error sit voluptatem'#13#10 +
     'accusantium doloremque laudantium, totam rem aperiam, eaque'#13#10 +
@@ -141,6 +150,7 @@ type
     CloseAllMenu: TMenuItem;
     AboutMainMenu: TMenuItem;
     AboutMenu: TMenuItem;
+    HTMLMenu: TMenuItem;
     PrefsMenu: TMenuItem;
     SearchAllWindowMenu: TMenuItem;
     WindowMenu: TMenuItem;
@@ -208,6 +218,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
+    procedure HTMLMenuClick(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
     procedure NoneMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
@@ -275,12 +286,13 @@ uses
 procedure TMainWindow.ExampleMenuClick(Sender: TObject);
 begin
   if CMenu.Checked then
-    CurEditor.Lines.Text := CTEXT
-  else
-    if PascalMenu.checked then
-      CurEditor.Lines.Text := PASTEXT
-    else
-      CurEditor.Lines.Text := NTEXT;
+    CurEditor.Lines.Text := CTEXT;
+  if PascalMenu.checked then
+    CurEditor.Lines.Text := PASTEXT;
+  if HTMLMenu.checked then
+    CurEditor.Lines.Text := HTMLTEXT;
+  if NoneMenu.checked then
+    CurEditor.Lines.Text := NTEXT;
   ResetChanged;
 end;
 
@@ -418,6 +430,10 @@ begin
       PascalMenu.Checked := True;
       PascalMenuClick(Sender);
     end;
+    HIGHLIGHTER_HTML: begin
+      HTMLMenu.Checked := True;
+      HTMLMenuClick(Sender);
+    end
     else begin
       NoneMenu.Checked := True;
       NoneMenuClick(Sender);
@@ -745,6 +761,16 @@ begin
   end;
 end;
 
+procedure TMainWindow.HTMLMenuClick(Sender: TObject);
+begin
+  if HTMLMenu.Checked then
+  begin
+    CurEditor.Highlighter := CurFrame.SynHTMLSyn1;
+    ExportMenu.Enabled := True;
+    MikroStat.Highlighter:='HTML';
+  end;
+end;
+
 procedure TMainWindow.QuitMenuClick(Sender: TObject);
 begin
   // This quirk is not needed anymore, but also does not harm
@@ -795,6 +821,8 @@ begin
     Prefs.DefHighlighter := HIGHLIGHTER_C;
   if PascalMenu.Checked then
     Prefs.DefHighlighter := HIGHLIGHTER_PASCAL;
+  if HTMLMenu.Checked then
+    Prefs.DefHighlighter := HIGHLIGHTER_HTML;
   if NoneMenu.Checked then
     Prefs.DefHighlighter := HIGHLIGHTER_NONE;
 end;
@@ -858,8 +886,10 @@ begin
   if Assigned(CurEditor.Highlighter) then
   begin
     if CurEditor.Highlighter is TSynCppSyn then
-      CMenu.Checked := True
-    else
+      CMenu.Checked := True;
+    if CurEditor.Highlighter is TSynHtmlSyn then
+      HTMLMenu.Checked:= True;
+    if CurEditor.Highlighter is TSynPasSyn then
       PascalMenu.Checked := True
   end else
     NoneMenu.Checked := True;
@@ -921,11 +951,12 @@ begin
     NewFrame.Editor.Highlighter := NewFrame.SynPasSyn1;
   if CMenu.Checked then
     NewFrame.Editor.Highlighter := NewFrame.SynCppSyn1;
+  if HTMLMenu.Checked then
+    NewFrame.Editor.Highlighter := NewFrame.SynHTMLSyn1;
   if NoneMenu.Checked then
     NewFrame.Editor.Highlighter := nil;
   // Add the Tab
   Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
-
 
   NewFrame.Editor.Visible := True;
   Tabs.TabIndex := Tabs.TabCount - 1;
@@ -1009,6 +1040,15 @@ begin
         Exit;
       end;
     end;
+    for i := 0 to High(HTMLEXT) do
+    begin
+      if Ext = HTMLEXT[i] then
+      begin
+        HTMLMenu.Checked := True;
+        HTMLMenuClick(CMenu);
+        Exit;
+      end;
+    end;
     NoneMenu.Checked:=True;
     NoneMenuClick(NoneMenu);
   end;
@@ -1024,9 +1064,11 @@ begin
   end else
   begin
     if CurEditor.Highlighter is TSynCppSyn then
-      MikroStat.Highlighter := 'C'
-    else
+      MikroStat.Highlighter := 'C';
+    if CurEditor.Highlighter is TSynPasSyn then
       MikroStat.Highlighter := 'Pas';
+    if CurEditor.Highlighter is TSynHTMLSyn then
+      MikroStat.Highlighter := 'HTML';
   end;
   MikroStat.InsMode := CurEditor.InsertMode;
   UndoMenu.Enabled := CurEditor.CanUndo;

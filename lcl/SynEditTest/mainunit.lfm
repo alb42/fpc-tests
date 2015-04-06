@@ -1,7 +1,7 @@
 object MainWindow: TMainWindow
-  Left = -37
+  Left = 62
   Height = 514
-  Top = 49
+  Top = 300
   Width = 801
   Caption = 'MainWindow'
   ClientHeight = 491
@@ -562,6 +562,13 @@ object MainWindow: TMainWindow
         GroupIndex = 1
         RadioItem = True
         OnClick = CMenuClick
+      end
+      object HTMLMenu: TMenuItem
+        AutoCheck = True
+        Caption = 'HTML'
+        GroupIndex = 1
+        RadioItem = True
+        OnClick = HTMLMenuClick
       end
       object PascalMenu: TMenuItem
         AutoCheck = True

@@ -1,4 +1,4 @@
-EdiSyn 0.40
+EdiSyn 0.41
 
 by Marcus "ALB42" Sackrow
 
@@ -76,6 +76,9 @@ Ctrl + Shift + F1          Previous Tab
 Ctrl + Shift + F2          Next Tab
 
 History:
+
+0.41
+  ADD: HTML Highlighter
 
 0.40 "Easter Edition"
 
