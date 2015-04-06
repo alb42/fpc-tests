@@ -30,6 +30,8 @@ implementation
 { TForm1 }
 
 procedure TForm1.PaintBox1Paint(Sender: TObject);
+var
+  Points1: array of TPoint;
 begin
   with PaintBox1.Canvas do
   begin
@@ -45,9 +47,22 @@ begin
     Pen.Color := clYellow;
     Brush.Color := clGreen;
     Rectangle(35,25,90,99);
+    // Arc Test
+    Pen.Color := clBlack;
+    Arc(20,20,150,120,45 * 16, 90 * 16);
     // FillRect Test
     Brush.Color := clFuchsia;
     FillRect(100, 150, 175, PaintBox1.Height - 100);
+    // Poly Line
+    Pen.Color := clLime;
+    SetLength(Points1, 5);
+    Points1[0] := Point(110,10);
+    Points1[1] := Point(140,11);
+    Points1[2] := Point(190,80);
+    Points1[3] := Point(PaintBox1.Width div 2,30);
+    Points1[4] := Point(120,20);
+    //Polyline(Points1, 0, 5);
+    Polygon(@Points1[0], 5, True);
     // Text test
     Pen.Color := clRed;
     Font.Color := clRed;
