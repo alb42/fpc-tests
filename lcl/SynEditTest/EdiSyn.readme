@@ -78,9 +78,17 @@ Ctrl + Shift + F2          Next Tab
 History:
 
 0.42
+
   FIX: Shortcuts with Alt Key
+  ADD: Shortcuts with Amiga key
+  FIX: Wrong keybinding
+  FIX: Freeze on save prefs
+  FIX: Scrollbar issues
+  ADD: Number of Lines / Number of Bytes of the current text
+  ADD: Column Selecting
 
 0.41
+
   ADD: HTML Highlighter
 
 0.40 "Easter Edition"

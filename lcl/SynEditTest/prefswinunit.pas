@@ -251,6 +251,14 @@ const
 
 {$R *.lfm}
 
+function MyShortCutToText(ShortCut: TShortCut): string;
+begin
+  Result := ShortCutToText(ShortCut);
+  {$ifdef HASAMIGA}
+  Result := StringReplace(Result, 'Meta', 'Amiga', [rfReplaceAll]);
+  {$endif}
+end;
+
 function CompareIDEShortCuts(Data1, Data2: Pointer): integer;
 var
   ShortCut1: PIDEShortCut absolute Data1;
@@ -404,6 +412,7 @@ begin
   SynPasSyn1.LoadFromFile(HTMLPrefsName);
   LangSelectionChange(nil);
   // ShortCuts
+  KeyListEdit.Visible:= False;
   KeyListEdit.BeginUpdate;
   KeyListEdit.Clear;
   SetLength(ShortCutList, SynEdit1.Keystrokes.Count);
@@ -433,12 +442,13 @@ begin
     if trim(cmd) = '' then
       cmd := 'ERR';
     ShortCutList[i].CommandName := cmd;
-    KeyListEdit.Values[IntToStr(i + 1) + '. ' + ShortCutList[i].CommandName] := ShortCutToText(ShortCutList[i].ShortCut);
+    KeyListEdit.Values[IntToStr(i + 1) + '. ' + ShortCutList[i].CommandName] := MyShortCutToText(ShortCutList[i].ShortCut);
     //KeyListEdit.InsertRow(IntToStr(i) + '. ' + ShortCutList[i].CommandName, ShortCutToText(ShortCutList[i].ShortCut), True);
   end;
   KeyListEdit.TitleCaptions.Strings[0] := 'Function';
   KeyListEdit.TitleCaptions.Strings[1] := 'ShortCut';
   KeyListEdit.EndUpdate;
+  KeyListEdit.Visible:= True;
 end;
 
 procedure TPrefsWin.KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
@@ -486,7 +496,7 @@ begin
       end;
     end;
     ShortCutList[CurRow].ShortCut := ShortCut;
-    KeyListEdit.Values[IntToStr(CurRow + 1) + '. ' + ShortCutList[CurRow].CommandName] := ShortCutToText(ShortCutList[CurRow].ShortCut);
+    KeyListEdit.Values[IntToStr(CurRow + 1) + '. ' + ShortCutList[CurRow].CommandName] := MyShortCutToText(ShortCutList[CurRow].ShortCut);
   end;
 end;
 
@@ -495,7 +505,7 @@ begin
   if (CurRow >= 0) and (CurRow <= High(ShortCutList)) then
   begin
     ShortCutList[CurRow].ShortCut := 0;
-    KeyListEdit.Values[ShortCutList[CurRow].CommandName] := ShortCutToText(ShortCutList[CurRow].ShortCut);
+    KeyListEdit.Values[ShortCutList[CurRow].CommandName] := MyShortCutToText(ShortCutList[CurRow].ShortCut);
   end;
 end;
 
@@ -979,7 +989,7 @@ begin
   ssAlt: Result:='Alt';
   ssCtrl: Result:='Ctrl';
   ssMeta:
-    {$ifdef AROS}
+    {$ifdef HASAMIGA}
     Result:='Amiga';
     {$else}
     Result:='Meta';
@@ -1049,7 +1059,7 @@ end;
 
 function TCustomShortCutGrabBox.GetDefaultShiftButtons: TShiftState;
 begin
-  {$IFDEF AROS}
+  {$IFDEF HASAMIGA}
   Result:=[ssCtrl,ssShift,ssAlt,ssMeta];
   {$ELSE}
   Result:=[ssCtrl,ssShift,ssAlt];

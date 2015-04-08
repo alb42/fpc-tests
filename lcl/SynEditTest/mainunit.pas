@@ -11,11 +11,11 @@ uses
   {$ifdef HASAMIGA}
   Workbench, muiformsunit, amigaDos,
   {$endif}
-  synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, Math, ATTabs,
-  MikroStatUnit, SynHighlighterhtml;
+  synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, StdCtrls, Math, ATTabs,
+  MikroStatUnit, SynHighlighterhtml, synEditTextbuffer;
 
 const
-  VERSION = '$VER: EdiSyn 0.41 ('+{$I %DATE%}+')';
+  VERSION = '$VER: EdiSyn 0.42 ('+{$I %DATE%}+')';
 
 
   PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
@@ -141,7 +141,7 @@ type
     CopyMenu: TMenuItem;
     CutMenu: TMenuItem;
     BookmarkImages: TImageList;
-    Image1: TImage;
+    StatLabel: TLabel;
     MenuItem1: TMenuItem;
     GoToLineMenu: TMenuItem;
     AutoMenu: TMenuItem;
@@ -1081,6 +1081,7 @@ begin
     Tabs.Invalidate;
   end;
   MikroStat.Invalidate;
+  StatLabel.Caption:= IntToStr(CurEditor.Lines.Count) + ' Lines | ' + IntToStr(Length(CurEditor.Text)) + ' bytes';
 end;
 
 procedure TMainWindow.UpdateTitlebar;

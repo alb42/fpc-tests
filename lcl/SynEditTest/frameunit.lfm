@@ -510,9 +510,9 @@ object EditorFrame: TEditorFrame
       ''
     )
     MaxLeftChar = 80
-    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabIndent, eoTabsToSpaces, eoTrimTrailingSpaces, eoDragDropEditing]
+    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabIndent, eoTabsToSpaces, eoTrimTrailingSpaces, eoAltSetsColumnMode, eoDragDropEditing]
     Options2 = [eoAlwaysVisibleCaret, eoEnhanceEndKey, eoFoldedCopyPaste, eoOverwriteBlock]
-    MouseOptions = [emDragDropEditing]
+    MouseOptions = [emAltSetsColumnMode, emDragDropEditing]
     VisibleSpecialChars = [vscSpace, vscTabAtLast]
     SelectedColor.BackPriority = 50
     SelectedColor.ForePriority = 50
