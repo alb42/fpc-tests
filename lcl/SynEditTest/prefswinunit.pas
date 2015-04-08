@@ -486,7 +486,7 @@ begin
       end;
     end;
     ShortCutList[CurRow].ShortCut := ShortCut;
-    KeyListEdit.Values[ShortCutList[CurRow].CommandName] := ShortCutToText(ShortCutList[CurRow].ShortCut);
+    KeyListEdit.Values[IntToStr(CurRow + 1) + '. ' + ShortCutList[CurRow].CommandName] := ShortCutToText(ShortCutList[CurRow].ShortCut);
   end;
 end;
 
@@ -703,7 +703,7 @@ begin
   Ed := EdFrame.Editor;
   // Tabs/Indent Handling
   Ed.BlockIndent := Prefs.IndentWidth;
-  Ed.BlockTabIndent := Prefs.TabWidth;
+  Ed.BlockTabIndent := 0;
   Ed.TabWidth:= Prefs.TabWidth;
   if Prefs.TabsToSpaces then
     Ed.Options := Ed.Options + [eoTabsToSpaces]
@@ -926,7 +926,7 @@ begin
             Checked:=s in FShiftState;
             Top := NT;
             Left := NL;
-            NL := NL + 75;
+            NL := NL + 55;
             {if LastCheckBox<>nil then
               AnchorToNeighbour(akLeft,6,LastCheckBox)
             else
@@ -978,7 +978,12 @@ begin
   ssShift: Result:='Shift';
   ssAlt: Result:='Alt';
   ssCtrl: Result:='Ctrl';
-  ssMeta: Result:='Meta';
+  ssMeta:
+    {$ifdef AROS}
+    Result:='Amiga';
+    {$else}
+    Result:='Meta';
+    {$endif}
   ssSuper: Result:='Super';
   ssHyper: {$IFDEF Darwin}
            Result:='Cmd';
@@ -1044,7 +1049,7 @@ end;
 
 function TCustomShortCutGrabBox.GetDefaultShiftButtons: TShiftState;
 begin
-  {$IFDEF Darwin}
+  {$IFDEF AROS}
   Result:=[ssCtrl,ssShift,ssAlt,ssMeta];
   {$ELSE}
   Result:=[ssCtrl,ssShift,ssAlt];

@@ -1,5 +1,5 @@
 object PrefsWin: TPrefsWin
-  Left = 37
+  Left = 66
   Height = 331
   Top = 119
   Width = 524
@@ -366,7 +366,7 @@ object PrefsWin: TPrefsWin
       end
       object LangSelection: TComboBox
         Left = 6
-        Height = 27
+        Height = 31
         Top = 78
         Width = 118
         ItemHeight = 0
