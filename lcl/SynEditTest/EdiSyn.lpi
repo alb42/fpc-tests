@@ -15,7 +15,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="42"/>
+      <MinorVersionNr Value="50"/>
       <StringTable Comments="Your friendly Editor" InternalName="EdiSyn" OriginalFilename="EdiSyn" ProductName="EdiSyn" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -40,7 +40,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="15">
       <Unit0>
         <Filename Value="EdiSyn.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -136,6 +136,19 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="PrefsWinUnit"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="startprogunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="StartProgUnit"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="outputunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="OutWindow"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="OutPutUnit"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

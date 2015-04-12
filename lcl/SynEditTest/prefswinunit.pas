@@ -9,9 +9,15 @@ uses
   StdCtrls, ComCtrls, PrefsUnit, ATTabs, types, SynEdit, Syngutterlinenumber,
   SynEditHighlighter, SynHighlighterPas, SynHighlighterCpp, SynEditTypes,
   FrameUnit, lclProc, lcltype, stringhashlist, ValEdit, SynEditkeycmds,
-  SynHighlighterHTML, Grids, menus;
+  SynHighlighterHTML, Grids, menus, EditBtn, Spin, Contnrs;
 
 const
+  FILEPATTERN = '{$f}';
+  FILEwPathPATTERN = '{$F}';
+  FILEwExtPATTERN = '{$e}';
+  FILEwExtwPathPATTERN = '{$E}';
+  PATHPATTERN = '{$p}';
+
   PasShortText =
     'unit Test;'#13#10 +
     '{$mode delphi}'#13#10 +
@@ -39,6 +45,8 @@ const
 
 
 type
+  TUserCommands = TObjectList;
+
 {$IF sizeof(TShiftState)=2}
   TShiftStateInt = word;
 {$ELSE}
@@ -96,16 +104,47 @@ type
 
   TPrefsWin = class(TForm)
     AcceptButton: TButton;
+    AcceptCom: TButton;
+    BrowseComButton: TButton;
+    BrowseDirButton: TButton;
+    CancelComButton: TButton;
+    CommandEdit: TEdit;
+    DirEdit: TEdit;
+    EditButton: TButton;
+    ComListPanel: TGroupBox;
+    ComPanel: TGroupBox;
+    Label25: TLabel;
+    Label26: TLabel;
+    Label27: TLabel;
+    NewCom: TButton;
+    OpenDialog1: TOpenDialog;
+    ComShortCutPanel: TPanel;
+    RemoveCom: TButton;
     ClearButton: TButton;
     CancelButton: TButton;
     ColEdBracket: TColorButton;
+    ChooseCaptureMode: TComboBox;
+    GroupBox1: TGroupBox;
+    ParamHelp: TComboBox;
+    ProgLabel: TEdit;
+    ParamEdit: TEdit;
     KeyBox1: TPanel;
     Label21: TLabel;
     KeyPage: TTabSheet;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
+    SpinStack: TSpinEdit;
+    UserComList: TListBox;
     Panel2: TPanel;
     KeyBox: TPanel;
     KeyPAnel: TPanel;
+    ChooseStartForget: TRadioButton;
+    ChooseWait: TRadioButton;
+    ChooseCaptureOut: TRadioButton;
     SynHTMLSyn1: TSynHTMLSyn;
+    ProgTab: TTabSheet;
     UseTextCol: TCheckBox;
     UseBgCol: TCheckBox;
     UseFrameCol: TCheckBox;
@@ -166,29 +205,41 @@ type
     HighLightTab: TTabSheet;
     KeyListEdit: TValueListEditor;
     procedure AcceptButtonClick(Sender: TObject);
+    procedure AcceptComClick(Sender: TObject);
+    procedure BrowseComButtonClick(Sender: TObject);
+    procedure BrowseDirButtonClick(Sender: TObject);
+    procedure CancelComButtonClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
     procedure ColEdBgColorChanged(Sender: TObject);
     procedure ColEdBracketClick(Sender: TObject);
     procedure ColEdTextColorChanged(Sender: TObject);
+    procedure EditButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
       var CanSelect: Boolean);
     procedure LangSelectionChange(Sender: TObject);
+    procedure NewComClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
+    procedure ParamHelpClick(Sender: TObject);
+    procedure RemoveComClick(Sender: TObject);
     procedure SyntaxItemsChange(Sender: TObject);
+    procedure UserComListDblClick(Sender: TObject);
     procedure UseTextColClick(Sender: TObject);
   private
-    FPrimaryKey1Box:TCustomShortCutGrabBox;
+    Key1Box:TCustomShortCutGrabBox;
+    Key2Box:TCustomShortCutGrabBox;
     CurAtt: TSynHighlighterAttributes;
     procedure TabClickEvent(Sender: TObject);
     Function GetAtt: TSynHighlighterAttributes;
     procedure GetAttSetting;
     procedure SetAttSetting;
+    procedure EnableComSett(Enable: Boolean);
   public
     CurRow: Integer;
     BlockEvent: Boolean;
     Tabs: TATTabs;
+    ComIdx: Integer;
     Procedure PrefsToEditor(EdFrame: TEditorFrame);
   end;
 
@@ -204,6 +255,7 @@ var
     CommandName: string;
     ShortCut: TShortCut;
   end;
+  UserCommands: TUserCommands;
 
 implementation
 
@@ -291,15 +343,26 @@ var
   i: Integer;
 begin
   CurRow := -1;
-  FPrimaryKey1Box:=TCustomShortCutGrabBox.Create(Self);
-  with FPrimaryKey1Box do begin
-    Name:='FPrimaryKey1Box';
+  Key1Box:=TCustomShortCutGrabBox.Create(Self);
+  with Key1Box do begin
+    Name:='Key1Box';
     Caption := 'Select short cut';
     Align:=alClient;
     AutoSize:=true;
     BorderSpacing.Around:=6;
     Parent:=KeyPanel;
   end;
+  //
+  Key2Box:=TCustomShortCutGrabBox.Create(Self);
+  with Key2Box do begin
+    Name:='Key2Box';
+    //Caption := 'Select short cut';
+    Align:=alClient;
+    AutoSize:=true;
+    BorderSpacing.Around:=0;
+    Parent:=ComShortCutPanel;
+  end;
+
   for i := 0 to High(CmdName) do
   begin
     CmdName[i] := '';
@@ -370,12 +433,17 @@ begin
   SynEdit1.Font.Color := ColEdText.ButtonColor;
 end;
 
+procedure TPrefsWin.EditButtonClick(Sender: TObject);
+begin
+  UserComListDblClick(Sender);
+end;
+
 procedure TPrefsWin.FormShow(Sender: TObject);
 var
   i: Integer;
-  ShortCut: TShortCut;
   cmd: String;
   j: Integer;
+  UCom: TUserCommand;
 begin
   // Tab Settings
   UseTabsToSpace.Checked := Prefs.TabsToSpaces;
@@ -449,22 +517,39 @@ begin
   KeyListEdit.TitleCaptions.Strings[1] := 'ShortCut';
   KeyListEdit.EndUpdate;
   KeyListEdit.Visible:= True;
+  // user commands
+  UserCommands.Clear;
+  UserComList.Clear;
+  i := 0;
+  while True do
+  begin
+    UCom := TUserCommand.Create;
+    Prefs.GetUserCom(i, UCom);
+    if UCom.ComLabel = '' then
+    begin
+      UCom.Free;
+      Break;
+    end;
+    UserCommands.Add(UCom);
+    UserComList.AddItem(UCom.ComLabel, UCom);
+    Inc(i);
+  end;
+  EnableComSett(False);
 end;
 
 procedure TPrefsWin.KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
   var CanSelect: Boolean);
 var
-  AValue: PIDEShortCut;
   Key: Word;
   Shift: TShiftState;
 begin
   if (aRow > 0) and (aRow <= High(ShortCutList) + 1) then
   begin
     KeyBox.Caption := 'Define ShortCut for ' + ShortCutList[ARow - 1].CommandName;
-    FPrimaryKey1Box.Visible := True;
+    Key1Box.Visible := True;
     ShortCutToKey(ShortCutList[ARow - 1].ShortCut, Key, Shift);
-    FPrimaryKey1Box.Key := Key;
-    FPrimaryKey1Box.ShiftState := Shift;
+    Key1Box.Key := Key;
+    Key1Box.ShiftState := Shift;
     AcceptButton.Visible := True;
     ClearButton.Visible := True;
     CurRow := ARow - 1;
@@ -472,7 +557,7 @@ begin
   else
   begin
     CurRow := -1;
-    FPrimaryKey1Box.Visible := False;
+    Key1Box.Visible := False;
     KeyBox.Caption := 'none';
     AcceptButton.Visible := False;
     ClearButton.Visible:= False;
@@ -486,7 +571,7 @@ var
 begin
   if (CurRow >= 0) and (CurRow <= High(ShortCutList)) then
   begin
-    ShortCut := KeyToShortCut(FPrimaryKey1Box.Key, FPrimaryKey1Box.ShiftState);
+    ShortCut := KeyToShortCut(Key1Box.Key, Key1Box.ShiftState);
     for i := 0 to High(ShortCutList) do
     begin
       if (ShortCutList[i].ShortCut = ShortCut) and (i <> CurRow) then
@@ -578,7 +663,37 @@ begin
     Prefs.IniFile.WriteInteger(SECTION_SHORTCUTS,  IntToStr(i) + EditorCommandToCodeString(ShortCutList[i].Command), ShortCutList[i].ShortCut);
   end;
   //
+  for i := 0 to UserCommands.Count - 1 do
+  begin
+    Prefs.SetUserCom(i, TUserCommand(UserCommands.Items[i]));
+  end;
+  MainWindow.UpdateUserMenu;
+  //
   ModalResult := mrYes;
+end;
+
+procedure TPrefsWin.ParamHelpClick(Sender: TObject);
+begin
+  case ParamHelp.ItemIndex of
+    0: ParamEdit.Text := ParamEdit.Text + FILEPATTERN;
+    1: ParamEdit.Text := ParamEdit.Text + FILEwPathPATTERN;
+    2: ParamEdit.Text := ParamEdit.Text + FILEwExtPATTERN;
+    3: ParamEdit.Text := ParamEdit.Text + FILEwExtwPathPATTERN;
+    4: ParamEdit.Text := ParamEdit.Text + PATHPATTERN;
+  end;
+end;
+
+procedure TPrefsWin.RemoveComClick(Sender: TObject);
+var
+  Idx: Integer;
+begin
+  Idx := UserComList.ItemIndex;
+  if (Idx >= 0) and (Idx < UserComList.Items.Count) then
+  begin
+    UserComList.Items.Delete(Idx);
+    UserCommands.Delete(Idx);
+    UserComListDblClick(nil);
+  end;
 end;
 
 procedure TPrefsWin.SyntaxItemsChange(Sender: TObject);
@@ -589,6 +704,126 @@ begin
   GetAttSetting;
   BlockEvent := False;
 end;
+
+procedure TPrefsWin.EnableComSett(Enable: Boolean);
+begin
+  ProgLabel.Enabled := Enable;
+  CommandEdit.Enabled := Enable;
+  BrowseComButton.Enabled := Enable;
+  ParamEdit.Enabled := Enable;
+  ParamHelp.Enabled := Enable;
+  DirEdit.Enabled := Enable;
+  BrowseDirButton.Enabled := Enable;
+  ChooseStartForget.Enabled := Enable;
+  ChooseWait.Enabled := Enable;
+  ChooseCaptureOut.Enabled := Enable;
+  SpinStack.Enabled := Enable;
+  ChooseCaptureMode.Enabled := Enable;
+  ComShortCutPanel.Enabled := Enable;
+  AcceptCom.Enabled := Enable;
+  CancelComButton.Enabled := Enable;
+  ComShortCutPanel.Enabled:=Enable;
+  ComPanel.Enabled := Enable;
+end;
+
+procedure TPrefsWin.UserComListDblClick(Sender: TObject);
+var
+  Idx: Integer;
+  UCom: TUserCommand;
+  kKey: Word;
+  kShift: TShiftState;
+begin
+  Idx := UserComList.ItemIndex;
+  ComIdx := Idx;
+  if (Idx >= 0) and (Idx < UserComList.Items.Count) then
+  begin
+    UCom := TUserCommand(UserCommands.Items[Idx]);
+    ProgLabel.Text := UCom.ComLabel;
+    CommandEdit.Text := UCom.Command;
+    ParamEdit.Text := UCom.Parameter;
+    DirEdit.Text := UCom.Path;
+    SpinStack.Value := UCom.Stack;
+    ShortCutToKey(UCom.ShortCut, kKey, kShift);
+    Key2Box.Key := kKey;
+    Key2Box.ShiftState := kShift;
+    case UCom.StartModus of
+      0: ChooseStartForget.Checked := True;
+      1: ChooseWait.Checked := True;
+      2: ChooseCaptureOut.Checked := True;
+    end;
+    ChooseCaptureMode.ItemIndex := UCom.CaptureModus;
+    EnableComSett(True);
+  end else
+  begin
+    EnableComSett(False);
+  end;
+end;
+
+procedure TPrefsWin.NewComClick(Sender: TObject);
+var
+  UCom: TUserCommand;
+begin
+  UCom := TUserCommand.Create;
+  UCom.ComLabel := '<New Command>';
+  UCom.Command := '';
+  UCom.Parameter := '';
+  UCom.StartModus := 0;
+  UCom.CaptureModus := 0;
+  UserComList.AddItem(UCom.ComLabel, UCom);
+  UserCommands.Add(UCom);
+  UserComList.ItemIndex := UserComList.Count - 1;
+  UserComListDblClick(nil);
+end;
+
+procedure TPrefsWin.AcceptComClick(Sender: TObject);
+var
+  Idx: Integer;
+  UCom: TUserCommand;
+begin
+  Idx := UserComList.ItemIndex;
+  if (Idx >= 0) and (Idx < UserComList.Items.Count) then
+  begin
+    UCom := TUserCommand(UserCommands.Items[Idx]);
+    UCom.ComLabel := ProgLabel.Text;
+    UCom.Command := CommandEdit.Text;
+    UCom.Parameter := ParamEdit.Text;
+    UCom.Path := DirEdit.Text;
+    UCom.Stack := SpinStack.Value;
+    UCom.ShortCut := KeyToShortCut(Key2Box.Key, Key2Box.ShiftState);
+    if ChooseStartForget.Checked then
+      UCom.StartModus := 0;
+    if ChooseWait.Checked then
+      UCom.StartModus := 1;
+    if ChooseCaptureOut.Checked then
+      UCom.StartModus := 2;
+    UCom.CaptureModus := ChooseCaptureMode.ItemIndex;
+    UserComList.Items.Strings[Idx] := ProgLabel.Text;
+  end;
+  CancelComButtonClick(Sender);
+end;
+
+procedure TPrefsWin.BrowseComButtonClick(Sender: TObject);
+begin
+  OpenDialog1.InitialDir := ExtractFilePath(CommandEdit.Text);
+  OpenDialog1.FileName := ExtractFileName(CommandEdit.Text);;
+  if OpenDialog1.Execute then
+  begin
+    CommandEdit.Text := OpenDialog1.FileName;
+  end;
+end;
+
+procedure TPrefsWin.BrowseDirButtonClick(Sender: TObject);
+begin
+  SelectDirectoryDialog1.InitialDir := DirEdit.Text;
+  If SelectDirectoryDialog1.Execute then
+    DirEdit.Text := SelectDirectoryDialog1.FileName;
+end;
+
+procedure TPrefsWin.CancelComButtonClick(Sender: TObject);
+begin
+  EnableComSett(False);
+end;
+
 
 procedure TPrefsWin.UseTextColClick(Sender: TObject);
 begin
@@ -604,7 +839,11 @@ end;
 
 procedure TPrefsWin.TabClickEvent(Sender: TObject);
 begin
+  PrefsWin.BeginFormUpdate;
+  Pages.Visible:=False;
   Pages.PageIndex := Tabs.TabIndex;
+  Pages.Visible:=True;
+  PrefsWin.EndFormUpdate;
 end;
 
 function TPrefsWin.GetAtt: TSynHighlighterAttributes;
@@ -1012,11 +1251,9 @@ constructor TCustomShortCutGrabBox.Create(TheOwner: TComponent);
 var
   i: Integer;
   s: String;
-  r: Integer;
 begin
   inherited Create(TheOwner);
 
-  r := Width;
   FAllowedShifts:=[ssShift, ssAlt, ssCtrl,
     ssMeta, ssSuper, ssHyper, ssAltGr,
     ssCaps, ssNum, ssScroll];
@@ -1070,7 +1307,8 @@ initialization
   PasPrefsName := ChangeFileExt(Application.ExeName, 'Pas.prefs');
   CPrefsName := ChangeFileExt(Application.ExeName, 'C.prefs');
   HTMLPrefsName := ChangeFileExt(Application.ExeName, 'HTML.prefs');
+  UserCommands := TUserCommands.Create(True);
 finalization;
+  UserCommands.Free;
   FreeAndNil(VirtualKeyStrings);
 end.
-

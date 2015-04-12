@@ -1,4 +1,4 @@
-EdiSyn 0.42
+EdiSyn 0.50
 
 by Marcus "ALB42" Sackrow
 
@@ -76,6 +76,14 @@ Ctrl + Shift + F1          Previous Tab
 Ctrl + Shift + F2          Next Tab
 
 History:
+
+0.50
+
+  ADD: Iconify Icon
+  ADD: User Program Startup
+  ADD: Catching Program output
+  ADD: Parsing program output -> Freepascal and GCC supported
+  ADD: ShortCuts for User programs
 
 0.42
 

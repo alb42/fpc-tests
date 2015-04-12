@@ -16,6 +16,7 @@ const
   SECTION_REPLACEHIST = 'ReplaceHistory';
   SECTION_COLORS = 'Colors';
   SECTION_SHORTCUTS = 'ShortCuts';
+  SECTION_USERCOM = 'UserCommands';
 
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
@@ -23,6 +24,16 @@ const
   HIGHLIGHTER_HTML = 3;
 
 type
+  TUserCommand = class
+    ComLabel: string;
+    Command: string;
+    Parameter: string;
+    Path: string;
+    Stack: Integer;
+    StartModus: Integer;
+    CaptureModus: Integer;
+    ShortCut: TShortCut;
+  end;
 
   { TPrefs }
 
@@ -47,6 +58,10 @@ type
     function GetLineNumbers: boolean;
     function GetLineSkipNum: integer;
     function GetOpenNewTab: Boolean;
+    function GetOutHeight: integer;
+    function GetOutWidth: integer;
+    function GetOutXPos: integer;
+    function GetOutYPos: integer;
     function GetPersistentBlock: Boolean;
     function GetPromptReplace: boolean;
     function GetRecFile(Idx: integer): string;
@@ -87,6 +102,10 @@ type
     procedure SetLineNumbers(AValue: boolean);
     procedure SetLineSkipNum(AValue: integer);
     procedure SetOpenNewTab(AValue: Boolean);
+    procedure SetOutHeight(AValue: integer);
+    procedure SetOutWidth(AValue: integer);
+    procedure SetOutXPos(AValue: integer);
+    procedure SetOutYPos(AValue: integer);
     procedure SetPersistentBlock(AValue: Boolean);
     procedure SetPromptReplace(AValue: boolean);
     procedure SetRecFile(Idx: integer; AValue: string);
@@ -111,11 +130,15 @@ type
     procedure SetSAllYPos(AValue: integer);
   public
     IniFile: TIniFile;
+
     constructor Create;
     destructor Destroy; override;
 
     procedure SetSearchHist(S: TStringList; AsReplace: Boolean);
     procedure GetSearchHist(S: TStringList; AsReplace: Boolean);
+
+    procedure SetUserCom(Idx: Integer; UCom: TUserCommand);
+    procedure GetUserCom(Idx: Integer; UCom: TUserCommand);
 
     property XPos: integer read GetXPos write SetXPos;
     property YPos: integer read GetYPos write SetYPos;
@@ -166,6 +189,11 @@ type
     property EdBgColor: TColor read GetEdBgColor write SetEdBgColor;
     property EdTextColor: TColor read GetEdTextColor write SetEdTextColor;
     property BracketColor: TColor read GetBracketColor write SetBracketColor;
+    //
+    property OutXPos: integer read GetOutXPos write SetOutXPos;
+    property OutYPos: integer read GetOutYPos write SetOutYPos;
+    property OutWidth: integer read GetOutWidth write SetOutWidth;
+    property OutHeight: integer read GetOutHeight write SetOutHeight;
   end;
 
 var
@@ -244,6 +272,26 @@ end;
 procedure TPrefs.SetOpenNewTab(AValue: Boolean);
 begin
   IniFile.WriteBool(SECTION_GENERAL, 'OpenNewTab', AValue);
+end;
+
+procedure TPrefs.SetOutHeight(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_USERCOM, 'Height', AValue);
+end;
+
+procedure TPrefs.SetOutWidth(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_USERCOM, 'Width', AValue);
+end;
+
+procedure TPrefs.SetOutXPos(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_USERCOM, 'Left', AValue);
+end;
+
+procedure TPrefs.SetOutYPos(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_USERCOM, 'Top', AValue);
 end;
 
 procedure TPrefs.SetPersistentBlock(AValue: Boolean);
@@ -436,6 +484,26 @@ begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'OpenNewTab', True);
 end;
 
+function TPrefs.GetOutHeight: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Height', 200);
+end;
+
+function TPrefs.GetOutWidth: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Width', 745);
+end;
+
+function TPrefs.GetOutXPos: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Left', 31);
+end;
+
+function TPrefs.GetOutYPos: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Left', 495);
+end;
+
 function TPrefs.GetPersistentBlock: Boolean;
 begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'PersistentBlock', False);
@@ -621,6 +689,30 @@ begin
   begin
     S.Add(IniFile.ReadString(Section, 'Search_' + IntToStr(i),''));
   end;
+end;
+
+procedure TPrefs.SetUserCom(Idx: Integer; UCom: TUserCommand);
+begin
+  IniFile.WriteString(SECTION_USERCOM, 'Label' + IntToStr(Idx), UCom.ComLabel);
+  IniFile.WriteString(SECTION_USERCOM, 'Command' + IntToStr(Idx), UCom.Command);
+  IniFile.WriteString(SECTION_USERCOM, 'Parameter' + IntToStr(Idx), UCom.Parameter);
+  IniFile.WriteString(SECTION_USERCOM, 'Path' + IntToStr(Idx), UCom.Path);
+  IniFile.WriteInteger(SECTION_USERCOM, 'StartModus' + IntToStr(Idx), UCom.StartModus);
+  IniFile.WriteInteger(SECTION_USERCOM, 'CaptureModus' + IntToStr(Idx), UCom.CaptureModus);
+  IniFile.WriteInteger(SECTION_USERCOM, 'Stack' + IntToStr(Idx), UCom.Stack);
+  IniFile.WriteInteger(SECTION_USERCOM, 'ShortCut' + IntToStr(Idx), UCom.ShortCut);
+end;
+
+procedure TPrefs.GetUserCom(Idx: Integer; UCom: TUserCommand);
+begin
+  UCom.ComLabel := IniFile.ReadString(SECTION_USERCOM, 'Label' + IntToStr(Idx), '');
+  UCom.Command := IniFile.ReadString(SECTION_USERCOM, 'Command' + IntToStr(Idx), '');
+  UCom.Parameter := IniFile.ReadString(SECTION_USERCOM, 'Parameter' + IntToStr(Idx), '');
+  UCom.Path := IniFile.ReadString(SECTION_USERCOM, 'Path' + IntToStr(Idx), '');
+  UCom.StartModus := IniFile.ReadInteger(SECTION_USERCOM, 'StartModus' + IntToStr(Idx), 0);
+  UCom.CaptureModus := IniFile.ReadInteger(SECTION_USERCOM, 'CaptureModus' + IntToStr(Idx), 0);
+  UCom.Stack := IniFile.ReadInteger(SECTION_USERCOM, 'Stack' + IntToStr(Idx), 1024000);
+  UCom.ShortCut := IniFile.ReadInteger(SECTION_USERCOM, 'ShortCut' + IntToStr(Idx), 0);
 end;
 
 initialization

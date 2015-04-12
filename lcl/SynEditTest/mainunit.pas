@@ -2,105 +2,66 @@ unit MainUnit;
 
 {$mode objfpc}{$H+}
 
-interface 
+interface
 
 uses
-
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,
   Graphics, Dialogs, Menus, ExtCtrls, SynHighlighterCpp, FrameUnit, LCLIntf,
   {$ifdef HASAMIGA}
-  Workbench, muiformsunit, amigaDos,
+  Workbench, muiformsunit, amigaDos, StartProgUnit,
+  {$endif}
+  {$ifdef Unix}
+  Unix,
   {$endif}
   synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, StdCtrls, Math, ATTabs,
-  MikroStatUnit, SynHighlighterhtml, synEditTextbuffer;
+  MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.42 ('+{$I %DATE%}+')';
+  VERSION = '$VER: EdiSyn 0.50 (' +{$I %DATE%} +')';
 
 
-  PASEXT: array[0..2] of string = ('.pas', '.pp', '.inc');
-  CEXT: array[0..3] of string = ('.c', '.h', '.cpp','.hpp');
+  PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
+  CEXT: array[0..3] of string = ('.c', '.h', '.cpp', '.hpp');
   HTMLEXT: array[0..1] of string = ('.html', '.htm');
 
   CTEXT =
-    '#include <proto/exec.h>'#13#10 +
-    '#include <dos/dos.h>'#13#10 +
+    '#include <proto/exec.h>'#13#10 + '#include <dos/dos.h>'#13#10 +
     '#include <intuition/intuition.h>'#13#10 +
     '#include <intuition/intuitionbase.h>'#13#10 +
-    '#include <proto/intuition.h>'#13#10 +
-    '#include <intuition/screens.h>'#13#10 +
-    ''#13#10 +
-    'const TEXT version[] = "VER: Beep 41.2 (03.03.2011)";'#13#10 +
-    ''#13#10 +
-    '__startup AROS_PROCH(Start, argstr, argsize, SysBase)'#13#10 +
-    '{'#13#10 +
-    '  AROS_PROCFUNC_INIT'#13#10 +
-    ''#13#10 +
+    '#include <proto/intuition.h>'#13#10 + '#include <intuition/screens.h>'#13#10 +
+    ''#13#10 + 'const TEXT version[] = "VER: Beep 41.2 (03.03.2011)";'#13#10 +
+    ''#13#10 + '__startup AROS_PROCH(Start, argstr, argsize, SysBase)'#13#10 +
+    '{'#13#10 + '  AROS_PROCFUNC_INIT'#13#10 + ''#13#10 +
     '  struct IntuitionBase *IntuitionBase;  // Its a comment'#13#10 +
-    ''#13#10 +
-    '              /*Another'#13#10 +
+    ''#13#10 + '              /*Another'#13#10 +
     '                Comment*/'#13#10 +
-    '  IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 0);'#13#10 +
-    '  if (!IntuitionBase)'#13#10 +
-    '    return RETURN_FAIL;'#13#10 +
-    ''#13#10 +
-    '  DisplayBeep( NULL );'#13#10 +
-    ''#13#10 +
+    '  IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 0);'#13#10
+    + '  if (!IntuitionBase)'#13#10 + '    return RETURN_FAIL;'#13#10 +
+    ''#13#10 + '  DisplayBeep( NULL );'#13#10 + ''#13#10 +
     '  CloseLibrary(&IntuitionBase->LibNode);'#13#10 +
-    '  return RETURN_OK;'#13#10 +
-    '  AROS_PROCFUNC_EXIT'#13#10 +
-    '}';
+    '  return RETURN_OK;'#13#10 + '  AROS_PROCFUNC_EXIT'#13#10 + '}';
 
   PASTEXT =
-    'unit Unit1;'#13#10 +
-    ''#13#10 +
-    '{$mode objfpc}{$H+}'#13#10 +
-    ''#13#10 +
-    'interface'#13#10 +
-    ''#13#10 +
-    'uses'#13#10 +
+    'unit Unit1;'#13#10 + ''#13#10 + '{$mode objfpc}{$H+}'#13#10 +
+    ''#13#10 + 'interface'#13#10 + ''#13#10 + 'uses'#13#10 +
     '  Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,'#13#10 +
-    '  Graphics, Dialogs;'#13#10 +
-    ''#13#10 +
-    'type'#13#10 +
-    ''#13#10 +
-    '  { TForm1 }'#13#10 +
-    ''#13#10 +
-    '  TForm1 = class(TForm)'#13#10 +
-    '    SynEdit1: TSynEdit;'#13#10 +
-    '    SynPasSyn1: TSynPasSyn;'#13#10 +
-    '  private'#13#10 +
-    '    procedure Test;'#13#10 +
-    '    { private declarations }'#13#10 +
-    '  public'#13#10 +
-    '    { public declarations }'#13#10 +
-    '  end;'#13#10 +
-    ''#13#10 +
-    'var'#13#10 +
-    '  Form1: TForm1;'#13#10 +
-    ''#13#10 +
-    'implementation'#13#10 +
-    ''#13#10 +
-    '{$R *.lfm}'#13#10 +
-    ''#13#10 +
-    '{ TForm1 }'#13#10 +
-    ''#13#10 +
-    'procedure TForm1.Test;'#13#10 +
-    'begin'#13#10 +
-    '  writeln(''something to test with'', 14, '' also with numbers ;)'');'#13#10 +
-    'end;'#13#10 +
-    ''#13#10 +
-    'end.';
+    '  Graphics, Dialogs;'#13#10 + ''#13#10 + 'type'#13#10 +
+    ''#13#10 + '  { TForm1 }'#13#10 + ''#13#10 +
+    '  TForm1 = class(TForm)'#13#10 + '    SynEdit1: TSynEdit;'#13#10 +
+    '    SynPasSyn1: TSynPasSyn;'#13#10 + '  private'#13#10 +
+    '    procedure Test;'#13#10 + '    { private declarations }'#13#10 +
+    '  public'#13#10 + '    { public declarations }'#13#10 +
+    '  end;'#13#10 + ''#13#10 + 'var'#13#10 + '  Form1: TForm1;'#13#10 +
+    ''#13#10 + 'implementation'#13#10 + ''#13#10 + '{$R *.lfm}'#13#10 +
+    ''#13#10 + '{ TForm1 }'#13#10 + ''#13#10 + 'procedure TForm1.Test;'#13#10 +
+    'begin'#13#10 + '  writeln(''something to test with'', 14, '' also with numbers ;)'');'#13#10 + 'end;'#13#10 + ''#13#10 + 'end.';
 
-HTMLText = '<HTML>'#13#10 +
-  '<!-- comment -->'#13#10 +
-  '<BODY bgcolor="#ffffff">'#13#10 +
-  '  Test &nbsp;'#13#10 +
-  '  <INVALID_TAG>'#13#10 +
-  '</HTML>';
+  HTMLText = '<HTML>'#13#10 + '<!-- comment -->'#13#10 +
+    '<BODY bgcolor="#ffffff">'#13#10 + '  Test &nbsp;'#13#10 +
+    '  <INVALID_TAG>'#13#10 + '</HTML>';
 
 
-NText =
+  NText =
     'Sed ut perspiciatis unde omnis iste natus error sit voluptatem'#13#10 +
     'accusantium doloremque laudantium, totam rem aperiam, eaque'#13#10 +
     'ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae'#13#10 +
@@ -114,8 +75,7 @@ NText =
     'suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?'#13#10 +
     'Quis autem vel eum iure reprehenderit qui in ea voluptate velit'#13#10 +
     'esse quam nihil molestiae consequatur, vel illum qui dolorem eum'#13#10 +
-    'fugiat quo voluptas nulla pariatur?'#13#10 +
-    ''#13#10 +
+    'fugiat quo voluptas nulla pariatur?'#13#10 + ''#13#10 +
     'At vero eos et accusamus et iusto odio dignissimos ducimus qui'#13#10 +
     'blanditiis praesentium voluptatum deleniti atque corrupti quos'#13#10 +
     'dolores et quas molestias excepturi sint occaecati cupiditate non'#13#10 +
@@ -129,8 +89,7 @@ NText =
     'repudiandae sint et molestiae non recusandae. Itaque earum'#13#10 +
     'rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus'#13#10 +
     'maiores alias consequatur aut perferendis doloribus asperiores'#13#10 +
-    'repellat. '#13#10 +
-    ''#13#10 +
+    'repellat. '#13#10 + ''#13#10 +
     '                              "De finibus bonorum et malorum" Cicero';
 
 type
@@ -141,6 +100,8 @@ type
     CopyMenu: TMenuItem;
     CutMenu: TMenuItem;
     BookmarkImages: TImageList;
+    ComOutputMenu: TMenuItem;
+    UserMenu: TMenuItem;
     StatLabel: TLabel;
     MenuItem1: TMenuItem;
     GoToLineMenu: TMenuItem;
@@ -208,6 +169,7 @@ type
     procedure CloseAllMenuClick(Sender: TObject);
     procedure CloseTabMenuClick(Sender: TObject);
     procedure CMenuClick(Sender: TObject);
+    procedure ComOutputMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
     procedure CutMenuClick(Sender: TObject);
     procedure ExampleMenuClick(Sender: TObject);
@@ -240,17 +202,16 @@ type
     procedure SetDefHighMenuClick(Sender: TObject);
     procedure SynEdit1ProcessCommand(Sender: TObject;
       var Command: TSynEditorCommand; var AChar: TUTF8Char; Data: pointer);
-    procedure SynEdit1ReplaceText(Sender: TObject; const ASearch,
-      AReplace: string; Line, Column: integer;
-      var ReplaceAction: TSynReplaceAction);
+    procedure SynEdit1ReplaceText(Sender: TObject; const ASearch, AReplace: string;
+      Line, Column: integer; var ReplaceAction: TSynReplaceAction);
     procedure SynEdit1StatusChange(Sender: TObject; Changes: TSynStatusChanges);
     procedure TabClickEvent(Sender: TObject);
-    procedure TabCloseEvent(Sender: TObject; ATabIndex: Integer; var ACanClose,
-      ACanContinue: boolean);
+    procedure TabCloseEvent(Sender: TObject; ATabIndex: integer;
+      var ACanClose, ACanContinue: boolean);
     procedure TabPlusClickEvent(Sender: TObject);
     procedure UndoMenuClick(Sender: TObject);
   private
-    FAbsCount: Integer;
+    FAbsCount: integer;
     ProgName: string;
     RecFileList: TStringList;
     RecMenuList: array[0..9] of TMenuItem;
@@ -260,13 +221,17 @@ type
     procedure AutoHighlighter;
     procedure UpdateStatusBar;
     procedure UpdateTitlebar;
+    procedure UpdateOutputEvent(Sender: TObject);
+    function ReplaceFilePat(Base: string): string;
   public
     Tabs: TATTabs;
     procedure LoadFile(AFileName: string);
-    function AbsCount: Integer;
+    function AbsCount: integer;
     function CurEditor: TSynEdit;
     function CurFrame: TEditorFrame;
-    procedure HandleExceptions(Sender: TObject; E : Exception);
+    procedure HandleExceptions(Sender: TObject; E: Exception);
+    procedure UserMenuEvent(Sender: TObject);
+    procedure UpdateUserMenu;
     { public declarations }
   end;
 
@@ -277,7 +242,7 @@ implementation
 
 uses
   GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit, AboutUnit,
-  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit;
+  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit, OutputUnit;
 
 {$R *.lfm}
 
@@ -287,11 +252,11 @@ procedure TMainWindow.ExampleMenuClick(Sender: TObject);
 begin
   if CMenu.Checked then
     CurEditor.Lines.Text := CTEXT;
-  if PascalMenu.checked then
+  if PascalMenu.Checked then
     CurEditor.Lines.Text := PASTEXT;
-  if HTMLMenu.checked then
+  if HTMLMenu.Checked then
     CurEditor.Lines.Text := HTMLTEXT;
-  if NoneMenu.checked then
+  if NoneMenu.Checked then
     CurEditor.Lines.Text := NTEXT;
   ResetChanged;
 end;
@@ -311,8 +276,8 @@ end;
 
 procedure TMainWindow.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 var
-  Res: Integer;
-  i: Integer;
+  Res: integer;
+  i: integer;
 begin
   CanClose := True;
   // Check if there is a Tab with changed Data
@@ -324,7 +289,9 @@ begin
   // Some Data Changed -> Ask the user what to do
   if not CanClose then
   begin
-    Res := MessageDlg('Unsaved Data', 'There are unsaved changes.'#13#10'Do you really want to close?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data',
+      'There are unsaved changes.'#13#10'Do you really want to close?',
+      mtConfirmation, mbYesNo, 0);
     CanClose := Res = mrYes;
   end;
   {$ifdef AROS}
@@ -332,31 +299,31 @@ begin
   if HandleAllocated and (TObject(Handle) is TMUIWindow) then
   begin
     Left := TMUIWindow(Handle).Left;
-    Top := TMUIWindow(Handle).Top
+    Top := TMUIWindow(Handle).Top;
   end;
   {$endif}
 end;
 
 
 {$ifdef AROS}
-function GetWBArg(Idx: Integer): string;
+function GetWBArg(Idx: integer): string;
 var
   startup: PWBStartup;
   wbarg: PWBArgList;
-  Path: array[0..254] of Char;
+  Path: array[0..254] of char;
   strPath: string;
-  Len: Integer;
+  Len: integer;
 begin
   GetWBArg := '';
   strPath := '';
-  FillChar(Path[0],255,#0);
+  FillChar(Path[0], 255, #0);
   Startup := PWBStartup(AOS_wbMsg);
   if Startup <> nil then
   begin
     //if (Idx >= 0) and (Idx < Startup^.sm_NumArgs) then
     begin
       wbarg := Startup^.sm_ArgList;
-      if NameFromLock(wbarg^[Idx + 1].wa_Lock,@Path[0],255) then
+      if NameFromLock(wbarg^[Idx + 1].wa_Lock, @Path[0], 255) then
       begin
         Len := 0;
         while (Path[Len] <> #0) and (Len < 254) do
@@ -370,11 +337,12 @@ begin
     end;
   end;
 end;
+
 {$endif}
 
 procedure TMainWindow.FormCreate(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
   NFile: string;
   NewFrame: TEditorFrame;
 begin
@@ -382,39 +350,39 @@ begin
   // Counter for Editornames ;)
   FAbsCount := 0;
   // Tab control initial Values
-  Tabs := TATTabs.create(Self);
-  Tabs.Align:= alTop;
-  Tabs.Height:= 42;
-  Tabs.TabAngle:= 0;
-  Tabs.TabIndentInter:= 2;
-  Tabs.TabIndentInit:= 2;
-  Tabs.TabIndentTop:= 4;
-  Tabs.TabIndentXSize:= 13;
-  Tabs.TabWidthMin:= 18;
-  Tabs.TabDragEnabled:= True;
+  Tabs := TATTabs.Create(Self);
+  Tabs.Align := alTop;
+  Tabs.Height := 42;
+  Tabs.TabAngle := 0;
+  Tabs.TabIndentInter := 2;
+  Tabs.TabIndentInit := 2;
+  Tabs.TabIndentTop := 4;
+  Tabs.TabIndentXSize := 13;
+  Tabs.TabWidthMin := 18;
+  Tabs.TabDragEnabled := True;
   // Tab control Colors
-  Tabs.Font.Color:= clBlack;
-  Tabs.ColorBg:= $F9EADB;
-  Tabs.ColorBorderActive:= $ACA196;
-  Tabs.ColorBorderPassive:= $ACA196;
-  Tabs.ColorTabActive:= $FCF5ED;
-  Tabs.ColorTabPassive:= $E0D3C7;
-  Tabs.ColorTabOver:= $F2E4D7;
-  Tabs.ColorCloseBg:= clNone;
-  Tabs.ColorCloseBgOver:= $D5C9BD;
-  Tabs.ColorCloseBorderOver:= $B0B0B0;
-  Tabs.ColorCloseX:= $7B6E60;
-  Tabs.ColorArrow:= $5C5751;
-  Tabs.ColorArrowOver:= Tabs.ColorArrow;
+  Tabs.Font.Color := clBlack;
+  Tabs.ColorBg := $F9EADB;
+  Tabs.ColorBorderActive := $ACA196;
+  Tabs.ColorBorderPassive := $ACA196;
+  Tabs.ColorTabActive := $FCF5ED;
+  Tabs.ColorTabPassive := $E0D3C7;
+  Tabs.ColorTabOver := $F2E4D7;
+  Tabs.ColorCloseBg := clNone;
+  Tabs.ColorCloseBgOver := $D5C9BD;
+  Tabs.ColorCloseBorderOver := $B0B0B0;
+  Tabs.ColorCloseX := $7B6E60;
+  Tabs.ColorArrow := $5C5751;
+  Tabs.ColorArrowOver := Tabs.ColorArrow;
   Tabs.Parent := Self;
   // Tab Control Events
-  Tabs.OnTabPlusClick:=@TabPlusClickEvent;
-  Tabs.OnTabClose:=@TabCloseEvent;
-  Tabs.OnTabClick:=@TabClickEvent;
+  Tabs.OnTabPlusClick := @TabPlusClickEvent;
+  Tabs.OnTabClose := @TabCloseEvent;
+  Tabs.OnTabClick := @TabClickEvent;
   // we create the first Tab (there should never be an empty Tab control)
   NewFrame := TEditorFrame.Create(Self);
   NewFrame.TabLink := Tabs;
-  NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
+  NewFrame.Name := 'NewFrame' + IntToStr(AbsCount);
   NewFrame.Align := alClient;
   NewFrame.Editor.Parent := EditorPanel;
   Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
@@ -422,19 +390,23 @@ begin
   AutoMenu.Checked := Prefs.AutoHighlighter;
   // which highlighter is default
   case Prefs.DefHighlighter of
-    HIGHLIGHTER_C: begin
+    HIGHLIGHTER_C:
+    begin
       CMenu.Checked := True;
       CMenuClick(nil);
     end;
-    HIGHLIGHTER_PASCAL: begin
+    HIGHLIGHTER_PASCAL:
+    begin
       PascalMenu.Checked := True;
       PascalMenuClick(Sender);
     end;
-    HIGHLIGHTER_HTML: begin
+    HIGHLIGHTER_HTML:
+    begin
       HTMLMenu.Checked := True;
       HTMLMenuClick(Sender);
     end
-    else begin
+    else
+    begin
       NoneMenu.Checked := True;
       NoneMenuClick(Sender);
     end;
@@ -494,8 +466,10 @@ begin
   MikroStat.Highlighter := '';
   MikroStat.Changed := True;
   MikroStat.Changed := False;
-  MikroStat.InsMode:=False;
+  MikroStat.InsMode := False;
   MikroStat.InsMode := True;
+  // make usermenu things
+  UpdateUserMenu;
   // Update Titlebar, status bar
   UpdateTitlebar;
   ResetChanged;
@@ -523,7 +497,8 @@ procedure TMainWindow.GoToLineMenuClick(Sender: TObject);
 begin
   // Open jump to Line window, (Next to the upper Right side of mainwindow)
   GotoLineWin.Visible := False;
-  GoToLineWin.SetBounds(Max(5, Left + Width - GotoLineWin.Width), Max(5, Top - GoToLineWin.Height div 2), GoToLineWin.Width, GoToLineWin.Height);
+  GoToLineWin.SetBounds(Max(5, Left + Width - GotoLineWin.Width),
+    Max(5, Top - GoToLineWin.Height div 2), GoToLineWin.Width, GoToLineWin.Height);
   GoToLineWin.Show;
 end;
 
@@ -531,8 +506,8 @@ procedure TMainWindow.DestroyTabTimerTimer(Sender: TObject);
 begin
   // Destroy a Tab, via Timer, because we are not allowed to destroy the
   // SynEdit Editor inside one of its Events -> Key press -> Close Tab
-  DestroyTabTimer.Enabled:= False;
-  CloseTabMenuClick(Sender)
+  DestroyTabTimer.Enabled := False;
+  CloseTabMenuClick(Sender);
 end;
 
 procedure TMainWindow.NewTabMenuClick(Sender: TObject);
@@ -560,7 +535,7 @@ end;
 
 procedure TMainWindow.PrefsMenuClick(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
   EdFrame: TEditorFrame;
 begin
   if PrefsWin.ShowModal = mrYes then
@@ -631,11 +606,13 @@ end;
 
 procedure TMainWindow.NewMenuClick(Sender: TObject);
 var
-  Res: Integer;
+  Res: integer;
 begin
   if CurEditor.Modified then
   begin
-    Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data',
+      'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?',
+      mtConfirmation, mbYesNo, 0);
     if Res <> mrYes then
       Exit;
   end;
@@ -648,11 +625,13 @@ end;
 
 procedure TMainWindow.OpenMenuClick(Sender: TObject);
 var
-  Res: Integer;
+  Res: integer;
 begin
   if CurEditor.Modified then
   begin
-    Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data',
+      'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?',
+      mtConfirmation, mbYesNo, 0);
     if Res <> mrYes then
       Exit;
   end;
@@ -660,9 +639,9 @@ begin
   {$ifdef HASAMIGA}
   // Quirk for amiga, or the Filter is just invisible -> better set then the
   // can type an own Filter if needed
-  OpenDialog1.Filter:='#?';
+  OpenDialog1.Filter := '#?';
   {$endif}
-  OpenDialog1.InitialDir:= Prefs.InitialDir;
+  OpenDialog1.InitialDir := Prefs.InitialDir;
   if OpenDialog1.InitialDir = '' then
     OpenDialog1.InitialDir := 'Sys:';
   if OpenDialog1.Execute then
@@ -679,8 +658,13 @@ begin
   begin
     CurEditor.Highlighter := CurFrame.SynCppSyn1;
     ExportMenu.Enabled := True;
-    MikroStat.Highlighter:='C';
+    MikroStat.Highlighter := 'C';
   end;
+end;
+
+procedure TMainWindow.ComOutputMenuClick(Sender: TObject);
+begin
+  OutWindow.Show;
 end;
 
 procedure TMainWindow.AutoMenuClick(Sender: TObject);
@@ -696,11 +680,11 @@ end;
 
 procedure TMainWindow.CloseAllMenuClick(Sender: TObject);
 var
-  i: Integer;
-  Modified: Boolean;
+  i: integer;
+  Modified: boolean;
   CanClose: boolean;
   CanCont: boolean;
-  Res: Integer;
+  Res: integer;
 begin
   // Close everything, first check if at least one is modified
   Modified := False;
@@ -713,7 +697,9 @@ begin
   // ask the user what to do
   if Modified then
   begin
-    Res := MessageDlg('Unsaved Data', 'There are unsaved changes.'#13#10'Do you really want to close all Tabs?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data',
+      'There are unsaved changes.'#13#10'Do you really want to close all Tabs?',
+      mtConfirmation, mbYesNo, 0);
     if Res <> mrYes then
       Exit;
   end;
@@ -757,7 +743,7 @@ begin
   begin
     CurEditor.Highlighter := CurFrame.SynPasSyn1;
     ExportMenu.Enabled := True;
-    MikroStat.Highlighter:='Pas';
+    MikroStat.Highlighter := 'Pas';
   end;
 end;
 
@@ -767,7 +753,7 @@ begin
   begin
     CurEditor.Highlighter := CurFrame.SynHTMLSyn1;
     ExportMenu.Enabled := True;
-    MikroStat.Highlighter:='HTML';
+    MikroStat.Highlighter := 'HTML';
   end;
 end;
 
@@ -785,10 +771,10 @@ end;
 procedure TMainWindow.SaveAsMenuClick(Sender: TObject);
 begin
   // Save as, use the current File+Path as Start
-  SaveDialog1.InitialDir:= ExtractFilePath(CurFrame.Filename);
+  SaveDialog1.InitialDir := ExtractFilePath(CurFrame.Filename);
   if SaveDialog1.InitialDir = '' then
     SaveDialog1.InitialDir := Prefs.InitialDir;
-  SaveDialog1.FileName:= ExtractFileName(CurFrame.Filename);
+  SaveDialog1.FileName := ExtractFileName(CurFrame.Filename);
   // aaaaaand do it
   if SaveDialog1.Execute then
   begin
@@ -810,7 +796,8 @@ begin
     UpdateTitlebar;
     ResetChanged;
     CurEditor.MarkTextAsSaved;
-  end else
+  end
+  else
     SaveAsMenuClick(Sender);
 end;
 
@@ -840,20 +827,21 @@ begin
     6: SearchReplaceWin.SearchBackClick(Sender); // Shift + F3 Search backwards
     7: ReplaceMenuClick(Sender);  // Ctrl + R Replace
     8: NewTabMenuClick(Sender);   // Ctrl + B Open New Tab
-    9: DestroyTabTimer.Enabled:= True; // Ctrl + G Close Tab
+    9: DestroyTabTimer.Enabled := True; // Ctrl + G Close Tab
     10: Tabs.SwitchTab(False);    // Ctrl + Shift + F1 previous Tab
     11: Tabs.SwitchTab(True);     // Ctrl + Shift + F2 next Tab
     12: SearchAllForm.ShowModal;  // Ctrl + Shift + F Search all
   end;
 end;
 
-procedure TMainWindow.SynEdit1ReplaceText(Sender: TObject; const ASearch,
-  AReplace: string; Line, Column: integer; var ReplaceAction: TSynReplaceAction
-  );
+procedure TMainWindow.SynEdit1ReplaceText(Sender: TObject;
+  const ASearch, AReplace: string; Line, Column: integer;
+  var ReplaceAction: TSynReplaceAction);
 var
   Res: TModalResult;
 begin
-  Res := ReplaceReqUnit.ReplaceRequest.StartReq('Replace this occurence by "' + AReplace + '" ?');
+  Res := ReplaceReqUnit.ReplaceRequest.StartReq('Replace this occurence by "' +
+    AReplace + '" ?');
   case Res of
     mrYes: ReplaceAction := raReplace;
     mrYesToAll: ReplaceAction := raReplaceAll;
@@ -862,8 +850,7 @@ begin
   end;
 end;
 
-procedure TMainWindow.SynEdit1StatusChange(Sender: TObject;
-  Changes: TSynStatusChanges);
+procedure TMainWindow.SynEdit1StatusChange(Sender: TObject; Changes: TSynStatusChanges);
 begin
   if CurEditor = Sender then
   begin
@@ -873,7 +860,7 @@ end;
 
 procedure TMainWindow.TabClickEvent(Sender: TObject);
 var
-  i: Integer;
+  i: integer;
   Frame: TEditorFrame;
 begin
   EditorPanel.BeginUpdateBounds;
@@ -888,10 +875,11 @@ begin
     if CurEditor.Highlighter is TSynCppSyn then
       CMenu.Checked := True;
     if CurEditor.Highlighter is TSynHtmlSyn then
-      HTMLMenu.Checked:= True;
+      HTMLMenu.Checked := True;
     if CurEditor.Highlighter is TSynPasSyn then
-      PascalMenu.Checked := True
-  end else
+      PascalMenu.Checked := True;
+  end
+  else
     NoneMenu.Checked := True;
   UpdateStatusBar;
   UpdateTitlebar;
@@ -901,17 +889,19 @@ begin
     Frame.Editor.SetFocus;
 end;
 
-procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: Integer;
+procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: integer;
   var ACanClose, ACanContinue: boolean);
 var
   TabData: TATTabData;
-  Res: Integer;
+  Res: integer;
 begin
   ACanClose := True;
   TabData := Tabs.GetTabData(ATabIndex);
   if TEditorFrame(TabData.TabObject).Editor.Modified then
   begin
-    Res := MessageDlg('Unsaved Data', 'The Text in this Tab is not saved.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+    Res := MessageDlg('Unsaved Data',
+      'The Text in this Tab is not saved.'#13#10'Do you really want to close it?',
+      mtConfirmation, mbYesNo, 0);
     ACanClose := Res = mrYes;
   end;
   if not ACanClose then
@@ -920,7 +910,8 @@ begin
   begin
     if ACanClose then
       TabData.TabObject.Free;
-  end else
+  end
+  else
   begin
     CurEditor.Lines.Clear;
     CurEditor.Modified := False;
@@ -941,11 +932,11 @@ begin
   NewFrame := TEditorFrame.Create(Self);
   NewFrame.Editor.Parent := EditorPanel;
   NewFrame.TabLink := Tabs;
-  NewFrame.Name := 'NewFrame'+IntToStr(AbsCount);
+  NewFrame.Name := 'NewFrame' + IntToStr(AbsCount);
   NewFrame.Align := alClient;
   // Preferences
-  NewFrame.Editor.Gutter.Parts[0].Visible:= Prefs.Bookmarks;
-  NewFrame.Editor.Gutter.Parts[1].Visible:= Prefs.LineNumbers;
+  NewFrame.Editor.Gutter.Parts[0].Visible := Prefs.Bookmarks;
+  NewFrame.Editor.Gutter.Parts[1].Visible := Prefs.LineNumbers;
   // Highlighter
   if PascalMenu.Checked then
     NewFrame.Editor.Highlighter := NewFrame.SynPasSyn1;
@@ -962,7 +953,7 @@ begin
   Tabs.TabIndex := Tabs.TabCount - 1;
 
   EditorPanel.Visible := True;
-  //
+
   NewFrame.Editor.SetFocus;
 
 end;
@@ -982,7 +973,7 @@ end;
 
 procedure TMainWindow.RemakeRecentFiles;
 var
-  i: Integer;
+  i: integer;
   NFile: string;
 begin
   while RecFileList.Count > 10 do
@@ -1001,7 +992,7 @@ end;
 
 procedure TMainWindow.AddNewRecent(Filename: string);
 var
-  Idx: Integer;
+  Idx: integer;
 begin
   if Trim(Filename) <> '' then
   begin
@@ -1016,8 +1007,8 @@ end;
 
 procedure TMainWindow.AutoHighlighter;
 var
-  Ext: String;
-  i: Integer;
+  Ext: string;
+  i: integer;
 begin
   if AutoMenu.Checked then
   begin
@@ -1049,7 +1040,7 @@ begin
         Exit;
       end;
     end;
-    NoneMenu.Checked:=True;
+    NoneMenu.Checked := True;
     NoneMenuClick(NoneMenu);
   end;
 end;
@@ -1057,11 +1048,12 @@ end;
 procedure TMainWindow.UpdateStatusBar;
 begin
   CoordPanel.Caption := IntToStr(CurEditor.CaretX) + ', ' + IntToStr(CurEditor.CaretY);
-  MikroStat.Changed:= CurEditor.Modified;
+  MikroStat.Changed := CurEditor.Modified;
   if CurEditor.Highlighter = nil then
   begin
     MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
-  end else
+  end
+  else
   begin
     if CurEditor.Highlighter is TSynCppSyn then
       MikroStat.Highlighter := 'C';
@@ -1081,7 +1073,8 @@ begin
     Tabs.Invalidate;
   end;
   MikroStat.Invalidate;
-  StatLabel.Caption:= IntToStr(CurEditor.Lines.Count) + ' Lines | ' + IntToStr(Length(CurEditor.Text)) + ' bytes';
+  StatLabel.Caption := IntToStr(CurEditor.Lines.Count) + ' Lines | ' +
+    IntToStr(Length(CurEditor.Text)) + ' bytes';
 end;
 
 procedure TMainWindow.UpdateTitlebar;
@@ -1099,31 +1092,35 @@ end;
 
 procedure TMainWindow.LoadFile(AFileName: string);
 var
-  Res: Integer;
-  i: Integer;
-  KeepSameTab: Boolean;
+  Res: integer;
+  i: integer;
+  KeepSameTab: boolean;
 begin
   if Trim(AFilename) = '' then
     Exit;
   {$ifdef AROS}
-  if Pos(':',AFilename) <= 0 then
+  if Pos(':', AFilename) <= 0 then
     AFilename := IncludeTrailingPathDelimiter(GetCurrentDir) + AFilename;
   {$endif}
   KeepSameTab := False;
   for i := 0 to Tabs.TabCount - 1 do
   begin
-    if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) = lowercase(AFilename) then
+    if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) =
+      lowercase(AFilename) then
     begin
       if i <> Tabs.TabIndex then
       begin
-        Res := MessageDlg('Already open', 'This file is already open in Tab ' + IntToStr(i + 1) + #13#10+ 'Change to this Tab, instead of loading?', mtConfirmation, mbYesNo, 0);
+        Res := MessageDlg('Already open', 'This file is already open in Tab ' +
+          IntToStr(i + 1) + #13#10 + 'Change to this Tab, instead of loading?',
+          mtConfirmation, mbYesNo, 0);
         if Res = mrYes then
         begin
           AddNewRecent(AFilename);
-          Tabs.TabIndex:= i;
+          Tabs.TabIndex := i;
           Exit;
         end;
-      end else
+      end
+      else
         KeepSameTab := True;
     end;
   end;
@@ -1131,11 +1128,14 @@ begin
   begin
     if Length(CurEditor.Lines.Text) > 1 then
       Self.TabPlusClickEvent(nil);
-  end else
+  end
+  else
   begin
     if CurEditor.Modified then
     begin
-      Res := MessageDlg('Unsaved Data', 'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?', mtConfirmation, mbYesNo, 0);
+      Res := MessageDlg('Unsaved Data',
+        'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?',
+        mtConfirmation, mbYesNo, 0);
       if Res <> mrYes then
         Exit;
     end;
@@ -1143,7 +1143,7 @@ begin
   try
     CurEditor.Lines.LoadFromFile(AFilename);
   except
-    Showmessage('Cannot open File: "'+AFilename+'"');
+    ShowMessage('Cannot open File: "' + AFilename + '"');
     Exit;
   end;
   CurFrame.Filename := AFileName;
@@ -1154,7 +1154,7 @@ begin
   Prefs.InitialDir := ExtractFilePath(CurFrame.FileName);
 end;
 
-function TMainWindow.AbsCount: Integer;
+function TMainWindow.AbsCount: integer;
 begin
   Result := FAbsCount;
   Inc(FAbsCount);
@@ -1183,11 +1183,155 @@ begin
   end;
 end;
 
-procedure TMainWindow.HandleExceptions(Sender: TObject; E : Exception);
+procedure TMainWindow.HandleExceptions(Sender: TObject; E: Exception);
 begin
   {$ifdef AROS}
-  DebugLn('Handled Exception: '+ E.Message+ ' in '+ E.UnitName);
+  DebugLn('Handled Exception: ' + E.Message + ' in ' + E.UnitName);
   {$endif}
+end;
+
+procedure TMainWindow.UpdateUserMenu;
+var
+  Men: TMenuItem;
+  i: integer;
+  UCom: TUserCommand;
+begin
+  for i := 0 to UserMenu.ComponentCount - 1 do
+  begin
+    Men := TMenuItem(UserMenu.Components[0]);
+    UserMenu.Remove(Men);
+    UCom := TUserCommand(Men.Tag);
+    UCom.Free;
+    Men.Free;
+  end;
+  i := 0;
+  while True do
+  begin
+    UCom := TUserCommand.Create;
+    Prefs.GetUserCom(i, UCom);
+    if UCom.ComLabel = '' then
+    begin
+      UCom.Free;
+      Exit;
+    end;
+    Men := TMenuItem.Create(UserMenu);
+    Men.Caption := UCom.ComLabel;
+    Men.OnClick := @UserMenuEvent;
+    Men.Tag := PtrUInt(UCom);
+    UserMenu.Add(Men);
+    Inc(i);
+  end;
+end;
+
+{$undef IMPLEMENTPROCCESS}
+
+procedure TMainWindow.UserMenuEvent(Sender: TObject);
+var
+  Men: TMenuItem;
+  UCom: TUserCommand;
+  Params: string;
+  Dir: string;
+  OldDir: string;
+  {$ifdef Linux}
+  AProcess: TProcess;
+  {$define IMPLEMENTPROCCESS}
+  {$endif}
+  {$ifdef HASAMIGA}
+  PrgStarter: TAROSPrgStarter;
+  {$define IMPLEMENTPROCCESS}
+  {$endif}
+
+  {$ifndef IMPLEMENTPROCCESS}
+    {$FATAL Implement process for this platform}
+  {$endif}
+
+begin
+  if Sender is TMenuItem then
+  begin
+    Men := TMenuItem(Sender);
+    UCom := TUserCommand(Men.Tag);
+    if (UCom.ComLabel = '-') or (UCom.Command = '') then
+      Exit;
+    Params := ReplaceFilePat(UCom.Parameter);
+    Dir := ReplaceFilePat(UCom.Path);
+    OldDir := '';
+    if Dir <> '' then
+    begin
+      OldDir := GetCurrentDir;
+      SetCurrentDir(Dir);
+    end;
+    case UCom.StartModus of
+      0: begin
+        {$ifdef HASAMIGA}
+        ExecuteProcess('c:run', UCom.Command + ' ' + Params);
+        {$endif}
+        {$ifdef linux}
+        AProcess := TProcess.Create(nil);
+        AProcess.Commandline := UCom.Command + ' ' + Params;
+        AProcess.Options := AProcess.Options - [poWaitOnExit] + [poNewConsole];
+        AProcess.Execute;
+        AProcess.Free;
+        {$endif}
+      end;
+      1: begin
+        ExecuteProcess(UCom.Command, Params);
+      end;
+      2: begin
+        OutWindow.Show;
+        {$ifdef linux}
+        OutWindow.OutList.Visible := True;
+        OutWindow.OutMemo.Visible := False;
+        AProcess := TProcess.Create(nil);
+        AProcess.Commandline := UCom.Command + ' ' + Params;
+        AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+        AProcess.Execute;
+        OutWindow.OutList.Items.LoadFromStream(AProcess.Output);
+        AProcess.Free;
+        {$endif}
+        {$ifdef HASAMIGA}
+        OutWindow.CaptureMode := UCom.CaptureModus;
+        OutWindow.FPath := Trim(ExtractFilePath(UCom.Command));
+        if OutWindow.FPath = '' then
+          OutWindow.FPath := Trim(ExtractFilePath(CurFrame.Filename));
+        OutWindow.OutList.Visible := False;
+        OutWindow.OutMemo.Visible := True;
+        PrgStarter := TAROSPrgStarter.Create;
+        PrgStarter.ErrAsOutput := UCom.CaptureModus = 1;
+        PrgStarter.FStackSize := Min(4096, UCom.Stack);
+        PrgStarter.OnUpdate := @UpdateOutputEvent;
+        PrgStarter.StartUp(UCom.Command, Params, OutWindow.OutMemo.Lines);
+        PrgStarter.Free;
+        OutWindow.OutList.Items.Assign(OutWindow.OutMemo.Lines);
+        OutWindow.BeautifyIt;
+        OutWindow.OutList.ItemIndex := OutWindow.OutList.Count - 1;
+        OutWindow.OutMemo.Visible := False;
+        OutWindow.OutList.Visible := True;
+        {$endif}
+      end;
+    end;
+    if Dir <> '' then
+    begin
+      SetCurrentDir(OldDir);
+    end;
+  end;
+end;
+
+function TMainWindow.ReplaceFilePat(Base: string): string;
+var
+  FN: string;
+begin
+  FN := CurFrame.Filename;
+  Result := StringReplace(Base, FILEPATTERN, ExtractFileName(FN), [rfReplaceAll]);
+  Result := StringReplace(Result, FILEwPathPATTERN, FN, [rfReplaceAll]);
+  Result := StringReplace(Result, FILEwExtPATTERN, ExtractFileNameWithoutExt(ExtractFileName(FN)), [rfReplaceAll]);
+  Result := StringReplace(Result, FILEwExtwPathPATTERN, ExtractFileNameWithoutExt(FN), [rfReplaceAll]);
+  Result := StringReplace(Result, PATHPATTERN, ExtractFilePath(FN), [rfReplaceAll]);
+end;
+
+procedure TMainWindow.UpdateOutputEvent(Sender: TObject);
+begin
+  OutWindow.OutMemo.CaretY := OutWindow.OutMemo.Lines.Count;
+  application.ProcessMessages;
 end;
 
 end.

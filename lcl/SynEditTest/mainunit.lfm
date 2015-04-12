@@ -1,7 +1,7 @@
 object MainWindow: TMainWindow
-  Left = 62
+  Left = 25
   Height = 514
-  Top = 300
+  Top = 499
   Width = 801
   Caption = 'MainWindow'
   ClientHeight = 491
@@ -258,6 +258,10 @@ object MainWindow: TMainWindow
           Caption = 'Search All Results'
           OnClick = SearchAllWindowMenuClick
         end
+        object ComOutputMenu: TMenuItem
+          Caption = 'User Command Output'
+          OnClick = ComOutputMenuClick
+        end
       end
       object PrefsMenu: TMenuItem
         Caption = 'Preferences'
@@ -313,6 +317,9 @@ object MainWindow: TMainWindow
         ShowAlwaysCheckable = True
         OnClick = AutoMenuClick
       end
+    end
+    object UserMenu: TMenuItem
+      Caption = 'User'
     end
     object AboutMainMenu: TMenuItem
       Caption = 'About'

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterCpp, SynHighlighterPas,
-  SynHighlighterHTML, Forms, Controls, ATTabs;
+  SynHighlighterHTML, Forms, Controls, ATTabs, menus;
 
 type
 
@@ -17,6 +17,7 @@ type
     Editor: TSynEdit;
     SynHTMLSyn1: TSynHTMLSyn;
     SynPasSyn1: TSynPasSyn;
+    procedure EditorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FFilename: string;
     procedure SetFileName(AValue: string);
@@ -29,9 +30,37 @@ type
 implementation
 
 uses
-  MainUnit, PrefsWinUnit;
+  MainUnit, PrefsWinUnit, PrefsUnit;
 
 { TEditorFrame }
+
+procedure TEditorFrame.EditorKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  MI: TMenuItem;
+  UCom: TUserCommand;
+  kKey: Word;
+  kShift: TShiftState;
+  i: Integer;
+begin
+  for i := 0 to MainWindow.UserMenu.ComponentCount - 1 do
+  begin
+    if MainWindow.UserMenu.Components[i] is TMenuItem then
+    begin
+      MI := MainWindow.UserMenu.Components[i] as TMenuItem;
+      UCom := TUserCommand(MI.Tag);
+      if UCom.ShortCut <> 0 then
+      begin
+        ShortCutToKey(UCom.ShortCut, kKey, kShift);
+        if (Key = kKey) and (Shift = kShift) then
+        begin
+          MainWindow.UserMenuEvent(MI);
+          Key := 0;
+        end;
+      end;
+    end;
+  end;
+end;
 
 procedure TEditorFrame.SetFileName(AValue: string);
 var

@@ -1,12 +1,12 @@
 object PrefsWin: TPrefsWin
-  Left = 196
-  Height = 331
-  Top = 73
-  Width = 524
+  Left = 52
+  Height = 398
+  Top = 86
+  Width = 691
   BorderStyle = bsDialog
   Caption = 'PrefsWin'
-  ClientHeight = 331
-  ClientWidth = 524
+  ClientHeight = 398
+  ClientWidth = 691
   Color = 16578029
   Constraints.MinHeight = 331
   Constraints.MinWidth = 524
@@ -15,9 +15,9 @@ object PrefsWin: TPrefsWin
   LCLVersion = '1.0.10.0'
   object Pages: TPageControl
     Left = 0
-    Height = 289
+    Height = 356
     Top = 0
-    Width = 524
+    Width = 691
     ActivePage = KeyPage
     Align = alClient
     ShowTabs = False
@@ -25,8 +25,8 @@ object PrefsWin: TPrefsWin
     TabOrder = 0
     object EditorTab: TTabSheet
       Caption = 'Editor'
-      ClientHeight = 285
-      ClientWidth = 520
+      ClientHeight = 352
+      ClientWidth = 687
       object TABPanel: TGroupBox
         Left = 2
         Height = 128
@@ -326,8 +326,8 @@ object PrefsWin: TPrefsWin
     end
     object HighLightTab: TTabSheet
       Caption = 'Colors'
-      ClientHeight = 285
-      ClientWidth = 520
+      ClientHeight = 352
+      ClientWidth = 687
       object Label10: TLabel
         Left = 6
         Height = 18
@@ -366,7 +366,7 @@ object PrefsWin: TPrefsWin
       end
       object LangSelection: TComboBox
         Left = 6
-        Height = 31
+        Height = 27
         Top = 78
         Width = 118
         ItemHeight = 0
@@ -390,20 +390,20 @@ object PrefsWin: TPrefsWin
         TabOrder = 1
       end
       object Panel1: TPanel
-        Left = 134
-        Height = 285
+        Left = 142
+        Height = 352
         Top = 0
-        Width = 386
+        Width = 545
         Align = alRight
-        ClientHeight = 285
-        ClientWidth = 386
+        ClientHeight = 352
+        ClientWidth = 545
         TabOrder = 2
         inline SynEdit1: TSynEdit
           Cursor = crDefault
           Left = 1
-          Height = 283
+          Height = 350
           Top = 1
-          Width = 384
+          Width = 543
           Align = alClient
           Font.Color = clBlack
           Font.Height = -15
@@ -1055,23 +1055,23 @@ object PrefsWin: TPrefsWin
     end
     object KeyPage: TTabSheet
       Caption = 'Keys'
-      ClientHeight = 285
-      ClientWidth = 520
+      ClientHeight = 352
+      ClientWidth = 687
       object Panel2: TPanel
         Left = 0
-        Height = 158
+        Height = 220
         Top = 0
-        Width = 520
+        Width = 687
         Align = alTop
         Caption = 'Panel2'
-        ClientHeight = 158
-        ClientWidth = 520
+        ClientHeight = 220
+        ClientWidth = 687
         TabOrder = 0
         object KeyListEdit: TValueListEditor
           Left = 6
-          Height = 146
+          Height = 208
           Top = 6
-          Width = 508
+          Width = 675
           Align = alClient
           AlternateColor = 16771798
           AutoEdit = False
@@ -1090,26 +1090,26 @@ object PrefsWin: TPrefsWin
           )
           ColWidths = (
             253
-            253
+            420
           )
         end
       end
       object KeyPAnel: TPanel
         Left = 0
         Height = 88
-        Top = 158
-        Width = 520
+        Top = 220
+        Width = 687
         Align = alTop
         BevelInner = bvRaised
         BevelOuter = bvLowered
         ClientHeight = 88
-        ClientWidth = 520
+        ClientWidth = 687
         TabOrder = 1
         object KeyBox: TPanel
           Left = 2
           Height = 20
           Top = 2
-          Width = 516
+          Width = 683
           Align = alTop
           BevelOuter = bvNone
           Caption = 'Command'
@@ -1122,11 +1122,11 @@ object PrefsWin: TPrefsWin
           Left = 2
           Height = 24
           Top = 62
-          Width = 516
+          Width = 683
           Align = alBottom
           BevelOuter = bvNone
           ClientHeight = 24
-          ClientWidth = 516
+          ClientWidth = 683
           TabOrder = 1
           object AcceptButton: TButton
             Left = 2
@@ -1149,19 +1149,284 @@ object PrefsWin: TPrefsWin
         end
       end
     end
+    object ProgTab: TTabSheet
+      Caption = 'Programs'
+      ClientHeight = 352
+      ClientWidth = 687
+      object ComListPanel: TGroupBox
+        Left = 0
+        Height = 352
+        Top = 0
+        Width = 174
+        Align = alLeft
+        Caption = 'Commands'
+        ClientHeight = 333
+        ClientWidth = 170
+        TabOrder = 0
+        object UserComList: TListBox
+          Left = 0
+          Height = 236
+          Top = 1
+          Width = 164
+          ItemHeight = 0
+          OnDblClick = UserComListDblClick
+          ScrollWidth = 162
+          TabOrder = 0
+          TopIndex = -1
+        end
+        object EditButton: TButton
+          Left = 5
+          Height = 25
+          Top = 270
+          Width = 75
+          Caption = 'Edit'
+          OnClick = EditButtonClick
+          TabOrder = 1
+        end
+        object RemoveCom: TButton
+          Left = 86
+          Height = 25
+          Top = 243
+          Width = 75
+          Caption = 'Remove'
+          OnClick = RemoveComClick
+          TabOrder = 2
+        end
+        object NewCom: TButton
+          Left = 5
+          Height = 25
+          Top = 243
+          Width = 75
+          Caption = 'New'
+          OnClick = NewComClick
+          TabOrder = 3
+        end
+      end
+      object ComPanel: TGroupBox
+        Left = 174
+        Height = 352
+        Top = 0
+        Width = 513
+        Align = alClient
+        Caption = 'Commands Settings'
+        ClientHeight = 333
+        ClientWidth = 509
+        Enabled = False
+        TabOrder = 1
+        object GroupBox1: TGroupBox
+          Left = 5
+          Height = 93
+          Top = 120
+          Width = 496
+          Caption = '  StartModus  '
+          ClientHeight = 74
+          ClientWidth = 492
+          TabOrder = 0
+          object ChooseStartForget: TRadioButton
+            Left = 6
+            Height = 24
+            Top = -1
+            Width = 134
+            Caption = 'Start and forget'
+            Checked = True
+            TabOrder = 2
+            TabStop = True
+          end
+          object ChooseWait: TRadioButton
+            Left = 6
+            Height = 24
+            Top = 24
+            Width = 121
+            Caption = 'Wait for finish'
+            TabOrder = 0
+          end
+          object ChooseCaptureOut: TRadioButton
+            Left = 6
+            Height = 24
+            Top = 48
+            Width = 238
+            Caption = 'Capture Output EXPERIMENTAL'
+            TabOrder = 1
+          end
+          object ChooseCaptureMode: TComboBox
+            Left = 248
+            Height = 27
+            Top = 45
+            Width = 234
+            ItemHeight = 0
+            ItemIndex = 0
+            Items.Strings = (
+              'Freepascal messages'
+              'GCC messages'
+            )
+            Style = csDropDownList
+            TabOrder = 3
+            Text = 'Freepascal messages'
+          end
+          object Label25: TLabel
+            Left = 223
+            Height = 18
+            Top = 17
+            Width = 86
+            Caption = 'Stacksize:      '
+            ParentColor = False
+          end
+          object SpinStack: TSpinEdit
+            Left = 301
+            Height = 27
+            Top = 12
+            Width = 128
+            MaxValue = 10000000
+            MinValue = 4096
+            TabOrder = 4
+            Value = 1024000
+          end
+          object Label27: TLabel
+            Left = 437
+            Height = 18
+            Top = 17
+            Width = 50
+            Caption = 'bytes    '
+            ParentColor = False
+          end
+        end
+        object ParamHelp: TComboBox
+          Left = 295
+          Height = 31
+          Top = 58
+          Width = 206
+          ItemHeight = 0
+          Items.Strings = (
+            '{$f}  Filename'
+            '{$F}  Filename w Path'
+            '{$e}  Filename wo Extension'
+            '{$E}  Filename wo Ext w Path'
+            '{$p}  Path of file'
+          )
+          OnChange = ParamHelpClick
+          Style = csDropDownList
+          TabOrder = 1
+        end
+        object Label22: TLabel
+          Left = 0
+          Height = 18
+          Top = 6
+          Width = 38
+          Caption = 'Label'
+          ParentColor = False
+        end
+        object ProgLabel: TEdit
+          Left = 79
+          Height = 27
+          Top = 1
+          Width = 134
+          TabOrder = 2
+          Text = 'ProgLabel'
+        end
+        object Label23: TLabel
+          Left = 0
+          Height = 18
+          Top = 35
+          Width = 70
+          Caption = 'Command'
+          ParentColor = False
+        end
+        object Label24: TLabel
+          Left = 0
+          Height = 18
+          Top = 66
+          Width = 73
+          Caption = 'Parameter'
+          ParentColor = False
+        end
+        object ParamEdit: TEdit
+          Left = 79
+          Height = 27
+          Top = 61
+          Width = 211
+          TabOrder = 3
+        end
+        object AcceptCom: TButton
+          Left = 8
+          Height = 25
+          Top = 270
+          Width = 75
+          Caption = 'Accept'
+          OnClick = AcceptComClick
+          TabOrder = 4
+        end
+        object CancelComButton: TButton
+          Left = 88
+          Height = 25
+          Top = 270
+          Width = 75
+          Caption = 'Cancel'
+          OnClick = CancelComButtonClick
+          TabOrder = 5
+        end
+        object Label26: TLabel
+          Left = 0
+          Height = 18
+          Top = 94
+          Width = 64
+          Caption = 'Directory'
+          ParentColor = False
+        end
+        object CommandEdit: TEdit
+          Left = 79
+          Height = 27
+          Top = 30
+          Width = 343
+          TabOrder = 6
+        end
+        object DirEdit: TEdit
+          Left = 79
+          Height = 27
+          Top = 89
+          Width = 343
+          TabOrder = 7
+        end
+        object BrowseComButton: TButton
+          Left = 426
+          Height = 27
+          Top = 30
+          Width = 75
+          Caption = 'Browse'
+          OnClick = BrowseComButtonClick
+          TabOrder = 8
+        end
+        object BrowseDirButton: TButton
+          Left = 426
+          Height = 27
+          Top = 89
+          Width = 75
+          Caption = 'Browse'
+          OnClick = BrowseDirButtonClick
+          TabOrder = 9
+        end
+        object ComShortCutPanel: TPanel
+          Left = 5
+          Height = 50
+          Top = 218
+          Width = 496
+          BevelOuter = bvNone
+          TabOrder = 10
+        end
+      end
+    end
   end
   object Panel3: TPanel
     Left = 0
     Height = 42
-    Top = 289
-    Width = 524
+    Top = 356
+    Width = 691
     Align = alBottom
     BevelInner = bvLowered
     ClientHeight = 42
-    ClientWidth = 524
+    ClientWidth = 691
     TabOrder = 1
     object CancelButton: TButton
-      Left = 432
+      Left = 601
       Height = 25
       Top = 7
       Width = 75
@@ -1170,7 +1435,7 @@ object PrefsWin: TPrefsWin
       TabOrder = 0
     end
     object OkButton: TButton
-      Left = 352
+      Left = 521
       Height = 25
       Top = 7
       Width = 75
@@ -1202,8 +1467,8 @@ object PrefsWin: TPrefsWin
     StringAttri.FrameEdges = sfeAround
     SymbolAttri.Foreground = clTeal
     SymbolAttri.FrameEdges = sfeAround
-    left = 346
-    top = 238
+    left = 16
+    top = 360
   end
   object SynPasSyn1: TSynPasSyn
     Enabled = False
@@ -1226,8 +1491,8 @@ object PrefsWin: TPrefsWin
     DirectiveAttri.FrameEdges = sfeAround
     CompilerMode = pcmDelphi
     NestedComments = False
-    left = 438
-    top = 238
+    left = 96
+    top = 360
   end
   object SynHTMLSyn1: TSynHTMLSyn
     DefaultFilter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
@@ -1246,7 +1511,15 @@ object PrefsWin: TPrefsWin
     TextAttri.FrameEdges = sfeAround
     UndefKeyAttri.FrameEdges = sfeAround
     ValueAttri.FrameEdges = sfeAround
-    left = 256
-    top = 240
+    left = 56
+    top = 360
+  end
+  object OpenDialog1: TOpenDialog
+    left = 160
+    top = 360
+  end
+  object SelectDirectoryDialog1: TSelectDirectoryDialog
+    left = 216
+    top = 360
   end
 end

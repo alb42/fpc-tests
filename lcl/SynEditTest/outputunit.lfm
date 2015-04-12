@@ -1,37 +1,50 @@
-object EditorFrame: TEditorFrame
-  Left = 0
-  Height = 130
-  Top = 0
-  Width = 191
-  ClientHeight = 130
-  ClientWidth = 191
-  TabOrder = 0
-  Visible = False
-  DesignLeft = 52
-  DesignTop = 126
-  inline Editor: TSynEdit
-    Cursor = crDefault
+object OutWindow: TOutWindow
+  Left = 31
+  Height = 200
+  Top = 492
+  Width = 745
+  Caption = 'OutputWindow'
+  ClientHeight = 200
+  ClientWidth = 745
+  Color = 16578029
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  LCLVersion = '1.0.10.0'
+  object OutList: TListBox
     Left = 0
-    Height = 130
+    Height = 200
     Top = 0
-    Width = 191
+    Width = 745
     Align = alClient
-    Font.Color = clBlack
-    Font.Height = -15
-    Font.Name = 'Courier'
+    Color = 16578029
+    ItemHeight = 0
+    OnDblClick = OutListDblClick
+    ScrollWidth = 743
+    Style = lbVirtual
+    TabOrder = 0
+    TopIndex = -1
+  end
+  inline OutMemo: TSynMemo
+    Cursor = crIBeam
+    Left = 0
+    Height = 200
+    Top = 0
+    Width = 745
+    Align = alClient
+    Color = 16578029
+    Font.Height = -13
+    Font.Name = 'Courier New'
     Font.Pitch = fpFixed
     Font.Quality = fqNonAntialiased
     ParentColor = False
     ParentFont = False
-    TabOrder = 0
-    OnKeyDown = EditorKeyDown
-    BorderStyle = bsNone
-    Gutter.Color = 16578029
-    Gutter.Width = 59
+    TabOrder = 1
+    Gutter.Visible = False
+    Gutter.Width = 57
     Gutter.MouseActions = <>
-    RightGutter.Visible = False
-    RightGutter.Width = 0
-    RightGutter.MouseActions = <>
     Keystrokes = <    
       item
         Command = ecUp
@@ -290,43 +303,43 @@ object EditorFrame: TEditorFrame
         ShortCut = 16441
       end    
       item
-        Command = ecToggleMarker0
+        Command = ecSetMarker0
         ShortCut = 24624
       end    
       item
-        Command = ecToggleMarker1
+        Command = ecSetMarker1
         ShortCut = 24625
       end    
       item
-        Command = ecToggleMarker2
+        Command = ecSetMarker2
         ShortCut = 24626
       end    
       item
-        Command = ecToggleMarker3
+        Command = ecSetMarker3
         ShortCut = 24627
       end    
       item
-        Command = ecToggleMarker4
+        Command = ecSetMarker4
         ShortCut = 24628
       end    
       item
-        Command = ecToggleMarker5
+        Command = ecSetMarker5
         ShortCut = 24629
       end    
       item
-        Command = ecToggleMarker6
+        Command = ecSetMarker6
         ShortCut = 24630
       end    
       item
-        Command = ecToggleMarker7
+        Command = ecSetMarker7
         ShortCut = 24631
       end    
       item
-        Command = ecToggleMarker8
+        Command = ecSetMarker8
         ShortCut = 24632
       end    
       item
-        Command = ecToggleMarker9
+        Command = ecSetMarker9
         ShortCut = 24633
       end    
       item
@@ -452,98 +465,32 @@ object EditorFrame: TEditorFrame
       item
         Command = ecColSelEditorBottom
         ShortCut = 57379
-      end    
-      item
-        Command = ecUserDefined0
-        ShortCut = 16457
-      end    
-      item
-        Command = ecUserDefined1
-        ShortCut = 16467
-      end    
-      item
-        Command = ecUserDefined2
-        ShortCut = 16463
-      end    
-      item
-        Command = ecUserDefined3
-        ShortCut = 16471
-      end    
-      item
-        Command = ecUserDefined4
-        ShortCut = 16454
-      end    
-      item
-        Command = ecUserDefined5
-        ShortCut = 114
-      end    
-      item
-        Command = ecUserDefined6
-        ShortCut = 8306
-      end    
-      item
-        Command = ecUserDefined7
-        ShortCut = 16466
-      end    
-      item
-        Command = ecUserDefined8
-        ShortCut = 16450
-      end    
-      item
-        Command = ecUserDefined9
-        ShortCut = 16455
-      end    
-      item
-        Command = ecUserDefined10
-        ShortCut = 24688
-      end    
-      item
-        Command = ecUserDefined11
-        ShortCut = 24689
-      end    
-      item
-        Command = ecUserDefined12
-        ShortCut = 24646
       end>
     MouseActions = <>
     MouseSelActions = <>
     Lines.Strings = (
       ''
     )
-    MaxLeftChar = 80
-    Options = [eoAutoIndent, eoBracketHighlight, eoEnhanceHomeKey, eoGroupUndo, eoKeepCaretX, eoScrollPastEol, eoSmartTabs, eoTabIndent, eoTabsToSpaces, eoTrimTrailingSpaces, eoAltSetsColumnMode, eoDragDropEditing]
-    Options2 = [eoAlwaysVisibleCaret, eoEnhanceEndKey, eoFoldedCopyPaste, eoOverwriteBlock]
-    MouseOptions = [emAltSetsColumnMode, emDragDropEditing]
-    VisibleSpecialChars = [vscSpace, vscTabAtLast]
+    Options = [eoGroupUndo, eoNoSelection, eoScrollPastEol, eoSmartTabs, eoTabsToSpaces, eoTrimTrailingSpaces]
+    ReadOnly = True
     SelectedColor.BackPriority = 50
     SelectedColor.ForePriority = 50
     SelectedColor.FramePriority = 50
     SelectedColor.BoldPriority = 50
     SelectedColor.ItalicPriority = 50
     SelectedColor.UnderlinePriority = 50
-    BracketHighlightStyle = sbhsBoth
-    BracketMatchColor.Background = clYellow
-    BracketMatchColor.Foreground = clNone
-    BracketMatchColor.Style = [fsBold]
-    FoldedCodeColor.Background = clNone
-    FoldedCodeColor.Foreground = clGray
-    FoldedCodeColor.FrameColor = clGray
-    MouseLinkColor.Background = clNone
-    MouseLinkColor.Foreground = clBlue
-    LineHighlightColor.Background = clNone
-    LineHighlightColor.Foreground = clNone
     inline SynLeftGutterPartList1: TSynGutterPartList
       object SynGutterMarks1: TSynGutterMarks
         Width = 24
         MouseActions = <>
       end
       object SynGutterLineNumber1: TSynGutterLineNumber
-        Width = 19
+        Width = 17
         MouseActions = <>
-        MarkupInfo.Background = 16578029
+        MarkupInfo.Background = clBtnFace
         MarkupInfo.Foreground = clNone
         DigitCount = 2
-        ShowOnlyLineNumbersMultiplesOf = 5
+        ShowOnlyLineNumbersMultiplesOf = 1
         ZeroStart = False
         LeadingZeros = False
       end
@@ -567,75 +514,5 @@ object EditorFrame: TEditorFrame
         MouseActionsCollapsed = <>
       end
     end
-  end
-  object SynCppSyn1: TSynCppSyn
-    DefaultFilter = 'C++-Quelltexte (*.c,*.cpp,*.h,*.hpp,*.hh)|*.c;*.cpp;*.h;*.hpp;*.hh'
-    Enabled = False
-    AsmAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    DirecAttri.Foreground = clMaroon
-    DirecAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clBlack
-    IdentifierAttri.FrameEdges = sfeAround
-    InvalidAttri.Foreground = clRed
-    InvalidAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    KeyAttri.Style = []
-    NumberAttri.Foreground = clOlive
-    NumberAttri.FrameEdges = sfeAround
-    SpaceAttri.Foreground = clTeal
-    SpaceAttri.FrameEdges = sfeAround
-    StringAttri.Foreground = clNavy
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.Foreground = clTeal
-    SymbolAttri.FrameEdges = sfeAround
-    left = 16
-    top = 8
-  end
-  object SynPasSyn1: TSynPasSyn
-    Enabled = False
-    AsmAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    IDEDirectiveAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clBlack
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    NumberAttri.Foreground = clTeal
-    NumberAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    StringAttri.Foreground = clPurple
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.FrameEdges = sfeAround
-    CaseLabelAttri.FrameEdges = sfeAround
-    DirectiveAttri.Foreground = clRed
-    DirectiveAttri.FrameEdges = sfeAround
-    CompilerMode = pcmDelphi
-    NestedComments = False
-    left = 72
-    top = 8
-  end
-  object SynHTMLSyn1: TSynHTMLSyn
-    DefaultFilter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
-    Enabled = False
-    AndAttri.FrameEdges = sfeAround
-    ASPAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clTeal
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    SymbolAttri.Foreground = clNavy
-    SymbolAttri.FrameEdges = sfeAround
-    TextAttri.FrameEdges = sfeAround
-    UndefKeyAttri.FrameEdges = sfeAround
-    ValueAttri.FrameEdges = sfeAround
-    left = 8
-    top = 56
   end
 end

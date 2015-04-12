@@ -9,8 +9,7 @@ uses
   {$ifdef HASAMIGA}
   Workbench, muiformsunit,
   {$endif}
-  ATTabs, fgl, SynEdit, FrameUnit, MainUnit;
-
+  ATTabs, fgl, SynEdit, FrameUnit, MainUnit, Contnrs;
 type
   TSearchResult = class
     Frame: TEditorFrame;
@@ -20,7 +19,7 @@ type
     Filename: string;
   end;
 
-  TResultList = specialize TFPGObjectList<TSearchResult>;
+  TResultList = TObjectList;
 
   { TSearchResultsWin }
 
@@ -200,7 +199,7 @@ begin
   ResultList := TResultList(ResultTabs.GetTabData(ResultTabs.TabIndex).TabObject);
   for i := 0 to ResultList.Count - 1 do
   begin
-    SResult := ResultList.Items[i];
+    SResult := TSearchResult(ResultList.Items[i]);
     if Assigned(SResult.Frame) then
     begin
       TabIdx := TabNumByFrame(SResult.Frame);
