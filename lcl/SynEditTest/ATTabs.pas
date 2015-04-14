@@ -538,7 +538,11 @@ begin
 
   Font.Name:= 'Tahoma';
   Font.Color:= $E0E0E0;
+  {$ifdef HASAMIGA}
+  Font.Size:= 13;
+  {$else}
   Font.Size:= 8;
+  {$endif}
 
   FTabIndex:= 0;
   FTabIndexOver:= -1;

@@ -68,7 +68,6 @@ type
     procedure RHToggleChange(Sender: TObject);
   private
     ReplaceHist: TStringList;
-    SearchString: string;
     ReplaceString: string;
     SearchSett: TSynSearchOptions;
     ReplaceMode: Boolean;
@@ -76,6 +75,7 @@ type
     procedure GetSearchSettings;
     procedure MyBeep;
   public
+    SearchString: string;
     SearchHist: TStringList;
     procedure StartReq(AsReplace: Boolean);
   end;
@@ -138,6 +138,7 @@ begin
     ResultPanel.Caption:= 'Nothing found';
     Show;
   end;
+  MainWindow.CurEditor.SetHighlightSearch(SearchString, SearchSett);
   if SHToggle.Checked or (not RHToggle.Enabled) then
     HistoryBox.Items.Assign(SearchHist)
   else
@@ -220,6 +221,7 @@ begin
   Res := MainWindow.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoFindContinue]);
   if Res <= 0 then
     MyBeep;
+  MainWindow.CurEditor.SetHighlightSearch(SearchString, SearchSett);
 end;
 
 procedure TSearchReplaceWin.HistoryBoxDblClick(Sender: TObject);
@@ -298,6 +300,7 @@ procedure TSearchReplaceWin.SearchBackClick(Sender: TObject);
 begin
   if MainWindow.CurEditor.SearchReplace(SearchString, '', SearchSett + [ssoBackwards,ssoFindContinue]) <= 0 then
     MyBeep;
+  MainWindow.CurEditor.SetHighlightSearch(SearchString, SearchSett);
 end;
 
 procedure TSearchReplaceWin.StartReq(AsReplace: Boolean);

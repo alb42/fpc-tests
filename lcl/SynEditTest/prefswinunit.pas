@@ -108,6 +108,7 @@ type
     BrowseComButton: TButton;
     BrowseDirButton: TButton;
     CancelComButton: TButton;
+    TextBold: TCheckBox;
     CommandEdit: TEdit;
     DirEdit: TEdit;
     EditButton: TButton;
@@ -136,6 +137,8 @@ type
     Label24: TLabel;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     SpinStack: TSpinEdit;
+    TextItalic: TCheckBox;
+    TextUnderline: TCheckBox;
     UserComList: TListBox;
     Panel2: TPanel;
     KeyBox: TPanel;
@@ -223,6 +226,7 @@ type
     procedure OkButtonClick(Sender: TObject);
     procedure ParamHelpClick(Sender: TObject);
     procedure RemoveComClick(Sender: TObject);
+    procedure SynEdit1DblClick(Sender: TObject);
     procedure SyntaxItemsChange(Sender: TObject);
     procedure UserComListDblClick(Sender: TObject);
     procedure UseTextColClick(Sender: TObject);
@@ -244,6 +248,9 @@ type
   end;
 
 var
+  CAtts: array[0..9] of TSynHighlighterAttributes;
+  PasAtts: array[0..10] of TSynHighlighterAttributes;
+  HTMLAtts: array[0..9] of TSynHighlighterAttributes;
   PrefsWin: TPrefsWin;
   PasPrefsName: string;
   CPrefsName: string;
@@ -342,6 +349,40 @@ procedure TPrefsWin.FormCreate(Sender: TObject);
 var
   i: Integer;
 begin
+  CAtts[0] := SynCppSyn1.AsmAttri;
+  CAtts[1] := SynCppSyn1.CommentAttri;
+  CAtts[2] := SynCppSyn1.DirecAttri;
+  CAtts[3] := SynCppSyn1.IdentifierAttri;
+  CAtts[4] := SynCppSyn1.InvalidAttri;
+  CAtts[5] := SynCppSyn1.KeyAttri;
+  CAtts[6] := SynCppSyn1.NumberAttri;
+  CAtts[7] := SynCppSyn1.SpaceAttri;
+  CAtts[8] := SynCppSyn1.StringAttri;
+  CAtts[9] := SynCppSyn1.SymbolAttri;
+
+  PasAtts[0] := SynPasSyn1.AsmAttri;
+  PasAtts[1] := SynPasSyn1.CaseLabelAttri;
+  PasAtts[2] := SynPasSyn1.CommentAttri;
+  PasAtts[3] := SynPasSyn1.DirectiveAttri;
+  PasAtts[4] := SynPasSyn1.IDEDirectiveAttri;
+  PasAtts[5] := SynPasSyn1.IdentifierAttri;
+  PasAtts[6] := SynPasSyn1.KeyAttri;
+  PasAtts[7] := SynPasSyn1.NumberAttri;
+  PasAtts[8] := SynPasSyn1.SpaceAttri;
+  PasAtts[9] := SynPasSyn1.StringAttri;
+  PasAtts[10] := SynPasSyn1.SymbolAttri;
+
+  HTMLAtts[0] := SynHTMLSyn1.AndAttri;
+  HTMLAtts[1] := SynHTMLSyn1.ASPAttri;
+  HTMLAtts[2] := SynHTMLSyn1.CommentAttri;
+  HTMLAtts[3] := SynHTMLSyn1.IdentifierAttri;
+  HTMLAtts[4] := SynHTMLSyn1.KeyAttri;
+  HTMLAtts[5] := SynHTMLSyn1.SpaceAttri;
+  HTMLAtts[6] := SynHTMLSyn1.SymbolAttri;
+  HTMLAtts[7] := SynHTMLSyn1.TextAttri;
+  HTMLAtts[8] := SynHTMLSyn1.UndefKeyAttri;
+  HTMLAtts[9] := SynHTMLSyn1.ValueAttri;
+
   CurRow := -1;
   Key1Box:=TCustomShortCutGrabBox.Create(Self);
   with Key1Box do begin
@@ -696,6 +737,53 @@ begin
   end;
 end;
 
+procedure TPrefsWin.SynEdit1DblClick(Sender: TObject);
+var
+  Att: TSynHighlighterAttributes;
+  token: string;
+  i: Integer;
+begin
+  //
+ if SynEdit1.GetHighlighterAttriAtRowCol(SynEdit1.CaretXY, token, Att) then
+ begin
+   case LangSelection.ItemIndex of
+    0: begin
+      for i := 0 to High(CAtts) do
+      begin
+        if Att = CAtts[i] then
+        begin
+          SyntaxItems.ItemIndex := i;
+          SyntaxItemsChange(SyntaxItems);
+          Break;
+        end;
+      end;
+    end;
+    1: begin
+      for i := 0 to High(PasAtts) do
+      begin
+        if Att = PasAtts[i] then
+        begin
+          SyntaxItems.ItemIndex := i;
+          SyntaxItemsChange(SyntaxItems);
+          Break;
+        end;
+      end;
+    end;
+    2: begin
+      for i := 0 to High(HTMLAtts) do
+      begin
+        if Att = HTMLAtts[i] then
+        begin
+          SyntaxItems.ItemIndex := i;
+          SyntaxItemsChange(SyntaxItems);
+          Break;
+        end;
+      end;
+    end;
+  end;
+ end;
+end;
+
 procedure TPrefsWin.SyntaxItemsChange(Sender: TObject);
 begin
   if BlockEvent then
@@ -824,14 +912,13 @@ begin
   EnableComSett(False);
 end;
 
-
 procedure TPrefsWin.UseTextColClick(Sender: TObject);
 begin
   if BlockEvent then
     Exit;
   BlockEvent := True;
   ColHBack.Visible := UseBgCol.Checked;
-  colHText.Visible := UseTextCol.Checked;
+  ColHText.Visible := UseTextCol.Checked;
   ColHFrame.Visible := UseFrameCol.Checked;
   SetAttSetting;
   BlockEvent := False;
@@ -910,7 +997,10 @@ begin
     ColHBack.ButtonColor := Att.Background;
     // TextColor
     UseTextCol.Checked := Att.Foreground <> clNone;
-    colHText.Visible := Att.Foreground <> clNone;
+    ColHText.Visible := Att.Foreground <> clNone;
+    TextBold.Checked := fsBold in Att.Style;
+    TextItalic.Checked := fsItalic in Att.Style;
+    TextUnderline.Checked := fsUnderline in Att.Style;
     colHText.ButtonColor := Att.Foreground;
     // TextColor
     UseFrameCol.Checked := Att.FrameColor <> clNone;
@@ -932,6 +1022,21 @@ begin
       CurAtt.Foreground := colHText.ButtonColor
     else
       CurAtt.Foreground := clNone;
+    //
+    if TextBold.Checked then
+      CurAtt.Style:= CurAtt.Style + [fsBold]
+    else
+      CurAtt.Style:= CurAtt.Style - [fsBold];
+    //
+    if TextItalic.Checked then
+      CurAtt.Style:= CurAtt.Style + [fsItalic]
+    else
+      CurAtt.Style:= CurAtt.Style - [fsItalic];
+    //
+    if TextUnderline.Checked then
+      CurAtt.Style:= CurAtt.Style + [fsUnderline]
+    else
+      CurAtt.Style:= CurAtt.Style - [fsUnderline];
     //
     if UseFrameCol.Checked then
     begin

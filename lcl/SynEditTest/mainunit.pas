@@ -855,6 +855,9 @@ begin
   if CurEditor = Sender then
   begin
     UpdateStatusBar;
+    if Assigned(SearchReplaceWin) then
+      if CurEditor.SelText <> SearchReplaceWin.SearchString then
+        CurEditor.SetHighlightSearch('', []);
   end;
 end;
 

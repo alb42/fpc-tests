@@ -521,6 +521,8 @@ object EditorFrame: TEditorFrame
     SelectedColor.BoldPriority = 50
     SelectedColor.ItalicPriority = 50
     SelectedColor.UnderlinePriority = 50
+    HighlightAllColor.Background = clSilver
+    HighlightAllColor.FrameColor = clGray
     BracketHighlightStyle = sbhsBoth
     BracketMatchColor.Background = clYellow
     BracketMatchColor.Foreground = clNone
@@ -599,6 +601,7 @@ object EditorFrame: TEditorFrame
     AsmAttri.FrameEdges = sfeAround
     CommentAttri.Foreground = clGreen
     CommentAttri.FrameEdges = sfeAround
+    CommentAttri.Style = []
     IDEDirectiveAttri.FrameEdges = sfeAround
     IdentifierAttri.Foreground = clBlack
     IdentifierAttri.FrameEdges = sfeAround

@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynMemo, Forms, Controls, Graphics, Dialogs,
-  StdCtrls;
+  StdCtrls, LCLType, Menus;
 
 const
   FatalMark   = ' ' + #27 + 'I[2:88888888,00000000,00000000]  ';
@@ -23,13 +23,18 @@ type
   { TOutWindow }
 
   TOutWindow = class(TForm)
+    MainMenu1: TMainMenu;
+    MenuItem1: TMenuItem;
+    TextMenu: TMenuItem;
     OutList: TListBox;
     OutMemo: TSynMemo;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
     procedure OutListDblClick(Sender: TObject);
   private
     Files: TStringList;
@@ -154,9 +159,23 @@ begin
   OrigText.Free;
 end;
 
+procedure TOutWindow.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Shift = [ssCtrl]) and (Key = VK_C) then
+  begin
+    OutMemo.DoCopyToClipboard(OutMemo.Text, '');
+  end;
+end;
+
 procedure TOutWindow.FormShow(Sender: TObject);
 begin
   SetBounds(Prefs.OutXPos, Prefs.OutYPos, Prefs.OutWidth, Prefs.OutHeight);
+end;
+
+procedure TOutWindow.MenuItem1Click(Sender: TObject);
+begin
+  OutMemo.DoCopyToClipboard(OutMemo.Text, '');
 end;
 
 function TOutWindow.FPCLine(Line: string; out Data: TMsgData): boolean;
