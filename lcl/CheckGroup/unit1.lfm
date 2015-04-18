@@ -1,0 +1,64 @@
+object Form1: TForm1
+  Left = 33
+  Height = 237
+  Top = 116
+  Width = 421
+  Caption = 'Form1'
+  ClientHeight = 237
+  ClientWidth = 421
+  LCLVersion = '1.0.10.0'
+  object CheckGroup1: TCheckGroup
+    Left = 16
+    Height = 193
+    Top = 8
+    Width = 185
+    AutoFill = True
+    Caption = 'CheckGroup1'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 174
+    ClientWidth = 181
+    Items.Strings = (
+      'Item 1'
+      'Item 2'
+      'Item 3'
+    )
+    TabOrder = 0
+    Data = {
+      03000000020202
+    }
+  end
+  object RadioGroup1: TRadioGroup
+    Left = 208
+    Height = 193
+    Top = 8
+    Width = 185
+    AutoFill = True
+    Caption = 'RadioGroup1'
+    ChildSizing.LeftRightSpacing = 6
+    ChildSizing.TopBottomSpacing = 6
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.ShrinkHorizontal = crsScaleChilds
+    ChildSizing.ShrinkVertical = crsScaleChilds
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 174
+    ClientWidth = 181
+    ItemIndex = 0
+    Items.Strings = (
+      'Item 1'
+      'Item 2'
+      'Item 3'
+      'Item 4'
+      'Item 5'
+    )
+    TabOrder = 1
+  end
+end
