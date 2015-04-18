@@ -1,5 +1,6 @@
-*.o
-*.ppu
-*.lps
-backup
-*.bak
+global:*.o
+global:*.ppu
+global:*.lps
+global:backup
+global:*.bak
+global:*.or
