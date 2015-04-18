@@ -131,6 +131,7 @@ procedure TOutWindow.FormCreate(Sender: TObject);
 begin
   Files := TStringList.Create;
   OrigText := TStringList.Create;
+  SetBounds(Prefs.OutXPos, Prefs.OutYPos, Prefs.OutWidth, Prefs.OutHeight);
 end;
 
 procedure TOutWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -151,6 +152,10 @@ begin
     Top := TMUIWindow(Handle).Top;
   end;
   {$endif}
+  Prefs.OutXPos := Left;
+  Prefs.OutYPos := Top;
+  Prefs.OutHeight := Height;
+  Prefs.OutWidth := Width;
 end;
 
 procedure TOutWindow.FormDestroy(Sender: TObject);
@@ -170,7 +175,7 @@ end;
 
 procedure TOutWindow.FormShow(Sender: TObject);
 begin
-  SetBounds(Prefs.OutXPos, Prefs.OutYPos, Prefs.OutWidth, Prefs.OutHeight);
+
 end;
 
 procedure TOutWindow.MenuItem1Click(Sender: TObject);

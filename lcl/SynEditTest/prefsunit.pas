@@ -29,6 +29,7 @@ type
     Command: string;
     Parameter: string;
     Path: string;
+    SaveBeforeStart: Boolean;
     Stack: Integer;
     StartModus: Integer;
     CaptureModus: Integer;
@@ -501,7 +502,7 @@ end;
 
 function TPrefs.GetOutYPos: integer;
 begin
-  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Left', 495);
+  Result := IniFile.ReadInteger(SECTION_USERCOM, 'Top', 495);
 end;
 
 function TPrefs.GetPersistentBlock: Boolean;
@@ -701,6 +702,7 @@ begin
   IniFile.WriteInteger(SECTION_USERCOM, 'CaptureModus' + IntToStr(Idx), UCom.CaptureModus);
   IniFile.WriteInteger(SECTION_USERCOM, 'Stack' + IntToStr(Idx), UCom.Stack);
   IniFile.WriteInteger(SECTION_USERCOM, 'ShortCut' + IntToStr(Idx), UCom.ShortCut);
+  IniFile.WriteBool(SECTION_USERCOM, 'SaveAtStart' + IntToStr(Idx), UCom.SaveBeforeStart);
 end;
 
 procedure TPrefs.GetUserCom(Idx: Integer; UCom: TUserCommand);
@@ -713,6 +715,7 @@ begin
   UCom.CaptureModus := IniFile.ReadInteger(SECTION_USERCOM, 'CaptureModus' + IntToStr(Idx), 0);
   UCom.Stack := IniFile.ReadInteger(SECTION_USERCOM, 'Stack' + IntToStr(Idx), 1024000);
   UCom.ShortCut := IniFile.ReadInteger(SECTION_USERCOM, 'ShortCut' + IntToStr(Idx), 0);
+  UCom.SaveBeforeStart := IniFile.ReadBool(SECTION_USERCOM, 'SaveAtStart' + IntToStr(Idx), False);
 end;
 
 initialization

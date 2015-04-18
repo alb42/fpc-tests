@@ -108,6 +108,7 @@ type
     BrowseComButton: TButton;
     BrowseDirButton: TButton;
     CancelComButton: TButton;
+    ChooseSaveStart: TCheckBox;
     TextBold: TCheckBox;
     CommandEdit: TEdit;
     DirEdit: TEdit;
@@ -831,6 +832,7 @@ begin
     ParamEdit.Text := UCom.Parameter;
     DirEdit.Text := UCom.Path;
     SpinStack.Value := UCom.Stack;
+    ChooseSaveStart.Checked := UCom.SaveBeforeStart;
     ShortCutToKey(UCom.ShortCut, kKey, kShift);
     Key2Box.Key := kKey;
     Key2Box.ShiftState := kShift;
@@ -877,6 +879,7 @@ begin
     UCom.Parameter := ParamEdit.Text;
     UCom.Path := DirEdit.Text;
     UCom.Stack := SpinStack.Value;
+    UCom.SaveBeforeStart := ChooseSaveStart.Checked;
     UCom.ShortCut := KeyToShortCut(Key2Box.Key, Key2Box.ShiftState);
     if ChooseStartForget.Checked then
       UCom.StartModus := 0;
@@ -1368,7 +1371,8 @@ begin
     Name:='GrabButton';
     Caption:='Grab Key';
     Align := alRight;
-    AutoSize:=true;
+    AutoSize:=False;
+    Width := 100;
     Parent:=Self;
     OnClick:=@OnGrabButtonClick;
   end;
@@ -1388,8 +1392,9 @@ begin
     Parent:=Self;
     AnchorToNeighbour(akRight,6,FGrabButton);
     Top := 5;
+    Width := 100;
     //AnchorVerticalCenterTo(FGrabButton);
-    Constraints.MinWidth:=130;
+    //Constraints.MinWidth:=130;
   end;
 
   BevelOuter:=bvNone;

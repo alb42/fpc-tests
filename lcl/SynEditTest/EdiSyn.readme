@@ -1,4 +1,4 @@
-EdiSyn 0.50
+EdiSyn 0.51
 
 by Marcus "ALB42" Sackrow
 
@@ -76,6 +76,15 @@ Ctrl + Shift + F1          Previous Tab
 Ctrl + Shift + F2          Next Tab
 
 History:
+
+0.51
+
+  ADD: Highlight all search results
+  ADD: Highlighter with italic, bold and underline
+  ADD: ProgramOutput Menu: copy to clipboard
+  ADD: Click in PrefsWin SynEdit to select the highlighter attribute
+  ADD: Save File before start User program
+  FIX: Position save of output window
 
 0.50
 

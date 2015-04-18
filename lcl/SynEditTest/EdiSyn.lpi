@@ -15,7 +15,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="50"/>
+      <MinorVersionNr Value="51"/>
       <StringTable Comments="Your friendly Editor" InternalName="EdiSyn" OriginalFilename="EdiSyn" ProductName="EdiSyn" ProductVersion=""/>
     </VersionInfo>
     <BuildModes Count="1">

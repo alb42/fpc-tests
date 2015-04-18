@@ -18,10 +18,10 @@ object PrefsWin: TPrefsWin
     Height = 356
     Top = 0
     Width = 691
-    ActivePage = HighLightTab
+    ActivePage = EditorTab
     Align = alClient
     ShowTabs = False
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 0
     object EditorTab: TTabSheet
       Caption = 'Editor'
@@ -369,6 +369,7 @@ object PrefsWin: TPrefsWin
         Height = 27
         Top = 78
         Width = 118
+        AutoSize = False
         ItemHeight = 0
         ItemIndex = 0
         Items.Strings = (
@@ -386,6 +387,7 @@ object PrefsWin: TPrefsWin
         Height = 31
         Top = 118
         Width = 118
+        AutoSize = False
         ItemHeight = 0
         OnChange = SyntaxItemsChange
         Style = csDropDownList
@@ -1249,11 +1251,11 @@ object PrefsWin: TPrefsWin
         TabOrder = 1
         object GroupBox1: TGroupBox
           Left = 5
-          Height = 93
+          Height = 109
           Top = 120
           Width = 496
           Caption = '  StartModus  '
-          ClientHeight = 74
+          ClientHeight = 90
           ClientWidth = 492
           TabOrder = 0
           object ChooseStartForget: TRadioButton
@@ -1285,7 +1287,7 @@ object PrefsWin: TPrefsWin
           object ChooseCaptureMode: TComboBox
             Left = 248
             Height = 27
-            Top = 45
+            Top = 57
             Width = 234
             ItemHeight = 0
             ItemIndex = 0
@@ -1300,7 +1302,7 @@ object PrefsWin: TPrefsWin
           object Label25: TLabel
             Left = 223
             Height = 18
-            Top = 17
+            Top = 29
             Width = 86
             Caption = 'Stacksize:      '
             ParentColor = False
@@ -1308,7 +1310,7 @@ object PrefsWin: TPrefsWin
           object SpinStack: TSpinEdit
             Left = 301
             Height = 27
-            Top = 12
+            Top = 24
             Width = 128
             MaxValue = 10000000
             MinValue = 4096
@@ -1318,15 +1320,23 @@ object PrefsWin: TPrefsWin
           object Label27: TLabel
             Left = 437
             Height = 18
-            Top = 17
+            Top = 29
             Width = 50
             Caption = 'bytes    '
             ParentColor = False
           end
+          object ChooseSaveStart: TCheckBox
+            Left = 301
+            Height = 24
+            Top = -1
+            Width = 170
+            Caption = 'Save File before Start'
+            TabOrder = 5
+          end
         end
         object ParamHelp: TComboBox
           Left = 295
-          Height = 31
+          Height = 27
           Top = 58
           Width = 206
           ItemHeight = 0
@@ -1440,8 +1450,8 @@ object PrefsWin: TPrefsWin
         end
         object ComShortCutPanel: TPanel
           Left = 5
-          Height = 50
-          Top = 218
+          Height = 31
+          Top = 237
           Width = 496
           BevelOuter = bvNone
           TabOrder = 10

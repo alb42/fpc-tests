@@ -17,7 +17,7 @@ uses
   MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.50 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.51 (' +{$I %DATE%} +')';
 
 
   PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
@@ -1255,6 +1255,8 @@ begin
     UCom := TUserCommand(Men.Tag);
     if (UCom.ComLabel = '-') or (UCom.Command = '') then
       Exit;
+    if UCom.SaveBeforeStart then
+      SaveMenuClick(nil);
     Params := ReplaceFilePat(UCom.Parameter);
     Dir := ReplaceFilePat(UCom.Path);
     OldDir := '';

@@ -616,8 +616,9 @@ object EditorFrame: TEditorFrame
     CaseLabelAttri.FrameEdges = sfeAround
     DirectiveAttri.Foreground = clRed
     DirectiveAttri.FrameEdges = sfeAround
-    CompilerMode = pcmDelphi
-    NestedComments = False
+    CompilerMode = pcmFPC
+    NestedComments = True
+    ExtendedKeywordsMode = True
     left = 72
     top = 8
   end
