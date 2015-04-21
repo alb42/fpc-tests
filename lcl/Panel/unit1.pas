@@ -15,6 +15,7 @@ type
   TForm1 = class(TForm)
     Button1: TButton;
     CheckBox1: TCheckBox;
+    CheckGroup1: TCheckGroup;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Panel1: TPanel;
@@ -23,6 +24,7 @@ type
     Panel4: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
+    RadioGroup1: TRadioGroup;
   private
     { private declarations }
   public

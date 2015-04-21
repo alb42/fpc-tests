@@ -121,7 +121,8 @@ begin
   Cv.Pen.Style:= psSolid;
   Cv.Brush.Style:= bsSolid;
   CV.Pen.Mode:= pmCopy;
-  Cv.Font.Name:='Vera Sans Bold';
+  Cv.Font.Name:='Arial';
+  Cv.Font.Style:=[fsBold];
   cv.Font.Height := Max(13, Min(TileHeight, TileWidth) div 2);
   // redraw all tiles
   for x := 0 to XSize - 1 do
@@ -409,6 +410,7 @@ begin
     SavePrefs;
     PlayField.Invalidate;
     GameTimer.Enabled:= False;
+    Application.ProcessMessages;
     Showmessage('          You stepped on a mine.          '#13#10'                    Game Over          ');
     Result := False;
   end;

@@ -2,10 +2,10 @@ object Form1: TForm1
   Left = 33
   Height = 237
   Top = 116
-  Width = 421
+  Width = 414
   Caption = 'Form1'
   ClientHeight = 237
-  ClientWidth = 421
+  ClientWidth = 414
   LCLVersion = '1.0.10.0'
   object CheckGroup1: TCheckGroup
     Left = 16
