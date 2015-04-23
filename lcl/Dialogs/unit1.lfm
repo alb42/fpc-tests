@@ -1,0 +1,83 @@
+object Form1: TForm1
+  Left = 8
+  Height = 294
+  Top = 204
+  Width = 540
+  Caption = 'Form1'
+  ClientHeight = 294
+  ClientWidth = 540
+  LCLVersion = '1.0.10.0'
+  object Button1: TButton
+    Left = 24
+    Height = 25
+    Top = 24
+    Width = 96
+    Caption = 'Find Dialog'
+    OnClick = Button1Click
+    TabOrder = 0
+  end
+  object Button2: TButton
+    Left = 24
+    Height = 25
+    Top = 56
+    Width = 96
+    Caption = 'Font Dialog'
+    OnClick = Button2Click
+    TabOrder = 1
+  end
+  object Button3: TButton
+    Left = 128
+    Height = 25
+    Top = 24
+    Width = 128
+    Caption = 'Replace Dialog'
+    OnClick = Button3Click
+    TabOrder = 2
+  end
+  object ChooseFixed: TCheckBox
+    Left = 24
+    Height = 24
+    Top = 96
+    Width = 107
+    Caption = 'Fixed Width'
+    TabOrder = 3
+  end
+  object ChooseStyle: TCheckBox
+    Left = 24
+    Height = 24
+    Top = 128
+    Width = 94
+    Caption = 'With Style'
+    Checked = True
+    State = cbChecked
+    TabOrder = 4
+  end
+  object Label1: TLabel
+    Left = 24
+    Height = 25
+    Top = 176
+    Width = 431
+    Caption = 'The quick brown fox jumps over the lazy dog'
+    Font.Color = clRed
+    Font.Height = -20
+    Font.Name = 'Arial'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object FindDialog1: TFindDialog
+    left = 336
+    top = 64
+  end
+  object FontDialog1: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    left = 232
+    top = 112
+  end
+  object ReplaceDialog1: TReplaceDialog
+    Options = [frDown, frReplace, frReplaceAll, frHidePromptOnReplace]
+    left = 251
+    top = 47
+  end
+end
