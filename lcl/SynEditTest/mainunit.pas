@@ -268,8 +268,8 @@ begin
     Exit;
   if SaveDialog1.Execute then
   begin
-    SynExporterHTML1.ExportAll(CurEditor.Lines);
     SynExporterHTML1.Highlighter := CurEditor.Highlighter;
+    SynExporterHTML1.ExportAll(CurEditor.Lines);
     SynExporterHTML1.SaveToFile(SaveDialog1.FileName);
   end;
 end;
@@ -1235,7 +1235,7 @@ var
   Params: string;
   Dir: string;
   OldDir: string;
-  {$ifdef Linux}
+  {$if defined(Linux) or defined(Win32)}
   AProcess: TProcess;
   {$define IMPLEMENTPROCCESS}
   {$endif}
@@ -1270,7 +1270,7 @@ begin
         {$ifdef HASAMIGA}
         ExecuteProcess('c:run', UCom.Command + ' ' + Params);
         {$endif}
-        {$ifdef linux}
+        {$if defined(linux) or defined(windows)}
         AProcess := TProcess.Create(nil);
         AProcess.Commandline := UCom.Command + ' ' + Params;
         AProcess.Options := AProcess.Options - [poWaitOnExit] + [poNewConsole];
@@ -1283,7 +1283,7 @@ begin
       end;
       2: begin
         OutWindow.Show;
-        {$ifdef linux}
+        {$if defined(linux) or defined(Windows)}
         OutWindow.OutList.Visible := True;
         OutWindow.OutMemo.Visible := False;
         AProcess := TProcess.Create(nil);
