@@ -1,17 +1,17 @@
 object Form1: TForm1
-  Left = 150
-  Height = 235
-  Top = 137
-  Width = 389
+  Left = 367
+  Height = 232
+  Top = 168
+  Width = 437
   Caption = 'Form1'
-  ClientHeight = 235
-  ClientWidth = 389
-  LCLVersion = '1.0.10.0'
+  ClientHeight = 232
+  ClientWidth = 437
+  LCLVersion = '1.2.4.0'
   object ButtonPanel1: TButtonPanel
     Left = 6
     Height = 37
-    Top = 192
-    Width = 377
+    Top = 189
+    Width = 425
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -26,16 +26,10 @@ object Form1: TForm1
     Left = 0
     Height = 26
     Top = 0
-    Width = 389
+    Width = 437
     Caption = 'ToolBar1'
     Images = ImageList1
     TabOrder = 1
-    object ToolButton1: TToolButton
-      Left = 1
-      Top = 2
-      Caption = '1'
-      ImageIndex = 5
-    end
     object ToolButton2: TToolButton
       Left = 24
       Top = 2
@@ -96,12 +90,18 @@ object Form1: TForm1
       ImageIndex = 10
       Style = tbsCheck
     end
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Caption = '1'
+      ImageIndex = 5
+    end
   end
   object ToolBar2: TToolBar
     Left = 0
     Height = 26
     Top = 26
-    Width = 389
+    Width = 437
     Caption = 'ToolBar2'
     Images = ImageList1
     TabOrder = 2
@@ -116,7 +116,7 @@ object Form1: TForm1
     Left = 0
     Height = 26
     Top = 52
-    Width = 389
+    Width = 437
     Caption = 'ToolBar3'
     Images = ImageList1
     TabOrder = 3

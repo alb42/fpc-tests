@@ -5,8 +5,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  ButtonPanel, ComCtrls;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ButtonPanel,
+  ComCtrls, ExtCtrls, StdCtrls, PopupNotifier, LResources, ShellCtrls;
 
 type
 
