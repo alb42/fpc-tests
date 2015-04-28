@@ -519,7 +519,7 @@ begin
   // Highlighter
   SynPasSyn1.LoadFromFile(PasPrefsName);
   SynCppSyn1.LoadFromFile(CPrefsName);
-  SynPasSyn1.LoadFromFile(HTMLPrefsName);
+  SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
   LangSelectionChange(nil);
   // ShortCuts
   KeyListEdit.Visible:= False;
