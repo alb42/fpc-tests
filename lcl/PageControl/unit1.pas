@@ -33,6 +33,8 @@ type
     procedure CheckBox2Click(Sender: TObject);
     procedure CheckBox3Click(Sender: TObject);
     procedure PageControl1Changing(Sender: TObject; var AllowChange: Boolean);
+    procedure TabSheet3MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
   private
     { private declarations }
   public
@@ -67,6 +69,12 @@ procedure TForm1.PageControl1Changing(Sender: TObject; var AllowChange: Boolean
   );
 begin
   AllowChange := not CheckBox1.Checked;
+end;
+
+procedure TForm1.TabSheet3MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  Caption := IntToStr(X) + ', ' + IntToStr(Y);
 end;
 
 procedure TForm1.Button5Click(Sender: TObject);

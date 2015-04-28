@@ -1,12 +1,12 @@
 object Form1: TForm1
-  Left = 58
+  Left = 332
   Height = 319
-  Top = 76
+  Top = 63
   Width = 416
   Caption = 'Form1'
   ClientHeight = 319
   ClientWidth = 416
-  LCLVersion = '1.0.10.0'
+  LCLVersion = '1.2.4.0'
   object PageControl1: TPageControl
     Left = 0
     Height = 255
@@ -47,6 +47,7 @@ object Form1: TForm1
       Caption = 'TabSheet3'
       ClientHeight = 224
       ClientWidth = 412
+      OnMouseMove = TabSheet3MouseMove
       object Button3: TButton
         Left = 104
         Height = 25
