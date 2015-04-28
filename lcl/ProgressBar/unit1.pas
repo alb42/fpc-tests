@@ -17,6 +17,8 @@ type
     CheckBox1: TCheckBox;
     ProgressBar1: TProgressBar;
     ProgressBar2: TProgressBar;
+    ProgressBar3: TProgressBar;
+    ProgressBar4: TProgressBar;
     Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure CheckBox1Change(Sender: TObject);

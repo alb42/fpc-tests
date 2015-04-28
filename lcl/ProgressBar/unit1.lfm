@@ -1,12 +1,12 @@
 object Form1: TForm1
-  Left = 0
-  Height = 152
-  Top = 238
-  Width = 341
+  Left = 392
+  Height = 200
+  Top = 260
+  Width = 348
   Caption = 'Form1'
-  ClientHeight = 152
-  ClientWidth = 341
-  LCLVersion = '1.0.10.0'
+  ClientHeight = 200
+  ClientWidth = 348
+  LCLVersion = '1.2.4.0'
   object ProgressBar1: TProgressBar
     Left = 8
     Height = 24
@@ -28,9 +28,9 @@ object Form1: TForm1
     TabOrder = 1
   end
   object Button1: TButton
-    Left = 224
+    Left = 72
     Height = 25
-    Top = 56
+    Top = 40
     Width = 75
     Caption = 'Zero'
     OnClick = Button1Click
@@ -38,18 +38,39 @@ object Form1: TForm1
   end
   object ProgressBar2: TProgressBar
     Left = 312
-    Height = 132
+    Height = 184
     Top = 8
     Width = 24
     Orientation = pbVertical
     TabOrder = 3
     BarShowText = True
   end
+  object ProgressBar3: TProgressBar
+    Left = 8
+    Height = 20
+    Top = 168
+    Width = 260
+    Position = 2
+    Step = 1
+    Style = pbstMarquee
+    TabOrder = 4
+  end
+  object ProgressBar4: TProgressBar
+    Left = 280
+    Height = 152
+    Top = 40
+    Width = 20
+    Orientation = pbVertical
+    Position = 2
+    Step = 1
+    Style = pbstMarquee
+    TabOrder = 5
+  end
   object Timer1: TTimer
     Enabled = False
     Interval = 100
     OnTimer = Timer1Timer
-    left = 180
-    top = 82
+    left = 112
+    top = 56
   end
 end
