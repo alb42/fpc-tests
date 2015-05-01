@@ -18,6 +18,15 @@ const
   SECTION_SHORTCUTS = 'ShortCuts';
   SECTION_USERCOM = 'UserCommands';
 
+  {$ifdef AROS}
+  DEFAULTFONT = 'ttcourier';
+  DEFAULTFONTSIZE = 14;
+  {$else}
+  DEFAULTFONT = 'Courier';
+  DEFAULTFONTSIZE = 11;
+  {$endif}
+
+
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
   HIGHLIGHTER_PASCAL = 2;
@@ -52,6 +61,8 @@ type
     function GetDefHighlighter: integer;
     function GetEdBgColor: TColor;
     function GetEdTextColor: TColor;
+    function GetFontName: string;
+    function GetFontSize: integer;
     function GetFullPath: boolean;
     function GetHeight: integer;
     function GetIndentWidth: Integer;
@@ -95,6 +106,8 @@ type
     procedure SetDblSelLine(AValue: Boolean);
     procedure SetEdBgColor(AValue: TColor);
     procedure SetEdTextColor(AValue: TColor);
+    procedure SetFontName(AValue: string);
+    procedure SetFontSize(AValue: integer);
     procedure SetFullPath(AValue: boolean);
     procedure SetHeight(AValue: integer);
     procedure SetHighlighter(AValue: integer);
@@ -190,6 +203,9 @@ type
     property EdBgColor: TColor read GetEdBgColor write SetEdBgColor;
     property EdTextColor: TColor read GetEdTextColor write SetEdTextColor;
     property BracketColor: TColor read GetBracketColor write SetBracketColor;
+    //
+    property FontName: string read GetFontName write SetFontName;
+    property FontSize: integer read GetFontSize write SetFontSize;
     //
     property OutXPos: integer read GetOutXPos write SetOutXPos;
     property OutYPos: integer read GetOutYPos write SetOutYPos;
@@ -353,6 +369,16 @@ end;
 procedure TPrefs.SetEdTextColor(AValue: TColor);
 begin
   IniFile.WriteInteger(SECTION_COLORS, 'EditorText', AValue);
+end;
+
+procedure TPrefs.SetFontName(AValue: string);
+begin
+  IniFile.WriteString(SECTION_GENERAL, 'FontName', AValue);
+end;
+
+procedure TPrefs.SetFontSize(AValue: integer);
+begin
+  IniFile.WriteInteger(SECTION_GENERAL, 'FontSize', AValue);
 end;
 
 procedure TPrefs.SetFullPath(AValue: boolean);
@@ -570,6 +596,16 @@ begin
   Result := IniFile.ReadInteger(SECTION_COLORS, 'EditorText', $000000);
 end;
 
+function TPrefs.GetFontName: string;
+begin
+  Result := IniFile.ReadString(SECTION_GENERAL, 'FontName', DEFAULTFONT);
+end;
+
+function TPrefs.GetFontSize: integer;
+begin
+  Result := IniFile.ReadInteger(SECTION_GENERAL, 'FontSize', DEFAULTFONTSIZE);
+end;
+
 function TPrefs.GetFullPath: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'FullPath', False);
@@ -610,12 +646,12 @@ begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'Forward', True);
 end;
 
-function TPrefs.GetSearchGlobal: Boolean;
+function TPrefs.GetSearchGlobal: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'Global', True);
 end;
 
-function TPrefs.GetTabIndent: boolean;
+function TPrefs.GetTabIndent: Boolean;
 begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'TabIndent', True);
 end;
@@ -635,7 +671,7 @@ begin
   Result := IniFile.ReadBool(SECTION_GENERAL, 'TrimSpaces', True);
 end;
 
-function TPrefs.GetWholeWord: Boolean;
+function TPrefs.GetWholeWord: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'WholeWord', False);
 end;

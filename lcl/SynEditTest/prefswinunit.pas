@@ -107,8 +107,11 @@ type
     AcceptCom: TButton;
     BrowseComButton: TButton;
     BrowseDirButton: TButton;
+    FontButton: TButton;
     CancelComButton: TButton;
     ChooseSaveStart: TCheckBox;
+    FontDialog1: TFontDialog;
+    Label17: TLabel;
     TextBold: TCheckBox;
     CommandEdit: TEdit;
     DirEdit: TEdit;
@@ -167,7 +170,6 @@ type
     SyntaxItems: TComboBox;
     LangSelection: TComboBox;
     Label10: TLabel;
-    Label17: TLabel;
     UseBookmarks: TCheckBox;
     UseChangeInd: TCheckBox;
     UseNewTab: TCheckBox;
@@ -218,6 +220,7 @@ type
     procedure ColEdBracketClick(Sender: TObject);
     procedure ColEdTextColorChanged(Sender: TObject);
     procedure EditButtonClick(Sender: TObject);
+    procedure FontButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
@@ -480,6 +483,16 @@ begin
   UserComListDblClick(Sender);
 end;
 
+procedure TPrefsWin.FontButtonClick(Sender: TObject);
+begin
+  FontDialog1.Font := SynEdit1.Font;
+  if FontDialog1.Execute then
+  begin
+    SynEdit1.Font := FontDialog1.Font;
+    FontButton.Caption := FontDialog1.Font.Name + '/' + IntToStr(FontDialog1.Font.Size);
+  end;
+end;
+
 procedure TPrefsWin.FormShow(Sender: TObject);
 var
   i: Integer;
@@ -516,6 +529,9 @@ begin
   ColEdBg.ButtonColor := Prefs.EdBgColor;
   ColEdText.ButtonColor := Prefs.EdTextColor;
   ColEdBracket.ButtonColor := Prefs.BracketColor;
+  SynEdit1.Font.Name := Prefs.FontName;
+  SynEdit1.Font.Size := Prefs.FontSize;
+  FontButton.Caption := SynEdit1.Font.Name + '/' + IntToStr(SynEdit1.Font.Size);
   // Highlighter
   SynPasSyn1.LoadFromFile(PasPrefsName);
   SynCppSyn1.LoadFromFile(CPrefsName);
@@ -695,6 +711,8 @@ begin
   Prefs.EdBgColor := ColEdBg.ButtonColor;
   Prefs.EdTextColor := ColEdText.ButtonColor;
   Prefs.BracketColor := ColEdBracket.ButtonColor;
+  Prefs.FontName := SynEdit1.Font.Name;
+  Prefs.FontSize := SynEdit1.Font.Size;
   //
   SynPasSyn1.SaveToFile(PasPrefsName);
   SynCppSyn1.SaveToFile(CPrefsName);
@@ -1100,6 +1118,8 @@ begin
   Ed.Color := Prefs.EdBgColor;
   Ed.Font.Color := Prefs.EdTextColor;
   Ed.BracketMatchColor.Background := Prefs.BracketColor;
+  Ed.Font.Name := Prefs.FontName;
+  Ed.Font.Size := Prefs.FontSize;
   //
   EdFrame.SynCppSyn1.LoadFromFile(CPrefsName);
   EdFrame.SynPasSyn1.LoadFromFile(PasPrefsName);

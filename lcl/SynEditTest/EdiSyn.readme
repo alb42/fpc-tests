@@ -1,4 +1,4 @@
-EdiSyn 0.51
+EdiSyn 0.52
 
 by Marcus "ALB42" Sackrow
 
@@ -76,6 +76,12 @@ Ctrl + Shift + F1          Previous Tab
 Ctrl + Shift + F2          Next Tab
 
 History:
+
+0.52
+
+  ADD: Font Selection
+  FIX: Load HTML Colors
+  FIX: Export HTML
 
 0.51
 

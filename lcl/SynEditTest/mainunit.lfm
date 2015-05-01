@@ -1,7 +1,7 @@
 object MainWindow: TMainWindow
-  Left = 25
+  Left = 178
   Height = 514
-  Top = 499
+  Top = 160
   Width = 801
   Caption = 'MainWindow'
   ClientHeight = 491
@@ -12,7 +12,7 @@ object MainWindow: TMainWindow
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.0.10.0'
+  LCLVersion = '1.2.4.0'
   object LowerPanel: TPanel
     Left = 0
     Height = 28

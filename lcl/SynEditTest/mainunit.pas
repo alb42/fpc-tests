@@ -17,7 +17,7 @@ uses
   MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.51 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.52 (' +{$I %DATE%} +')';
 
 
   PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');

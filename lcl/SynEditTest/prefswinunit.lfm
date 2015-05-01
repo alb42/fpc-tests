@@ -1,7 +1,7 @@
 object PrefsWin: TPrefsWin
-  Left = 52
+  Left = 98
   Height = 398
-  Top = 86
+  Top = 154
   Width = 691
   BorderStyle = bsDialog
   Caption = 'PrefsWin'
@@ -12,16 +12,16 @@ object PrefsWin: TPrefsWin
   Constraints.MinWidth = 524
   OnCreate = FormCreate
   OnShow = FormShow
-  LCLVersion = '1.0.10.0'
+  LCLVersion = '1.2.4.0'
   object Pages: TPageControl
     Left = 0
     Height = 356
     Top = 0
     Width = 691
-    ActivePage = EditorTab
+    ActivePage = HighLightTab
     Align = alClient
     ShowTabs = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     object EditorTab: TTabSheet
       Caption = 'Editor'
@@ -38,9 +38,9 @@ object PrefsWin: TPrefsWin
         TabOrder = 0
         object Label1: TLabel
           Left = 147
-          Height = 18
+          Height = 17
           Top = 7
-          Width = 70
+          Width = 69
           Caption = 'Tab width:'
           ParentColor = False
         end
@@ -70,9 +70,9 @@ object PrefsWin: TPrefsWin
         end
         object Label2: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 7
-          Width = 100
+          Width = 99
           Caption = 'Tabs to Spaces'
           ParentColor = False
         end
@@ -85,9 +85,9 @@ object PrefsWin: TPrefsWin
         end
         object Label3: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 81
-          Width = 132
+          Width = 131
           Caption = 'Trim trailing Spaces'
           ParentColor = False
         end
@@ -100,9 +100,9 @@ object PrefsWin: TPrefsWin
         end
         object Label4: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 33
-          Width = 71
+          Width = 70
           Caption = 'Tab Indent'
           ParentColor = False
         end
@@ -115,9 +115,9 @@ object PrefsWin: TPrefsWin
         end
         object Label5: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 57
-          Width = 80
+          Width = 79
           Caption = 'Auto Indent'
           ParentColor = False
         end
@@ -140,9 +140,9 @@ object PrefsWin: TPrefsWin
         end
         object Label6: TLabel
           Left = 133
-          Height = 18
+          Height = 17
           Top = 34
-          Width = 89
+          Width = 88
           Caption = 'Indent width:'
           ParentColor = False
         end
@@ -165,9 +165,9 @@ object PrefsWin: TPrefsWin
         end
         object Label7: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 8
-          Width = 163
+          Width = 162
           Caption = 'Double click selects Line'
           ParentColor = False
         end
@@ -180,17 +180,17 @@ object PrefsWin: TPrefsWin
         end
         object Label8: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 33
-          Width = 106
+          Width = 105
           Caption = 'Block overwrite'
           ParentColor = False
         end
         object Label9: TLabel
           Left = 27
-          Height = 18
+          Height = 17
           Top = 57
-          Width = 110
+          Width = 109
           Caption = 'Persistent Block'
           ParentColor = False
         end
@@ -220,9 +220,9 @@ object PrefsWin: TPrefsWin
         end
         object Label11: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 8
-          Width = 91
+          Width = 90
           Caption = 'Line numbers'
           ParentColor = False
         end
@@ -235,17 +235,17 @@ object PrefsWin: TPrefsWin
         end
         object Label12: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 33
-          Width = 78
+          Width = 77
           Caption = 'Bookmarks'
           ParentColor = False
         end
         object Label13: TLabel
           Left = 143
-          Height = 18
+          Height = 17
           Top = 8
-          Width = 76
+          Width = 75
           Caption = 'Show every'
           ParentColor = False
         end
@@ -276,9 +276,9 @@ object PrefsWin: TPrefsWin
         end
         object Label14: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 57
-          Width = 114
+          Width = 113
           Caption = 'Change Indicator'
           ParentColor = False
         end
@@ -301,17 +301,17 @@ object PrefsWin: TPrefsWin
         end
         object Label15: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 8
-          Width = 153
+          Width = 152
           Caption = 'Always open a new Tab'
           ParentColor = False
         end
         object Label16: TLabel
           Left = 31
-          Height = 18
+          Height = 17
           Top = 35
-          Width = 98
+          Width = 97
           Caption = 'Show Full Path'
           ParentColor = False
         end
@@ -330,14 +330,14 @@ object PrefsWin: TPrefsWin
       ClientWidth = 687
       object Label10: TLabel
         Left = 6
-        Height = 18
+        Height = 17
         Top = 6
-        Width = 71
-        Caption = 'Editor bkg'
+        Width = 42
+        Caption = 'Editor'
         ParentColor = False
       end
       object ColEdBg: TColorButton
-        Left = 83
+        Left = 104
         Height = 25
         Top = 0
         Width = 40
@@ -346,18 +346,10 @@ object PrefsWin: TPrefsWin
         ButtonColor = clWhite
         OnColorChanged = ColEdBgColorChanged
       end
-      object Label17: TLabel
-        Left = 6
-        Height = 18
-        Top = 29
-        Width = 74
-        Caption = 'Editor text'
-        ParentColor = False
-      end
       object ColEdText: TColorButton
-        Left = 83
+        Left = 58
         Height = 25
-        Top = 24
+        Top = 0
         Width = 40
         BorderWidth = 2
         ButtonColorSize = 16
@@ -370,6 +362,7 @@ object PrefsWin: TPrefsWin
         Top = 78
         Width = 118
         AutoSize = False
+        Color = 16578029
         ItemHeight = 0
         ItemIndex = 0
         Items.Strings = (
@@ -388,6 +381,7 @@ object PrefsWin: TPrefsWin
         Top = 118
         Width = 118
         AutoSize = False
+        Color = 16578029
         ItemHeight = 0
         OnChange = SyntaxItemsChange
         Style = csDropDownList
@@ -901,6 +895,7 @@ object PrefsWin: TPrefsWin
               ShortCut = 24646
             end>
           MouseActions = <>
+          MouseTextActions = <>
           MouseSelActions = <>
           Lines.Strings = (
             ''
@@ -909,25 +904,33 @@ object PrefsWin: TPrefsWin
           Options = [eoAutoIndent, eoBracketHighlight, eoGroupUndo, eoNoCaret, eoNoSelection, eoScrollPastEol, eoSmartTabs, eoTrimTrailingSpaces]
           VisibleSpecialChars = [vscSpace, vscTabAtLast]
           ReadOnly = True
+          SelectedColor.FrameEdges = sfeAround
           SelectedColor.BackPriority = 50
           SelectedColor.ForePriority = 50
           SelectedColor.FramePriority = 50
           SelectedColor.BoldPriority = 50
           SelectedColor.ItalicPriority = 50
           SelectedColor.UnderlinePriority = 50
+          SelectedColor.StrikeOutPriority = 50
+          IncrementColor.FrameEdges = sfeAround
           HighlightAllColor.Background = clMedGray
           HighlightAllColor.FrameColor = clGray
+          HighlightAllColor.FrameEdges = sfeAround
           BracketHighlightStyle = sbhsBoth
           BracketMatchColor.Background = clYellow
           BracketMatchColor.Foreground = clNone
+          BracketMatchColor.FrameEdges = sfeAround
           BracketMatchColor.Style = [fsBold]
           FoldedCodeColor.Background = clNone
           FoldedCodeColor.Foreground = clGray
           FoldedCodeColor.FrameColor = clGray
+          FoldedCodeColor.FrameEdges = sfeAround
           MouseLinkColor.Background = clNone
           MouseLinkColor.Foreground = clBlue
+          MouseLinkColor.FrameEdges = sfeAround
           LineHighlightColor.Background = clNone
           LineHighlightColor.Foreground = clNone
+          LineHighlightColor.FrameEdges = sfeAround
           inline SynLeftGutterPartList1: TSynGutterPartList
             object SynGutterMarks1: TSynGutterMarks
               Width = 24
@@ -938,6 +941,7 @@ object PrefsWin: TPrefsWin
               MouseActions = <>
               MarkupInfo.Background = 16578029
               MarkupInfo.Foreground = clNone
+              MarkupInfo.FrameEdges = sfeAround
               DigitCount = 2
               ShowOnlyLineNumbersMultiplesOf = 5
               ZeroStart = False
@@ -954,11 +958,13 @@ object PrefsWin: TPrefsWin
               MouseActions = <>
               MarkupInfo.Background = clWhite
               MarkupInfo.Foreground = clGray
+              MarkupInfo.FrameEdges = sfeAround
             end
             object SynGutterCodeFolding1: TSynGutterCodeFolding
               MouseActions = <>
               MarkupInfo.Background = clNone
               MarkupInfo.Foreground = clGray
+              MarkupInfo.FrameEdges = sfeAround
               MouseActionsExpanded = <>
               MouseActionsCollapsed = <>
             end
@@ -975,9 +981,9 @@ object PrefsWin: TPrefsWin
       end
       object Label18: TLabel
         Left = 30
-        Height = 18
+        Height = 17
         Top = 158
-        Width = 30
+        Width = 29
         Caption = 'Text'
         ParentColor = False
       end
@@ -1001,9 +1007,9 @@ object PrefsWin: TPrefsWin
       end
       object Label19: TLabel
         Left = 30
-        Height = 18
+        Height = 17
         Top = 183
-        Width = 55
+        Width = 54
         Caption = 'BgColor'
         ParentColor = False
       end
@@ -1027,9 +1033,9 @@ object PrefsWin: TPrefsWin
       end
       object Label20: TLabel
         Left = 30
-        Height = 18
+        Height = 17
         Top = 208
-        Width = 44
+        Width = 43
         Caption = 'Frame'
         ParentColor = False
       end
@@ -1045,9 +1051,9 @@ object PrefsWin: TPrefsWin
       end
       object Label21: TLabel
         Left = 6
-        Height = 18
+        Height = 17
         Top = 52
-        Width = 53
+        Width = 52
         Caption = 'Bracket'
         ParentColor = False
       end
@@ -1088,6 +1094,23 @@ object PrefsWin: TPrefsWin
         OnClick = UseTextColClick
         TabOrder = 8
       end
+      object Label17: TLabel
+        Left = 5
+        Height = 17
+        Top = 29
+        Width = 35
+        Caption = 'Font:'
+        ParentColor = False
+      end
+      object FontButton: TButton
+        Left = 58
+        Height = 25
+        Top = 24
+        Width = 134
+        Caption = 'Courier/11'
+        OnClick = FontButtonClick
+        TabOrder = 9
+      end
     end
     object KeyPage: TTabSheet
       Caption = 'Keys'
@@ -1120,13 +1143,16 @@ object PrefsWin: TPrefsWin
           TabOrder = 0
           OnSelectCell = KeyListEditSelectCell
           Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goRowSelect, goThumbTracking]
+          Strings.Strings = (
+            ''
+          )
           TitleCaptions.Strings = (
             'Function'
             'ShortCut'
           )
           ColWidths = (
             253
-            420
+            418
           )
         end
       end
@@ -1545,6 +1571,8 @@ object PrefsWin: TPrefsWin
     Enabled = False
     AndAttri.FrameEdges = sfeAround
     ASPAttri.FrameEdges = sfeAround
+    CDATAAttri.FrameEdges = sfeAround
+    DOCTYPEAttri.FrameEdges = sfeAround
     CommentAttri.Foreground = clGreen
     CommentAttri.FrameEdges = sfeAround
     IdentifierAttri.Foreground = clTeal
@@ -1566,6 +1594,13 @@ object PrefsWin: TPrefsWin
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     left = 216
+    top = 360
+  end
+  object FontDialog1: TFontDialog
+    MinFontSize = 0
+    MaxFontSize = 0
+    Options = [fdEffects, fdFixedPitchOnly, fdNoStyleSel]
+    left = 336
     top = 360
   end
 end
