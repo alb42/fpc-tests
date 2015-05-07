@@ -26,13 +26,6 @@ const
   DEFAULTFONTSIZE = 11;
   {$endif}
 
-  {
-  HIGHLIGHTER_NONE = 0;
-  HIGHLIGHTER_C = 1;
-  HIGHLIGHTER_PASCAL = 2;
-  HIGHLIGHTER_HTML = 3;
-  }
-
 type
   TUserCommand = class
     ComLabel: string;
@@ -591,6 +584,7 @@ begin
   // NOTE: It is not possible to sync this in a sane way anymore.
   // chosen 2, as currently it means Pascal, but there is no way to tell for
   // sure.
+  // Possible solution: search SyntaxManager for hardcoded Pascal Name "Object pascal"
   Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', 2);
 end;
 

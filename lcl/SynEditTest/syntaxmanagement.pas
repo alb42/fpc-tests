@@ -1,5 +1,56 @@
 unit SyntaxManagement;
 
+{
+  Unit SyntaxManagement holds two important classes that are used
+  throughout the rest of the units (in particular MainUnit, FrameUnit and
+  PrefsWinUnit).
+
+  The classes are:
+  - TSyntaxManager   - holding a list of TSyntaxElement objects
+  - THighlighterList - holding a list of THighlighterListItem objects.
+
+  TSyntaxmanager is 'exposed' by global variable SyntaxManager
+
+  THighlighterList contains all the dynamically create highlighters and as
+  such replaces the visual SynEdit highlighters previosuly used. You can
+  find this class being used in units FrameUnit and PrefsWinUnit, both
+  using the variable-name "Highlighters".
+
+  The SyntaxManager is created and populated on unit initialization as well
+  as disposed off on unit finalization.
+
+  All the items added to SyntaxManager are used to 'automagically' create the
+  highlighterlist. Of course, if other behaviour is required, then it should be
+  fairly easy to make changes.
+
+  Why two separate classes ?
+
+  The Highlighter class follows that what is available regarding real dynamic
+  created highlighters. Nil (or Highlighter None) is not one of them.
+
+  SyntaxManager on the other hand follows the Highlighter Menu, and as such
+  holds all data for highlighters that can be defined once. Realize that this
+  concept was explicitely implemented as such.
+
+  Why ?
+
+  Because it seemed to be the most logical thing todo at the time, also in
+  regards to possible extensions that could be implemented in the future.
+
+  Also keep in mind that SynFacilHighlighter offers the possibility to follow
+  the rule of having one highlighter per SynEdit component, but afaik there is
+  no penalty on changing the actual syntax (in which case SynFacil just needs
+  to be updated in order to let the Editor reflect the changes). [*]
+
+  Alas the latter was not implemented, inspired by the current design of having
+  multiple created highlighters per editor. It's the easiest/fastest solution
+  atm.
+
+  [*] would one remove the built-in Highlighters, that would theoretically mean
+      that EdiSyn could do with just one SynFacil Highlighter per editor + one
+      extra for the PrefsWinUnit.
+}
+
 {$mode objfpc}{$H+}
 
 interface
@@ -7,13 +58,6 @@ interface
 uses
   Classes, SysUtils, Contnrs, menus, SynEditHighlighter;
 
-{
-Const
-  HIGHLIGHTER_NONE = 0;
-  HIGHLIGHTER_C = 1;
-  HIGHLIGHTER_PASCAL = 2;
-  HIGHLIGHTER_HTML = 3;
-}
 
 Type
   TSyntaxHighlighterType =
@@ -108,11 +152,9 @@ Type
 
   function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
 
+
 Var
   SyntaxManager : TSyntaxManager;
-
-
-  {.$I SyntaxDeclarations.inc}          // Temp workable Syntax declarations go in here
 
 
 implementation
@@ -127,14 +169,6 @@ Uses
 
 
   {$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
-
-{#
-Const
-  HIGHLIGHTER_NONE = 0;
-  HIGHLIGHTER_C = 1;
-  HIGHLIGHTER_PASCAL = 2;
-  HIGHLIGHTER_HTML = 3;
-#}
 
 
 
@@ -159,6 +193,7 @@ end;
 // ###      TSyntaxElement
 // ###
 // ############################################################################
+
 
 
 constructor TSyntaxElement.Create;
@@ -386,32 +421,6 @@ begin
   end;
 end;
 
-{
-Procedure THighlighterList.Populate;
-var
-  Highlighter   : TSynCustomHighlighter;
-  ListItem      : THighlighterListItem;
-begin
-  // synced: (none), c, pascal, html
-  ListItem    := THighlighterListItem.Create;
-  Highlighter := TSynCppSyn.Create(nil);
-  ListItem.fHighlighter := Highlighter;
-  ListItem.fSyntaxIndex := HIGHLIGHTER_C;
-  fHighlighters.Add(ListItem);
-
-  ListItem    := THighlighterListItem.Create;
-  Highlighter := TSynPasSyn.Create(nil);
-  ListItem.fHighlighter := Highlighter;
-  ListItem.fSyntaxIndex := HIGHLIGHTER_PASCAL;
-  fHighlighters.Add(ListItem);
-
-  ListItem    := THighlighterListItem.Create;
-  Highlighter := TSynHtmlSyn.Create(nil);
-  ListItem.fHighlighter := Highlighter;
-  ListItem.fSyntaxIndex := HIGHLIGHTER_HTML;
-  fHighlighters.Add(ListItem);
-end;
-}
 
 // Add / create (custom) EdiSyn highlighters based on information from
 // SyntaxManager.
@@ -449,6 +458,7 @@ begin
     else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist');
   end;
 end;
+
 
 
 // ############################################################################
@@ -507,7 +517,6 @@ begin
   SE := SyntaxManager.NewElement(shtHTML);
   FillNewElement(SE, SYNS_LangHTML   , 'HTML'      , 'Html' , PFs + 'HTML.prefs'      , HTMLTEXT      , HTMLTEXT      , HTMLEXT);
 end;
-
 
 
 initialization

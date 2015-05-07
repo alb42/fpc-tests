@@ -18,34 +18,6 @@ const
   FILEwExtwPathPATTERN = '{$E}';
   PATHPATTERN = '{$p}';
 
-  {#
-  PasShortText =
-    'unit Test;'#13#10 +
-    '{$mode delphi}'#13#10 +
-    '{%Fold%}'#13#10 +
-    '  // Comment'#13#10 +
-    'begin'#13#10 +
-    '  writeln(''string'', 42);'#13#10 +
-    '  asm'#13#10 +
-    '    nop;'#13#10 +
-    '  end;'#13#10 +
-    '  b := 1 + color;'#13#10 +
-    '  case Align of'#13#10 +
-    '    alClient: writeln(''alClient''#13#10);'#13#10 +
-    '  end;'#13#10 +
-    'end.';
-  #}
-  {#
-  CShortText =
-    ' /*Comment*/ '#13#10 +
-    '#include <stdio.h>'#13#10 +
-    'int main(int argc, char **argv)'#13#10 +
-    '{'#13#10 +
-    '  int a = r + 10;'#13#10 +
-    '  printf("hello world\n");'#13#10 +
-    '  return 0'#13#10 +
-    '}';
-  #}
 
 type
   TUserCommands = TObjectList;
@@ -62,6 +34,7 @@ type
     Shift2: TShiftState;
   end;
   PIDEShortCut = ^TIDEShortCut;
+
   { TCustomShortCutGrabBox }
 
   TCustomShortCutGrabBox = class(TCustomPanel)
@@ -254,17 +227,7 @@ type
   end;
 
 var
-  {#
-  CAtts: array[0..9] of TSynHighlighterAttributes;
-  PasAtts: array[0..10] of TSynHighlighterAttributes;
-  HTMLAtts: array[0..9] of TSynHighlighterAttributes;
-  #}
   PrefsWin: TPrefsWin;
-  {#
-  PasPrefsName: string;
-  CPrefsName: string;
-  HTMLPrefsName: string;
-  #}
   VirtualKeyStrings: TStringHashList = nil;
   CmdName: array[0..1000] of string;
   ShortCutList: array of record
@@ -279,46 +242,6 @@ implementation
 uses
   MainUnit;
 
-{#
-const
-  CNames: array[0..9] of string = (
-    'Assembler',
-    'Comment',
-    'Directive',
-    'Identifier',
-    'Invalid',
-    'Keyword',
-    'Number',
-    'Space',
-    'String',
-    'Symbol'
-    );
-  HTMLNames: array[0..9] of string = (
-    'And Codes',
-    'ASP',
-    'Comment',
-    'Identifier',
-    'Keyword',
-    'Space',
-    'Symbol',
-    'Text',
-    'Undef',
-    'Value'
-    );
-  PasNames: array[0..10] of string = (
-    'Assembler',
-    'Case Label',
-    'Comment',
-    'Directive',
-    'IDE Directive',
-    'Identifier',
-    'Keyword',
-    'Number',
-    'Space',
-    'String',
-    'Symbol'
-    );
-#}
 
 {$R *.lfm}
 
@@ -362,41 +285,7 @@ var
   i: Integer;
 begin
   Highlighters := THighlighterList.Create;
-  {#
-  CAtts[0] := SynCppSyn1.AsmAttri;
-  CAtts[1] := SynCppSyn1.CommentAttri;
-  CAtts[2] := SynCppSyn1.DirecAttri;
-  CAtts[3] := SynCppSyn1.IdentifierAttri;
-  CAtts[4] := SynCppSyn1.InvalidAttri;
-  CAtts[5] := SynCppSyn1.KeyAttri;
-  CAtts[6] := SynCppSyn1.NumberAttri;
-  CAtts[7] := SynCppSyn1.SpaceAttri;
-  CAtts[8] := SynCppSyn1.StringAttri;
-  CAtts[9] := SynCppSyn1.SymbolAttri;
 
-  PasAtts[0] := SynPasSyn1.AsmAttri;
-  PasAtts[1] := SynPasSyn1.CaseLabelAttri;
-  PasAtts[2] := SynPasSyn1.CommentAttri;
-  PasAtts[3] := SynPasSyn1.DirectiveAttri;
-  PasAtts[4] := SynPasSyn1.IDEDirectiveAttri;
-  PasAtts[5] := SynPasSyn1.IdentifierAttri;
-  PasAtts[6] := SynPasSyn1.KeyAttri;
-  PasAtts[7] := SynPasSyn1.NumberAttri;
-  PasAtts[8] := SynPasSyn1.SpaceAttri;
-  PasAtts[9] := SynPasSyn1.StringAttri;
-  PasAtts[10] := SynPasSyn1.SymbolAttri;
-
-  HTMLAtts[0] := SynHTMLSyn1.AndAttri;
-  HTMLAtts[1] := SynHTMLSyn1.ASPAttri;
-  HTMLAtts[2] := SynHTMLSyn1.CommentAttri;
-  HTMLAtts[3] := SynHTMLSyn1.IdentifierAttri;
-  HTMLAtts[4] := SynHTMLSyn1.KeyAttri;
-  HTMLAtts[5] := SynHTMLSyn1.SpaceAttri;
-  HTMLAtts[6] := SynHTMLSyn1.SymbolAttri;
-  HTMLAtts[7] := SynHTMLSyn1.TextAttri;
-  HTMLAtts[8] := SynHTMLSyn1.UndefKeyAttri;
-  HTMLAtts[9] := SynHTMLSyn1.ValueAttri;
-  #}
   CurRow := -1;
   Key1Box:=TCustomShortCutGrabBox.Create(Self);
   with Key1Box do begin
@@ -550,11 +439,7 @@ begin
   SynEdit1.Font.Size := Prefs.FontSize;
   FontButton.Caption := SynEdit1.Font.Name + '/' + IntToStr(SynEdit1.Font.Size);
   // Highlighter
-  {#
-  SynPasSyn1.LoadFromFile(PasPrefsName);
-  SynCppSyn1.LoadFromFile(CPrefsName);
-  SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
-  #}
+  // Retrieves prefs filename for every highlighter and Load Syntax Attributes
   for i := 0 To Pred(Highlighters.Count) do
   begin
     SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
@@ -692,6 +577,7 @@ begin
   // LangSelection item indices are synced with Highlighters item indices
   i := LangSelection.ItemIndex;
 
+  // Retrieve Details from current (selected) highlighter and make them active
   If InRange(i, 0, Pred(Highlighters.Count)) then
   begin
     HighlighterItem := Highlighters.Items[i];
@@ -711,31 +597,6 @@ begin
   end
   else Writeln('MISSION IMPOSSIBLE: langselection.itemindex out of range: ', i);
 
-  {#
-  case LangSelection.ItemIndex of
-    0:
-    begin
-      SynEdit1.Highlighter := SynCppSyn1;
-      SynEdit1.Lines.Text := CShortText;
-      for i := 0 to High(CNames) do
-        SyntaxItems.Items.Add(CNames[i]);
-    end;
-    1:
-    begin
-      SynEdit1.Highlighter := SynPasSyn1;
-      SynEdit1.Lines.Text := PasShortText;
-      for i := 0 to High(PasNames) do
-        SyntaxItems.Items.Add(PasNames[i]);
-    end;
-    2:
-    begin
-      SynEdit1.Highlighter := SynHTMLSyn1;
-      SynEdit1.Lines.Text := HTMLText;
-      for i := 0 to High(HTMLNames) do
-        SyntaxItems.Items.Add(HTMLNames[i]);
-    end;
-  end;
-  #}
   SyntaxItems.Items.EndUpdate;
 end;
 
@@ -770,12 +631,7 @@ begin
   Prefs.BracketColor := ColEdBracket.ButtonColor;
   Prefs.FontName := SynEdit1.Font.Name;
   Prefs.FontSize := SynEdit1.Font.Size;
-  //
-  {#
-  SynPasSyn1.SaveToFile(PasPrefsName);
-  SynCppSyn1.SaveToFile(CPrefsName);
-  SynHTMLSyn1.SaveToFile(HTMLPrefsName);
-  #}
+  // Save Syntax Attributes for all highlighters
   for i := 0 To Pred(Highlighters.Count) do
   begin
     SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
@@ -830,7 +686,7 @@ var
   HlItemIndex : LongInt;
   AttrIndex   : LongInt;
 begin
-  //
+  // Find and activate double-clicked attribute
   if SynEdit1.GetHighlighterAttriAtRowCol(SynEdit1.CaretXY, token, Att) then
   begin
     // LangSelection item indices are synced with Highlighters item indices
@@ -847,47 +703,6 @@ begin
       end;
     end;
   end;
-
- {#
- if SynEdit1.GetHighlighterAttriAtRowCol(SynEdit1.CaretXY, token, Att) then
- begin
-   case LangSelection.ItemIndex of
-    0: begin
-      for i := 0 to High(CAtts) do
-      begin
-        if Att = CAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
-      end;
-    end;
-    1: begin
-      for i := 0 to High(PasAtts) do
-      begin
-        if Att = PasAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
-      end;
-    end;
-    2: begin
-      for i := 0 to High(HTMLAtts) do
-      begin
-        if Att = HTMLAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
-      end;
-    end;
-  end;
- end;
- #}
 end;
 
 procedure TPrefsWin.SyntaxItemsChange(Sender: TObject);
@@ -1041,58 +856,6 @@ begin
   PrefsWin.EndFormUpdate;
 end;
 
-{#
-function TPrefsWin.GetAtt: TSynHighlighterAttributes;
-begin
-  CurAtt := nil;
-  case LangSelection.ItemIndex of
-    0: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynCppSyn1.AsmAttri;
-        1: CurAtt := SynCppSyn1.CommentAttri;
-        2: CurAtt := SynCppSyn1.DirecAttri;
-        3: CurAtt := SynCppSyn1.IdentifierAttri;
-        4: CurAtt := SynCppSyn1.InvalidAttri;
-        5: CurAtt := SynCppSyn1.KeyAttri;
-        6: CurAtt := SynCppSyn1.NumberAttri;
-        7: CurAtt := SynCppSyn1.SpaceAttri;
-        8: CurAtt := SynCppSyn1.StringAttri;
-        9: CurAtt := SynCppSyn1.SymbolAttri;
-      end;
-    end;
-    1: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynPasSyn1.AsmAttri;
-        1: CurAtt := SynPasSyn1.CaseLabelAttri;
-        2: CurAtt := SynPasSyn1.CommentAttri;
-        3: CurAtt := SynPasSyn1.DirectiveAttri;
-        4: CurAtt := SynPasSyn1.IDEDirectiveAttri;
-        5: CurAtt := SynPasSyn1.IdentifierAttri;
-        6: CurAtt := SynPasSyn1.KeyAttri;
-        7: CurAtt := SynPasSyn1.NumberAttri;
-        8: CurAtt := SynPasSyn1.SpaceAttri;
-        9: CurAtt := SynPasSyn1.StringAttri;
-        10: CurAtt := SynPasSyn1.SymbolAttri;
-      end;
-    end;
-    2: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynHTMLSyn1.AndAttri;
-        1: CurAtt := SynHTMLSyn1.ASPAttri;
-        2: CurAtt := SynHTMLSyn1.CommentAttri;
-        3: CurAtt := SynHTMLSyn1.IdentifierAttri;
-        4: CurAtt := SynHTMLSyn1.KeyAttri;
-        5: CurAtt := SynHTMLSyn1.SpaceAttri;
-        6: CurAtt := SynHTMLSyn1.SymbolAttri;
-        7: CurAtt := SynHTMLSyn1.TextAttri;
-        8: CurAtt := SynHTMLSyn1.UndefKeyAttri;
-        9: CurAtt := SynHTMLSyn1.ValueAttri;
-      end;
-    end;
-  end;
-  Result := CurAtt;
-end;
-#}
 function TPrefsWin.GetAtt: TSynHighlighterAttributes;
 var
   AttrIndex   : LongInt;
@@ -1206,7 +969,7 @@ begin
     Ed.Options := Ed.Options + [eoTrimTrailingSpaces]
   else
     Ed.Options := Ed.Options - [eoTrimTrailingSpaces];
-  //SideBar
+  // SideBar
   Ed.Gutter.Parts[0].Visible := Prefs.Bookmarks;
   Ed.Gutter.Parts[1].Visible := Prefs.LineNumbers;
   TSynGutterLineNumber(Ed.Gutter.Parts[1]).ShowOnlyLineNumbersMultiplesOf := Prefs.LineSkipNum;
@@ -1230,12 +993,7 @@ begin
   Ed.BracketMatchColor.Background := Prefs.BracketColor;
   Ed.Font.Name := Prefs.FontName;
   Ed.Font.Size := Prefs.FontSize;
-  //
-  {#
-  EdFrame.SynCppSyn1.LoadFromFile(CPrefsName);
-  EdFrame.SynPasSyn1.LoadFromFile(PasPrefsName);
-  EdFrame.SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
-  #}
+  // Load Syntax attributes for every highlighter in current editor frame.
   for i := 0 To Pred(EdFrame.Highlighters.Count) do
   begin
     SyntaxIndex := EdFrame.Highlighters.Items[i].SyntaxIndex;
@@ -1552,11 +1310,6 @@ begin
 end;
 
 initialization
-  {#
-  PasPrefsName := ChangeFileExt(Application.ExeName, 'Pas.prefs');
-  CPrefsName := ChangeFileExt(Application.ExeName, 'C.prefs');
-  HTMLPrefsName := ChangeFileExt(Application.ExeName, 'HTML.prefs');
-  #}
   UserCommands := TUserCommands.Create(True);
 finalization;
   UserCommands.Free;
