@@ -48,10 +48,87 @@ Type
   end;
 
 
+  function LoadSyntaxAttributesFromFile(Syn: TSynCustomHighlighter; IniFileName: String): boolean;
+  function SaveSyntaxAttributesToFile(Syn: TSynCustomHighlighter; IniFileName: String): boolean;
+
+  function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
+
 implementation
 
+
 Uses
-  SynHighlighterCpp, SynHighlighterPas, SynHighlighterHTML;
+  SynHighlighterCpp, SynHighlighterPas, SynHighlighterHTML, // EdiSyn Syntax Highlighters
+  inifiles;                // For reading/writing attributes prefs
+
+
+// ############################################################################
+// ###
+// ###      Global Routines
+// ###
+// ############################################################################
+
+
+
+// Copy from Math.InRange in order to avoid dragging in the complete math unit.
+function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
+begin
+  Result:=(AValue>=AMin) and (AValue<=AMax);
+end;
+
+
+
+// ############################################################################
+// ###
+// ###      Highlighter Helpers
+// ###
+// ############################################################################
+
+
+
+// LoadSyntaxAttributesFromFile and SaveSyntaxAttributesToFile
+// Implemented to create a generic way of loading and saving attributes from a
+// EdiSyn Custom highlighter.
+// Normally one would use LoadFromFile and SaveToFile in the custom highlighter,
+// but unfortunately TSynFacilSyn uses these to load and save the complete
+// XML syntax file, instead of attributes.
+function LoadSyntaxAttributesFromFile(Syn: TSynCustomHighlighter; IniFileName: String): boolean;
+var
+ AnIni : TIniFile;
+ i     : Integer;
+begin
+  writeln('loading preferences from file ', IniFileName);
+  AnIni := TIniFile.Create({UTF8ToSys}(IniFilename));
+  try
+    with AnIni do
+    begin
+      Result := true;
+      for i := 0 to Pred(Syn.AttrCount) do
+        Result := Result and Syn.Attribute[i].LoadFromFile(AnIni);
+    end;
+   finally
+    AnIni.Free;
+  end;
+end;
+
+
+function  SaveSyntaxAttributesToFile(Syn: TSynCustomHighlighter; IniFileName: String): boolean;
+var
+  AnIni : TIniFile;
+  i     : integer;
+begin
+  writeln('writing preferences to file ', IniFileName);
+  AnIni := TIniFile.Create({UTF8ToSys}(IniFileName));
+  try
+    with AnIni do
+    begin
+      Result := true;
+      for i := 0 to Pred(Syn.AttrCount) do
+        Result := Result and Syn.Attribute[i].SaveToFile(AnIni);
+    end;
+   finally
+    AnIni.Free;
+  end;
+end;
 
 
 
