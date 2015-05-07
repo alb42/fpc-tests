@@ -25,6 +25,7 @@ Type
     Destructor Destroy; override;
    public
     property HighLighter: TSynCustomHighlighter read fHighLighter;
+    property SyntaxIndex: Integer read fSyntaxIndex;
   end;
 
 
