@@ -1,9 +1,9 @@
 Const
   // ToDo: Use defaultfilter property from TSynCustomHighlighter ?
-  PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
-  CEXT: array[0..3] of string = ('.c', '.h', '.cpp', '.hpp');
-  HTMLEXT: array[0..1] of string = ('.html', '.htm');
-
+  CEXT         : array[0..3] of string = ('.c', '.h', '.cpp', '.hpp');
+  HOLLYWOODEXT : array[0..0] of string = ('.hws');
+  HTMLEXT      : array[0..1] of string = ('.html', '.htm');
+  PASEXT       : array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
 
   CTEXT =
   '#include <proto/exec.h>'#13#10 + '#include <dos/dos.h>'#13#10 +
@@ -22,6 +22,56 @@ Const
   '  CloseLibrary(&IntuitionBase->LibNode);'#13#10 +
   '  return RETURN_OK;'#13#10 + '  AROS_PROCFUNC_EXIT'#13#10 + '}';
 
+  HOLLYWOODTEXT =
+  '; this is a comment' + #13#10 +
+  #13#10 +
+  '/* this is a' + #13#10 +
+  'multiline' + #13#10 +
+  'comment */' + #13#10 +
+  #13#10 +
+  '@BGPIC 1, "FancyBackground.jpg" ; a preprocessor commmand + string' + #13#10 +
+  #13#10 +
+  'a$ = [[ This' + #13#10 +
+  'is a' + #13#10 +
+  'multiline string' + #13#10 +
+  ']]' + #13#10 +
+  #13#10 +
+  't = GetMonitors()' + #13#10 +
+  'For Local k = 0 To ListItems(t) - 1' + #13#10 +
+  '   DebugPrint("Monitor", k + 1, "X:", t[k].X, "Y:", t[k].Y,' + #13#10 +
+  '        "Width:", t[k].Width, "Height:", t[k].Height)' + #13#10 +
+  'Next' + #13#10 +
+  #13#10 +
+  'mathlib = {}  ; create an empty table' + #13#10 +
+  #13#10 +
+  '#FLIPPERFLOP' + #13#10 +
+  #13#10 +
+  'Function p_MyFunc(msg)' + #13#10 +
+  '    Switch msg.action' + #13#10 +
+  '    Case "OnMouseUp":' + #13#10 +
+  '            DebugPrint("Left mouse button pressed:", msg.id)' + #13#10 +
+  '    Case "OnRightMouseUp":' + #13#10 +
+  '            DebugPrint("Right mouse button pressed:", msg.id)' + #13#10 +
+  '    EndSwitch' + #13#10 +
+  'EndFunction' + #13#10 +
+  #13#10 +
+  'Function mathlib.add(a, b)' + #13#10 +
+  '    Return(a + b)' + #13#10 +
+  'EndFunction' + #13#10 +
+  #13#10 +
+  'Print("Hello World!")' + #13#10 +
+  #13#10 +
+  'MakeButton(1, #SIMPLEBUTTON, 0, 0, 100, 100, {OnMouseUp = p_MyFunc})' + #13#10 +
+  'MakeButton(2, #SIMPLEBUTTON, 200, 0, 100, 100, {OnMouseUp = p_MyFunc})' + #13#10 +
+  #13#10 +
+  'End()  ; Exit' + #13#10 +
+  #13#10 +
+  'a = mathlib.mul(5, 10)  ; a receives the value 50';
+
+  HTMLText = '<HTML>'#13#10 + '<!-- comment -->'#13#10 +
+  '<BODY bgcolor="#ffffff">'#13#10 + '  Test &nbsp;'#13#10 +
+  '  <INVALID_TAG>'#13#10 + '</HTML>';
+
   PASTEXT =
   'unit Unit1;'#13#10 + ''#13#10 + '{$mode objfpc}{$H+}'#13#10 +
   ''#13#10 + 'interface'#13#10 + ''#13#10 + 'uses'#13#10 +
@@ -36,11 +86,6 @@ Const
   ''#13#10 + 'implementation'#13#10 + ''#13#10 + '{$R *.lfm}'#13#10 +
   ''#13#10 + '{ TForm1 }'#13#10 + ''#13#10 + 'procedure TForm1.Test;'#13#10 +
   'begin'#13#10 + '  writeln(''something to test with'', 14, '' also with numbers ;)'');'#13#10 + 'end;'#13#10 + ''#13#10 + 'end.';
-
-
-  HTMLText = '<HTML>'#13#10 + '<!-- comment -->'#13#10 +
-  '<BODY bgcolor="#ffffff">'#13#10 + '  Test &nbsp;'#13#10 +
-  '  <INVALID_TAG>'#13#10 + '</HTML>';
 
   NText =
   'Sed ut perspiciatis unde omnis iste natus error sit voluptatem'#13#10 +
@@ -98,3 +143,60 @@ Const
     '  printf("hello world\n");'#13#10 +
     '  return 0'#13#10 +
     '}';
+
+  HollywoodSyntax =
+    '<?xml version="1.0"?>' +
+    '<Language name="Hollywood" ext="hws">' +
+    '  <Attribute Name="Preprocessor" ForeCol="#FF0000"></Attribute>' +
+    '  <Attribute Name="Directive"    ForeCol="#00FF00"></Attribute>' +
+    '  <Attribute Name="String"       ForeCol="#00FFFF" Bold="True" ></Attribute>' +
+    '  <symbols>' +
+    '  </symbols>' +
+    '  <Identifiers CharsStart= "A..Za..z_" Content = "A..Za..z0..9_">' +
+    '    <token attribute="Keyword">' +
+    '    And' +
+    '    Block Break' +
+    '    Case Const Continue' +
+    '    Default Dim DimStr Do' +
+    '    Else ElseIf EndBlock EndFunction EndIf EndSwitch' +
+    '    False For Forever Function' +
+    '    Global Gosub Goto' +
+    '    If In' +
+    '    Label Local' +
+    '    Next Nil Not' +
+    '    Or' +
+    '    Repeat Return' +
+    '    Step Switch' +
+    '    Then To True' +
+    '    Until' +
+    '    Wend While' +
+    '    Xor' +
+    '    </token>' +
+    '  </Identifiers>' +
+    '  <Token CharsStart="$"    Content = "0..9ABCDEFabcdef" Attribute=''NUMBER''> </Token>' +
+    '  <!-- Token CharsStart="%"    Content = "01" Attribute=''NUMBER''> </Token> -->' +
+    '  <Token CharsStart="0..9" Content = "0..9" Attribute=''NUMBER''> </Token>' +
+    '  <Token CharsStart="#"    Content = "A..Za..z0..9" Attribute=''DIRECTIVE''> </Token>' +
+    '  <Token CharsStart="@"    Content = "A..Za..z0..9" Attribute=''PREPROCESSOR''> </Token>' +
+    '' +
+    '  <!--- Strings -->' +
+    '  <String Start="&quot;" End="&quot;"></String>' +
+    '  <String Start="[["     End="]]" Multiline="true" Folding="true"></String>' +
+    '  <!--- Character constants -->' +
+    '  <String Start="''"      End="''"></String>' +
+    '  <!--- single line comment -->' +
+    '  <Comment Start=";" ></Comment>' +
+    '  <!--- multiple line comment -->' +
+    '  <Comment Start="/*"    End="*/" Multiline="true"></Comment>' +
+    '' +
+    '  <Block Start="Block"  End= "EndBlock" ></Block>' +
+    '  <Block Start="For"    End= "Next" ></Block>' +
+    '  <Block Start="Repeat" End= "Until" ></Block>' +
+    '  <Block Start="Switch" End= "EndSwitch" ></Block>' +
+    '  <Block Start="While"  End= "Wend" ></Block>' +
+    '' +
+    '  <Block Name="Func" Start="function" End="endfunction" Parent="Main" BackCol="#D0F5FF">' +
+    '    <Block Name="FuncParam" Start="(" End=")" Folding="false"></Block>' +
+    '  </Block>' +
+    '</Language>';
+

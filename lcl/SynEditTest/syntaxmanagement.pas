@@ -532,11 +532,14 @@ begin
   SE := SyntaxManager.NewElement(shtCPP);
   FillNewElement(SE, SYNS_LangCPP    , 'C/C++'     , 'C'    , PFs + 'C.prefs'         , CTEXT         , CShortText    , CEXT);
 
-  SE := SyntaxManager.NewElement(shtPascal);
-  FillNewElement(SE, SYNS_LangPascal , 'Pascal'    , 'Pas'  , PFs + 'Pas.prefs'       , PASTEXT       , PasShortText  , PASEXT);
+  SE := SyntaxManager.NewElement(shtCustom);
+  FillNewElement(SE, 'Hollywood'     , 'Hollywood' , 'Hw'   , PFs + 'Hollywood.prefs' , HOLLYWOODTEXT , HOLLYWOODTEXT , HOLLYWOODEXT , HollywoodSyntax);
 
   SE := SyntaxManager.NewElement(shtHTML);
   FillNewElement(SE, SYNS_LangHTML   , 'HTML'      , 'Html' , PFs + 'HTML.prefs'      , HTMLTEXT      , HTMLTEXT      , HTMLEXT);
+
+  SE := SyntaxManager.NewElement(shtPascal);
+  FillNewElement(SE, SYNS_LangPascal , 'Pascal'    , 'Pas'  , PFs + 'Pas.prefs'       , PASTEXT       , PasShortText  , PASEXT);
 end;
 
 
