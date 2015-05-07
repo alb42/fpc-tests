@@ -657,7 +657,10 @@ begin
   // Set the C Highlighter
   if CMenu.Checked then
   begin
+    {#
     CurEditor.Highlighter := CurFrame.SynCppSyn1;
+    #}
+    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_C).HighLighter;
     ExportMenu.Enabled := True;
     MikroStat.Highlighter := 'C';
   end;
@@ -742,7 +745,10 @@ begin
   // TODO: Change Highlighters to a List with Tags as Index
   if PascalMenu.Checked then
   begin
+    {#
     CurEditor.Highlighter := CurFrame.SynPasSyn1;
+    #}
+    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_PASCAL).HighLighter;
     ExportMenu.Enabled := True;
     MikroStat.Highlighter := 'Pas';
   end;
@@ -752,7 +758,10 @@ procedure TMainWindow.HTMLMenuClick(Sender: TObject);
 begin
   if HTMLMenu.Checked then
   begin
+    {#
     CurEditor.Highlighter := CurFrame.SynHTMLSyn1;
+    #}
+    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_HTML).HighLighter;
     ExportMenu.Enabled := True;
     MikroStat.Highlighter := 'HTML';
   end;
@@ -943,11 +952,20 @@ begin
   NewFrame.Editor.Gutter.Parts[1].Visible := Prefs.LineNumbers;
   // Highlighter
   if PascalMenu.Checked then
+    {#
     NewFrame.Editor.Highlighter := NewFrame.SynPasSyn1;
+    #}
+    NewFrame.Editor.Highlighter := NewFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_PASCAL).HighLighter;
   if CMenu.Checked then
+    {#
     NewFrame.Editor.Highlighter := NewFrame.SynCppSyn1;
+    #}
+    NewFrame.Editor.Highlighter := NewFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_C).HighLighter;
   if HTMLMenu.Checked then
+    {#
     NewFrame.Editor.Highlighter := NewFrame.SynHTMLSyn1;
+    #}
+    NewFrame.Editor.Highlighter := NewFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_HTML).HighLighter;
   if NoneMenu.Checked then
     NewFrame.Editor.Highlighter := nil;
   // Add the Tab
