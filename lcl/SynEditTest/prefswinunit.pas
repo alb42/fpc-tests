@@ -260,9 +260,11 @@ var
   HTMLAtts: array[0..9] of TSynHighlighterAttributes;
   #}
   PrefsWin: TPrefsWin;
+  {#
   PasPrefsName: string;
   CPrefsName: string;
   HTMLPrefsName: string;
+  #}
   VirtualKeyStrings: TStringHashList = nil;
   CmdName: array[0..1000] of string;
   ShortCutList: array of record
@@ -556,12 +558,7 @@ begin
   for i := 0 To Pred(Highlighters.Count) do
   begin
     SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
-    Case SyntaxIndex of
-      HIGHLIGHTER_C       : s := CPrefsName;
-      HIGHLIGHTER_PASCAL  : s := PasPrefsName;
-      HIGHLIGHTER_HTML    : s := HTMLPrefsName;
-      else                  s := '';
-    end;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
     LoadSyntaxAttributesFromFile(Highlighters.Items[i].HighLighter, s);
   end;
   LangSelectionChange(nil);
@@ -684,6 +681,7 @@ procedure TPrefsWin.LangSelectionChange(Sender: TObject);
 var
   i : Integer;
   SyntaxIndex : Integer;
+  SyntaxElem  : TSyntaxElement;
   HighlighterItem: THighlighterListItem;
   Highlighter: TSynCustomHighlighter;
   s : String;
@@ -693,6 +691,7 @@ begin
 
   // LangSelection item indices are synced with Highlighters item indices
   i := LangSelection.ItemIndex;
+
   If InRange(i, 0, Pred(Highlighters.Count)) then
   begin
     HighlighterItem := Highlighters.Items[i];
@@ -700,16 +699,10 @@ begin
     begin
       Highlighter := HighlighterItem.HighLighter;
       SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
-
-      Case SyntaxIndex of
-        HIGHLIGHTER_C       : s := CShortText;
-        HIGHLIGHTER_PASCAL  : s := PasShortText;
-        HIGHLIGHTER_HTML    : s := HTMLText;
-        else                  s := 'Error in Syntaxindex';
-      end;
+      SyntaxElem  := SyntaxManager.Elements[SyntaxIndex];
 
       SynEdit1.Highlighter := Highlighter;
-      SynEdit1.Lines.Text  := s;
+      SynEdit1.Lines.Text  := SyntaxElem.SamplePrefs;
 
       for i := 0 to Pred(Highlighter.AttrCount)
         do SyntaxItems.Items.Add(Highlighter.Attribute[i].Name);
@@ -786,12 +779,7 @@ begin
   for i := 0 To Pred(Highlighters.Count) do
   begin
     SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
-    Case SyntaxIndex of
-      HIGHLIGHTER_C       : s := CPrefsName;
-      HIGHLIGHTER_PASCAL  : s := PasPrefsName;
-      HIGHLIGHTER_HTML    : s := HTMLPrefsName;
-      else                  s := '';
-    end;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
     SaveSyntaxAttributesToFile(Highlighters.Items[i].HighLighter, s);
   end;
   // Keys
@@ -1251,12 +1239,7 @@ begin
   for i := 0 To Pred(EdFrame.Highlighters.Count) do
   begin
     SyntaxIndex := EdFrame.Highlighters.Items[i].SyntaxIndex;
-    Case SyntaxIndex of
-      HIGHLIGHTER_C       : s := CPrefsName;
-      HIGHLIGHTER_PASCAL  : s := PasPrefsName;
-      HIGHLIGHTER_HTML    : s := HTMLPrefsName;
-      else                  s := '';
-    end;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
     LoadSyntaxAttributesFromFile(EdFrame.Highlighters.Items[i].HighLighter, s);
   end;
   // Keybindings
@@ -1569,9 +1552,11 @@ begin
 end;
 
 initialization
+  {#
   PasPrefsName := ChangeFileExt(Application.ExeName, 'Pas.prefs');
   CPrefsName := ChangeFileExt(Application.ExeName, 'C.prefs');
   HTMLPrefsName := ChangeFileExt(Application.ExeName, 'HTML.prefs');
+  #}
   UserCommands := TUserCommands.Create(True);
 finalization;
   UserCommands.Free;

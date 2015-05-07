@@ -7,13 +7,13 @@ interface
 uses
   Classes, SysUtils, Contnrs, menus, SynEditHighlighter;
 
-
+{
 Const
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
   HIGHLIGHTER_PASCAL = 2;
   HIGHLIGHTER_HTML = 3;
-
+}
 
 Type
   TSyntaxHighlighterType =
@@ -112,7 +112,7 @@ Var
   SyntaxManager : TSyntaxManager;
 
 
-  {$I SyntaxDeclarations.inc}          // Temp workable Syntax declarations go in here
+  {.$I SyntaxDeclarations.inc}          // Temp workable Syntax declarations go in here
 
 
 implementation
@@ -126,7 +126,14 @@ Uses
   inifiles;                            // For reading/writing attributes prefs
 
 
-  {.$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
+  {$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
+
+Const
+  HIGHLIGHTER_NONE = 0;
+  HIGHLIGHTER_C = 1;
+  HIGHLIGHTER_PASCAL = 2;
+  HIGHLIGHTER_HTML = 3;
+
 
 // ############################################################################
 // ###

@@ -587,7 +587,11 @@ end;
 
 function TPrefs.GetDefHighlighter: integer;
 begin
-  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
+  // Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
+  // NOTE: It is not possible to sync this in a sane way anymore.
+  // chosen 2, as currently it means Pascal, but there is no way to tell for
+  // sure.
+  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', 2);
 end;
 
 function TPrefs.GetEdBgColor: TColor;
