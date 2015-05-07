@@ -26,11 +26,12 @@ const
   DEFAULTFONTSIZE = 11;
   {$endif}
 
-
+  {
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
   HIGHLIGHTER_PASCAL = 2;
   HIGHLIGHTER_HTML = 3;
+  }
 
 type
   TUserCommand = class

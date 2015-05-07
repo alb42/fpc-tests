@@ -7,6 +7,14 @@ interface
 uses
   Classes, SysUtils, Contnrs, SynEditHighlighter;
 
+
+Const
+  HIGHLIGHTER_NONE = 0;
+  HIGHLIGHTER_C = 1;
+  HIGHLIGHTER_PASCAL = 2;
+  HIGHLIGHTER_HTML = 3;
+
+
 Type
   THighlighterListItem = class(TObject)
    private
@@ -42,16 +50,7 @@ Type
 implementation
 
 Uses
-  PrefsUnit,
   SynHighlighterCpp, SynHighlighterPas, SynHighlighterHTML;
-
-(*
-Const
-  HIGHLIGHTER_NONE   = 0;
-  HIGHLIGHTER_C      = 1;
-  HIGHLIGHTER_PASCAL = 2;
-  HIGHLIGHTER_HTML   = 3;
-*)
 
 
 
