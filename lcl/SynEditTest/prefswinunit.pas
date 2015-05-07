@@ -283,9 +283,29 @@ end;
 procedure TPrefsWin.FormCreate(Sender: TObject);
 var
   i: Integer;
+  HighlighterItem : THighlighterListItem;
+  SyntaxIndex : Integer;
+  s : String;
 begin
+  // SynEdit Highlighters
   Highlighters := THighlighterList.Create;
-
+  // LangSelection combobox (based on Highlighters)
+  LangSelection.Items.BeginUpdate;
+  LangSelection.Clear;
+  for i := 0 to Pred(Highlighters.Count) do
+  begin
+    HighlighterItem := Highlighters.Items[i];
+    If Assigned(HighlighterItem) then
+    begin
+      SyntaxIndex := HighlighterItem.SyntaxIndex;
+      s := SyntaxManager.Elements[SyntaxIndex].MenuName;
+      langselection.Items.Add(s);
+    end;
+  end;
+  LangSelection.Items.EndUpdate;
+  // required for windows to make first item appear activated ?
+  LangSelection.ItemIndex := 0;
+  //
   CurRow := -1;
   Key1Box:=TCustomShortCutGrabBox.Create(Self);
   with Key1Box do begin
