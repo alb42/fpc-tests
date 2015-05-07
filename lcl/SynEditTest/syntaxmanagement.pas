@@ -5,7 +5,7 @@ unit SyntaxManagement;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, SynEditHighlighter;
+  Classes, SysUtils, Contnrs, menus, SynEditHighlighter;
 
 
 Const
@@ -16,6 +16,61 @@ Const
 
 
 Type
+  TSyntaxHighlighterType =
+  (
+    shtNone,   // a.k.a. No Highlighter at all
+    shtCpp,    // a.k.a. TSynCppSyn
+    shtPascal, // a.k.a. TSynPasSyn
+    shtHTML,   // a.k.a. TSynHTMLSyn
+    shtCustom  // a.k.a. TSynFacilSyn
+  );
+
+
+  TSyntaxElement = class(TObject)
+   private
+    fSyntaxHLType : TSyntaxHighlighterType;
+    fSampleCode   : pChar;
+    fSamplePrefs  : pChar;
+    fSyntaxDesc   : pChar;
+    fName         : String;
+    fMikroName    : String;
+    fMenuName     : String;
+    fPrefsName    : String;
+    fExtensions   : Array of String;
+    fMenuItem     : TMenuItem;
+   public
+    Constructor Create;
+    Destructor  Destroy; override;
+   public
+    Function  HasFileExtension(Extension: String): Boolean;
+   public
+    property SampleCode  : pChar read fSampleCode;
+    property SamplePrefs : pChar read fSamplePrefs;
+    property Name        : String read fName;
+    property MikroName   : String read fMikroName;
+    property MenuName    : String read fMenuName;
+    property PrefsName   : String read fPrefsName;
+    property MenuItem    : TMenuItem read fMenuItem write fMenuItem;
+    property SyntaxHLType: TSyntaxHighlighterType read fSyntaxHLType;
+  end;
+
+
+  TSyntaxManager = Class(TObject)
+   private
+    fElements : TFPObjectList;
+   protected
+    function  GetElement(index: LongInt): TSyntaxElement;
+    function  GetElementsCount: LongInt;
+    function  NewElement(ElementType: TSyntaxHighlighterType): TSyntaxElement;
+   public
+    constructor Create;
+    destructor  Destroy; override;
+   public
+    property  Elements[index: LongInt]: TSyntaxElement read GetElement;
+    property  ElementsCount: LongInt read GetElementsCount;
+  end;
+
+
   THighlighterListItem = class(TObject)
    private
     fHighlighter : TSynCustomHighlighter;
@@ -53,7 +108,12 @@ Type
 
   function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
 
+Var
+  SyntaxManager : TSyntaxManager;
+
+
   {$I SyntaxDeclarations.inc}          // Temp workable Syntax declarations go in here
+
 
 implementation
 
@@ -64,7 +124,7 @@ Uses
   inifiles;                            // For reading/writing attributes prefs
 
 
-  {. $I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
+  {.$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
 
 // ############################################################################
 // ###
@@ -78,6 +138,102 @@ Uses
 function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
 begin
   Result:=(AValue>=AMin) and (AValue<=AMax);
+end;
+
+
+
+// ############################################################################
+// ###
+// ###      TSyntaxElement
+// ###
+// ############################################################################
+
+
+constructor TSyntaxElement.Create;
+begin
+  inherited;
+
+  fSyntaxHLType := TSyntaxHighlighterType(-1);
+  fSampleCode   := nil;
+  fSamplePrefs  := nil;
+  fSyntaxDesc   := nil;
+  fName         := '';
+  fMikroName    := '';
+  fMenuName     := '';
+  fPrefsName    := '';
+  SetLength(fExtensions, 0);
+  fMenuItem     := nil;
+end;
+
+
+Destructor TSyntaxElement.Destroy;
+begin
+  SetLength(fExtensions, 0);
+  inherited;
+end;
+
+
+function  TSyntaxElement.HasFileExtension(Extension: String): Boolean;
+var
+  i: Integer;
+begin
+  Result := False;
+
+  for i := 0 to high(fExtensions) do
+  begin
+    if Extension = fExtensions[i] then
+    begin
+      Result := true;
+      break;
+    end;
+  end;
+end;
+
+
+
+// ############################################################################
+// ###
+// ###      TSyntaxManager
+// ###
+// ############################################################################
+
+
+
+constructor TSyntaxManager.Create;
+begin
+  inherited;
+  fElements := TFPObjectList.Create(True);
+end;
+
+
+destructor TSyntaxManager.Destroy;
+begin
+  fElements.Free;
+  inherited;
+end;
+
+
+function  TSyntaxManager.GetElementsCount: LongInt;
+begin
+  Result := fElements.Count;
+end;
+
+
+function  TSyntaxManager.GetElement(index: LongInt): TSyntaxElement;
+begin
+  Result := TSyntaxElement(fElements.Items[Index]);
+end;
+
+
+function  TSyntaxManager.NewElement(ElementType: TSyntaxHighlighterType): TSyntaxElement;
+Var
+  Element: TSyntaxElement;
+begin
+  Element := TSyntaxElement.Create;
+  Element.fSyntaxHLType:= ElementType;
+
+  fElements.Add(Element);
+  result := Element;
 end;
 
 
