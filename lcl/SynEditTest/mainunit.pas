@@ -115,7 +115,6 @@ type
     CloseAllMenu: TMenuItem;
     AboutMainMenu: TMenuItem;
     AboutMenu: TMenuItem;
-    HTMLMenu: TMenuItem;
     PrefsMenu: TMenuItem;
     SearchAllWindowMenu: TMenuItem;
     WindowMenu: TMenuItem;
@@ -146,7 +145,6 @@ type
     ReplaceMenu: TMenuItem;
     SearchAgainMenu: TMenuItem;
     SepMenu3: TMenuItem;
-    NoneMenu: TMenuItem;
     SepMenu2: TMenuItem;
     UndoMenu: TMenuItem;
     RedoMenu: TMenuItem;
@@ -162,8 +160,6 @@ type
     ExportMenu: TMenuItem;
     QuitMenu: TMenuItem;
     HighLightMenu: TMenuItem;
-    CMenu: TMenuItem;
-    PascalMenu: TMenuItem;
     ExampleMenu: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
@@ -172,7 +168,6 @@ type
     procedure AutoMenuClick(Sender: TObject);
     procedure CloseAllMenuClick(Sender: TObject);
     procedure CloseTabMenuClick(Sender: TObject);
-    procedure CMenuClick(Sender: TObject);
     procedure ComOutputMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
     procedure CutMenuClick(Sender: TObject);
@@ -184,9 +179,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
-    procedure HTMLMenuClick(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
-    procedure NoneMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
     procedure PrefsMenuClick(Sender: TObject);
     procedure RecMenu1Click(Sender: TObject);
@@ -199,7 +192,6 @@ type
     procedure SelAllMenuClick(Sender: TObject);
     procedure NewMenuClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
-    procedure PascalMenuClick(Sender: TObject);
     procedure QuitMenuClick(Sender: TObject);
     procedure SaveAsMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
@@ -368,11 +360,11 @@ var
   MenuItem : TMenuItem;
 begin
   application.OnException := @HandleExceptions;
-  // Insert HighLightMenuItems. Kludgy solution until visual menu's are removed.
+  // Create dynamic MenuItems for Highlighter Menu
   For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
   begin
     MenuItem := TMenuItem.Create(HighLightMenu);
-    MenuItem.Caption    := SyntaxManager.Elements[SyntaxIndex].MenuName + ' new';
+    MenuItem.Caption    := SyntaxManager.Elements[SyntaxIndex].MenuName;
     MenuItem.Tag        := SyntaxIndex;
     MenuItem.GroupIndex := 1;
     MenuItem.RadioItem  := true;
@@ -380,11 +372,10 @@ begin
     MenuItem.AutoCheck  := true;
     MenuItem.OnClick    := @HighlightMenuItemClick;
     HighLightMenu.Insert(SyntaxIndex, MenuItem);
-    // Because of the autocheck we need to keep track of the status. Use the
+    // Because of the autocheck we need to keep track of its status. Use the
     // individual dynamic created menuitems stored in SyntaxManager for that.
     SyntaxManager.Elements[SyntaxIndex].MenuItem := MenuItem;
   end;
-
   // Counter for Editornames ;)
   FAbsCount := 0;
   // Tab control initial Values
@@ -585,20 +576,6 @@ begin
   TabPlusClickEvent(Tabs);
 end;
 
-{ TODO : remove }
-procedure TMainWindow.NoneMenuClick(Sender: TObject);
-begin
-  {#
-  // Switch Highlighter off
-  if NoneMenu.Checked then
-  begin
-    CurEditor.Highlighter := nil;
-    ExportMenu.Enabled := False;
-    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
-  end;
-  #}
-end;
-
 procedure TMainWindow.PasteMenuClick(Sender: TObject);
 begin
   // Paste
@@ -723,23 +700,6 @@ begin
   end;
 end;
 
-{ TODO : Remove }
-procedure TMainWindow.CMenuClick(Sender: TObject);
-begin
-  (*#
-  // Set the C Highlighter
-  if CMenu.Checked then
-  begin
-    {#
-    CurEditor.Highlighter := CurFrame.SynCppSyn1;
-    #}
-    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_C).HighLighter;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'C';
-  end;
-  #*)
-end;
-
 procedure TMainWindow.ComOutputMenuClick(Sender: TObject);
 begin
   OutWindow.Show;
@@ -811,40 +771,6 @@ procedure TMainWindow.CutMenuClick(Sender: TObject);
 begin
   // CutClip
   CurEditor.CutToClipboard;
-end;
-
-{ TODO : Remove }
-procedure TMainWindow.PascalMenuClick(Sender: TObject);
-begin
-  (*#
-  // Pascal highlighter
-  // TODO: Change Highlighters to a List with Tags as Index
-  if PascalMenu.Checked then
-  begin
-    {#
-    CurEditor.Highlighter := CurFrame.SynPasSyn1;
-    #}
-    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_PASCAL).HighLighter;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'Pas';
-  end;
-  #*)
-end;
-
-{ TODO : Remove }
-procedure TMainWindow.HTMLMenuClick(Sender: TObject);
-begin
-  (*#
-  if HTMLMenu.Checked then
-  begin
-    {#
-    CurEditor.Highlighter := CurFrame.SynHTMLSyn1;
-    #}
-    CurEditor.Highlighter := CurFrame.Highlighters.FindItemBySyntaxIndex(HIGHLIGHTER_HTML).HighLighter;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'HTML';
-  end;
-  #*)
 end;
 
 procedure TMainWindow.QuitMenuClick(Sender: TObject);
