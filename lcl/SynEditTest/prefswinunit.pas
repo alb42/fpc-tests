@@ -222,6 +222,7 @@ type
     procedure EditButtonClick(Sender: TObject);
     procedure FontButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
       var CanSelect: Boolean);
@@ -248,6 +249,7 @@ type
     BlockEvent: Boolean;
     Tabs: TATTabs;
     ComIdx: Integer;
+    Highlighters : THighlighterList;
     Procedure PrefsToEditor(EdFrame: TEditorFrame);
   end;
 
@@ -353,6 +355,8 @@ procedure TPrefsWin.FormCreate(Sender: TObject);
 var
   i: Integer;
 begin
+  Highlighters := THighlighterList.Create;
+
   CAtts[0] := SynCppSyn1.AsmAttri;
   CAtts[1] := SynCppSyn1.CommentAttri;
   CAtts[2] := SynCppSyn1.DirecAttri;
@@ -461,6 +465,11 @@ begin
   Pages.PageIndex := 0;
   // Tab Control Events
   Tabs.OnTabClick:=@TabClickEvent;
+end;
+
+procedure TPrefsWin.FormDestroy(Sender: TObject);
+begin
+  Highlighters.Free;
 end;
 
 procedure TPrefsWin.ColEdBgColorChanged(Sender: TObject);

@@ -23,7 +23,9 @@ type
     procedure SetFileName(AValue: string);
   public
     TabLink: TATTabs;
+    Highlighters : THighlighterList;
     constructor Create(TheOwner: TComponent); override;
+    destructor  Destroy; override;
     property Filename: string read FFilename write SetFileName;
   end;
 
@@ -86,11 +88,19 @@ end;
 constructor TEditorFrame.Create(TheOwner: TComponent);
 begin
   inherited Create(TheOwner);
+  Highlighters := THighlighterList.Create;
   Editor.OnProcessCommand := @(MainUnit.MainWindow.SynEdit1ProcessCommand);
   Editor.OnReplaceText:=@MainUnit.MainWindow.SynEdit1ReplaceText;
   Editor.OnStatusChange:=@MainUnit.MainWindow.SynEdit1StatusChange;
   Editor.BookMarkOptions.BookmarkImages := MainUnit.MainWindow.BookmarkImages;
   PrefsWin.PrefsToEditor(Self);
+end;
+
+destructor  TEditorFrame.Destroy;
+begin
+  Highlighters.Free;
+
+  inherited Destroy;
 end;
 
 {$R *.lfm}
