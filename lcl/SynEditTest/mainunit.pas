@@ -242,7 +242,8 @@ implementation
 
 uses
   GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit, AboutUnit,
-  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit, OutputUnit;
+  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit, OutputUnit,
+  SyntaxManagement;
 
 {$R *.lfm}
 

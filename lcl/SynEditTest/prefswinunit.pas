@@ -9,7 +9,7 @@ uses
   StdCtrls, ComCtrls, PrefsUnit, ATTabs, types, SynEdit, Syngutterlinenumber,
   SynEditHighlighter, SynHighlighterPas, SynHighlighterCpp, SynEditTypes,
   FrameUnit, lclProc, lcltype, stringhashlist, ValEdit, SynEditkeycmds,
-  SynHighlighterHTML, Grids, menus, EditBtn, Spin, Contnrs;
+  SynHighlighterHTML, Grids, menus, EditBtn, Spin, Contnrs, SyntaxManagement;
 
 const
   FILEPATTERN = '{$f}';

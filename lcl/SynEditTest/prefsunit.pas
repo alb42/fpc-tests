@@ -218,6 +218,9 @@ var
 
 implementation
 
+Uses
+  SyntaxManagement;
+
 { TPrefs }
 
 procedure TPrefs.SetXPos(AValue: integer);

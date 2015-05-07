@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, SynEdit, SynHighlighterCpp, SynHighlighterPas,
-  SynHighlighterHTML, Forms, Controls, ATTabs, menus;
+  SynHighlighterHTML, Forms, Controls, ATTabs, menus, SyntaxManagement;
 
 type
 

@@ -4,7 +4,7 @@ object MainWindow: TMainWindow
   Top = 160
   Width = 801
   Caption = 'MainWindow'
-  ClientHeight = 491
+  ClientHeight = 495
   ClientWidth = 801
   Color = 16578029
   Menu = MainMenu
@@ -16,7 +16,7 @@ object MainWindow: TMainWindow
   object LowerPanel: TPanel
     Left = 0
     Height = 28
-    Top = 463
+    Top = 467
     Width = 801
     Align = alBottom
     BevelOuter = bvNone
@@ -75,7 +75,7 @@ object MainWindow: TMainWindow
   end
   object EditorPanel: TPanel
     Left = 0
-    Height = 459
+    Height = 463
     Top = 2
     Width = 801
     Align = alClient
