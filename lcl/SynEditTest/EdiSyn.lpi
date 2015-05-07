@@ -40,7 +40,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="15">
+    <Units Count="16">
       <Unit0>
         <Filename Value="EdiSyn.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -149,6 +149,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OutPutUnit"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="syntaxmanagement.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="SyntaxManagement"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
