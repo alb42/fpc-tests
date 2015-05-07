@@ -145,11 +145,11 @@ Const
     '}';
 
   HollywoodSyntax =
-    '<?xml version="1.0"?>' +
-    '<Language name="Hollywood" ext="hws">' +
-    '  <Attribute Name="Preprocessor" ForeCol="#FF0000"></Attribute>' +
-    '  <Attribute Name="Directive"    ForeCol="#00FF00"></Attribute>' +
-    '  <Attribute Name="String"       ForeCol="#00FFFF" Bold="True" ></Attribute>' +
+    '<?xml version="1.0"?>'#13#10 +
+    '<Language name="Hollywood" ext="hws">'#13#10 +
+    '  <Attribute Name="Preprocessor" ForeCol="#FF0000"></Attribute>'#13#10 +
+    '  <Attribute Name="Directive"    ForeCol="#00FF00"></Attribute>'#13#10 +
+    '  <Attribute Name="String"       ForeCol="#00FFFF" Bold="True" ></Attribute>'#13#10 +
     '  <symbols>' +
     '  </symbols>' +
     '  <Identifiers CharsStart= "A..Za..z_" Content = "A..Za..z0..9_">' +

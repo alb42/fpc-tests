@@ -778,6 +778,8 @@ var
   Frame: TEditorFrame;
   SyntaxIndex: Integer;
 begin
+  // writeln('enter - MainUnit.TabClickEvent');
+
   EditorPanel.BeginUpdateBounds;
   for i := 0 to Tabs.TabCount - 1 do
   begin
@@ -788,18 +790,24 @@ begin
   // Let correct menuitem be checked based on active Frame/Editor
   if Assigned(CurEditor.Highlighter) then
   begin
-    For SyntaxIndex := 0 To Pred(SyntaxManager.ElementsCount) do
+    For i := 0 To Pred(CurFrame.Highlighters.Count) do
     begin
-      If CurEditor.Highlighter.LanguageName =
-        SyntaxManager.Elements[SyntaxIndex].Name then
+      // writeln('MainUnit.TabClickEvent: Highlighter name: ', CurEditor.Highlighter.LanguageName);
+      If CurEditor.Highlighter = CurFrame.Highlighters.Items[i].HighLighter then
       begin
+        SyntaxIndex := CurFrame.Highlighters.Items[i].SyntaxIndex;
         SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked := true;
+        // writeln('MainUnit.TabClickEvent: Matched a highlighter and checked MenuItem');
         break;
       end;
     end;
   end
   // ToDo: remove hardcoded zero index fallback value (highlighter is None)
-  else SyntaxManager.Elements[0].MenuItem.Checked:= true;
+  else
+  begin
+    // writeln('MainUnit.TabClickEvent: No valid highlighter, Check None menuitem');
+    SyntaxManager.Elements[0].MenuItem.Checked:= true;
+  end;
 
   UpdateStatusBar;
   UpdateTitlebar;
@@ -807,6 +815,7 @@ begin
   Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
   if EditorPanel.Visible then
     Frame.Editor.SetFocus;
+  writeln('leave - MainUnit.TabClickEvent');
 end;
 
 procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: integer;

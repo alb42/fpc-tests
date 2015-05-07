@@ -465,7 +465,6 @@ begin
 
     If (Highlighter <> nil) then
     begin
-      Writeln('Item ', SyntaxIndex, ' added to HighlightersList');
       Item := THighlighterListItem.Create;
       Item.fSyntaxIndex := SyntaxIndex;
       Item.fHighlighter := Highlighter;
@@ -475,8 +474,10 @@ begin
         XMLStringToSyntax(SyntaxElement.fSyntaxDesc, Highlighter as TSynFacilSyn);
       end;
       fHighlighters.Add(Item);
+      // SynFacilSyn missing: LanguageName not overriden.
+      Writeln('Item ', SyntaxIndex, ' added to HighlightersList: ', HighLighter.LanguageName);
     end
-    else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist');
+    else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist: ');
   end;
 end;
 
