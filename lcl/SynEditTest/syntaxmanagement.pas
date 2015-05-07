@@ -119,6 +119,8 @@ implementation
 
 
 Uses
+  Forms,                               // For Application
+  SynEditStrConst,                     // For SyntaxManager, official highlighter names
   SynHighlighterCpp, SynHighlighterPas,
   SynHighlighterHTML,                  // EdiSyn Syntax Highlighters
   inifiles;                            // For reading/writing attributes prefs
@@ -400,6 +402,74 @@ begin
   fHighlighters.Add(ListItem);
 end;
 
+
+
+// ############################################################################
+// ###
+// ###      Var SyntaxManager
+// ###
+// ############################################################################
+
+
+
+Procedure FillNewElement(SE: TSyntaxElement;
+  Name: String;
+  Menuname: String;
+  MikroName: String;
+  PrefsName : String;
+  const SampleCode: PChar;
+  const SamplePrefs: PChar;
+  const Extensions: Array of string;
+  const Syntax: PChar = nil
+  );
+var i: integer;
+begin
+  SE.fSyntaxDesc   := Syntax;
+  SE.fName         := Name;
+  SE.fMenuName     := MenuName;
+  SE.fMikroName    := MikroName;
+  SE.fPrefsName    := PrefsName;
+  SE.fSampleCode   := SampleCode;
+  SE.fSamplePrefs  := SamplePrefs;
+
+  If Length(Extensions) > 0 then
+  begin
+    SetLength(SE.fExtensions, Length(Extensions));
+    For i := low(Extensions) to high(Extensions)
+      do SE.fExtensions[i] := Extensions[i];
+  end;
+end;
+
+
+Procedure InitializeSyntaxManager;
+var
+  SE      : TSyntaxElement;
+  PFs     : String;
+begin
+  PFs := ChangeFileExt(Application.ExeName, '');
+  //                  Name           ,  MenuName   , mikro  , PrefsName               , SmpCode       , PrefsCode     , File exts    , Optional Syntax Description File for custom highlighters
+  SE := SyntaxManager.NewElement(shtNone);
+  FillNewElement(SE, 'None'          , 'None'      , ''     , ''                      , NTEXT         , nil           , []);
+
+  SE := SyntaxManager.NewElement(shtCPP);
+  FillNewElement(SE, SYNS_LangCPP    , 'C/C++'     , 'C'    , PFs + 'C.prefs'         , CTEXT         , CShortText    , CEXT);
+
+  SE := SyntaxManager.NewElement(shtPascal);
+  FillNewElement(SE, SYNS_LangPascal , 'Pascal'    , 'Pas'  , PFs + 'Pas.prefs'       , PASTEXT       , PasShortText  , PASEXT);
+
+  SE := SyntaxManager.NewElement(shtHTML);
+  FillNewElement(SE, SYNS_LangHTML   , 'HTML'      , 'Html' , PFs + 'HTML.prefs'      , HTMLTEXT      , HTMLTEXT      , HTMLEXT);
+end;
+
+
+
+initialization
+  SyntaxManager := TSyntaxManager.Create;
+  InitializeSyntaxManager;
+
+
+finalization
+  SyntaxManager.Free;
 
 end.
 
