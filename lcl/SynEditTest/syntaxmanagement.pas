@@ -128,11 +128,14 @@ Uses
 
   {$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
 
+{#
 Const
   HIGHLIGHTER_NONE = 0;
   HIGHLIGHTER_C = 1;
   HIGHLIGHTER_PASCAL = 2;
   HIGHLIGHTER_HTML = 3;
+#}
+
 
 
 // ############################################################################
@@ -383,7 +386,7 @@ begin
   end;
 end;
 
-
+{
 Procedure THighlighterList.Populate;
 var
   Highlighter   : TSynCustomHighlighter;
@@ -408,7 +411,44 @@ begin
   ListItem.fSyntaxIndex := HIGHLIGHTER_HTML;
   fHighlighters.Add(ListItem);
 end;
+}
 
+// Add / create (custom) EdiSyn highlighters based on information from
+// SyntaxManager.
+procedure THighlighterList.Populate;
+var
+  SyntaxIndex   : Integer;
+  SyntaxElement : TSyntaxElement;
+  Item          : THighlighterListItem;
+  Highlighter   : TSynCustomHighlighter;
+  SyntaxHLType  : TSyntaxHighlighterType;
+begin
+  // for every element present in the Syntax elementList
+  For SyntaxIndex := 0 To Pred(SyntaxManager.fElements.Count) do
+  begin
+    Highlighter   := nil;
+    SyntaxElement := TSyntaxElement(SyntaxManager.fElements.Items[SyntaxIndex]);
+    SyntaxHLType  := SyntaxElement.SyntaxHLType;
+
+    Case SyntaxHLType of
+      shtNone   : continue;                                 // a.k.a. No Highlighter at all
+      shtCPP    : Highlighter := TSynCppSyn.Create(nil);    // a.k.a. TSynCppSyn
+      shtPascal : Highlighter := TSynPasSyn.Create(nil);    // a.k.a. TSynPasSyn
+      shtHTML   : Highlighter := TSynHTMLSyn.Create(nil);   // a.k.a. TSynHTMLSyn
+      else        begin writeln('error: unknwon syntax Highlighter class'); continue; end;
+    end; // case
+
+    If (Highlighter <> nil) then
+    begin
+      Writeln('Item ', SyntaxIndex, ' added to HighlightersList');
+      Item := THighlighterListItem.Create;
+      Item.fSyntaxIndex := SyntaxIndex;
+      Item.fHighlighter := Highlighter;
+      fHighlighters.Add(Item);
+    end
+    else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist');
+  end;
+end;
 
 
 // ############################################################################
