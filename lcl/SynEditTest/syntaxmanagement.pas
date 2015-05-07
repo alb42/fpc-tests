@@ -161,14 +161,14 @@ implementation
 
 
 Uses
-  Forms,                               // For Application
-  SynEditStrConst,                     // For SyntaxManager, official highlighter names
+  Forms,                                     // For Application
+  SynEditStrConst,                           // For SyntaxManager, official highlighter names
   SynHighlighterCpp, SynHighlighterPas,
-  SynHighlighterHTML,                  // EdiSyn Syntax Highlighters
-  inifiles;                            // For reading/writing attributes prefs
+  SynHighlighterHTML, SynFacilHighlighter,   // EdiSyn Syntax Highlighters
+  inifiles;                                  // For reading/writing attributes prefs
 
 
-  {$I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
+  {$I SyntaxDeclarations.inc}                // Syntax declarations go in here (in the end )
 
 
 
@@ -339,6 +339,21 @@ begin
 end;
 
 
+// XMLStringToSyntax is used to create a stringstream out of given XML-string S.
+// Used to load internal stored Syntax file into TSynFacil custom highlighter.
+procedure XMLStringToSyntax(S: String; Syntax: TSynFacilSyn);
+Var
+ SS : TStringStream;
+begin
+  SS := TStringStream.Create(S);
+  try
+    Syntax.LoadFromStream(SS);      // Read complete XML document
+   finally
+    SS.Free;
+  end;
+end;
+
+
 
 // ############################################################################
 // ###
@@ -444,6 +459,7 @@ begin
       shtCPP    : Highlighter := TSynCppSyn.Create(nil);    // a.k.a. TSynCppSyn
       shtPascal : Highlighter := TSynPasSyn.Create(nil);    // a.k.a. TSynPasSyn
       shtHTML   : Highlighter := TSynHTMLSyn.Create(nil);   // a.k.a. TSynHTMLSyn
+      shtCustom : Highlighter := TSynFacilSyn.Create(nil);  // a.k.a. TSynFacilSyn
       else        begin writeln('error: unknwon syntax Highlighter class'); continue; end;
     end; // case
 
@@ -453,6 +469,11 @@ begin
       Item := THighlighterListItem.Create;
       Item.fSyntaxIndex := SyntaxIndex;
       Item.fHighlighter := Highlighter;
+      // If custom HL and an available syntax, add the provided syntax
+      If (SyntaxHLType = shtCustom) and (SyntaxElement.fSyntaxDesc <> nil) then
+      begin
+        XMLStringToSyntax(SyntaxElement.fSyntaxDesc, Highlighter as TSynFacilSyn);
+      end;
       fHighlighters.Add(Item);
     end
     else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist');

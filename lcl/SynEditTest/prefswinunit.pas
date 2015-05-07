@@ -240,7 +240,7 @@ var
 implementation
 
 uses
-  MainUnit;
+  MainUnit, SynFacilHighlighter;
 
 
 {$R *.lfm}
@@ -864,6 +864,11 @@ begin
   ColHText.Visible := UseTextCol.Checked;
   ColHFrame.Visible := UseFrameCol.Checked;
   SetAttSetting;
+
+  // SynFacil manual talks of SynEdit.Invalidate in order to properly update
+  // contents (Seems to help).
+  If (SynEdit1.Highlighter is TSynFacilSyn) then SynEdit1.Invalidate;
+
   BlockEvent := False;
 end;
 
