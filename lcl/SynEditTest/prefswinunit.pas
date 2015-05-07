@@ -150,7 +150,6 @@ type
     ChooseStartForget: TRadioButton;
     ChooseWait: TRadioButton;
     ChooseCaptureOut: TRadioButton;
-    SynHTMLSyn1: TSynHTMLSyn;
     ProgTab: TTabSheet;
     UseTextCol: TCheckBox;
     UseBgCol: TCheckBox;
@@ -165,8 +164,6 @@ type
     Label20: TLabel;
     SynEdit1: TSynEdit;
     Panel1: TPanel;
-    SynCppSyn1: TSynCppSyn;
-    SynPasSyn1: TSynPasSyn;
     SyntaxItems: TComboBox;
     LangSelection: TComboBox;
     Label10: TLabel;

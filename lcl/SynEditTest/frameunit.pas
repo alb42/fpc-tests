@@ -13,10 +13,7 @@ type
   { TEditorFrame }
 
   TEditorFrame = class(TFrame)
-    SynCppSyn1: TSynCppSyn;
     Editor: TSynEdit;
-    SynHTMLSyn1: TSynHTMLSyn;
-    SynPasSyn1: TSynPasSyn;
     procedure EditorKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FFilename: string;
