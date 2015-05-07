@@ -18,6 +18,7 @@ const
   FILEwExtwPathPATTERN = '{$E}';
   PATHPATTERN = '{$p}';
 
+  {#
   PasShortText =
     'unit Test;'#13#10 +
     '{$mode delphi}'#13#10 +
@@ -33,6 +34,8 @@ const
     '    alClient: writeln(''alClient''#13#10);'#13#10 +
     '  end;'#13#10 +
     'end.';
+  #}
+  {#
   CShortText =
     ' /*Comment*/ '#13#10 +
     '#include <stdio.h>'#13#10 +
@@ -42,7 +45,7 @@ const
     '  printf("hello world\n");'#13#10 +
     '  return 0'#13#10 +
     '}';
-
+  #}
 
 type
   TUserCommands = TObjectList;

@@ -53,13 +53,18 @@ Type
 
   function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
 
+  {$I SyntaxDeclarations.inc}          // Temp workable Syntax declarations go in here
+
 implementation
 
 
 Uses
-  SynHighlighterCpp, SynHighlighterPas, SynHighlighterHTML, // EdiSyn Syntax Highlighters
-  inifiles;                // For reading/writing attributes prefs
+  SynHighlighterCpp, SynHighlighterPas,
+  SynHighlighterHTML,                  // EdiSyn Syntax Highlighters
+  inifiles;                            // For reading/writing attributes prefs
 
+
+  {. $I SyntaxDeclarations.inc}          // Syntax declarations go in here (in the end )
 
 // ############################################################################
 // ###

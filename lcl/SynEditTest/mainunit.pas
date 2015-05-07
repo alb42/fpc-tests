@@ -19,11 +19,12 @@ uses
 const
   VERSION = '$VER: EdiSyn 0.52 (' +{$I %DATE%} +')';
 
-
+  {#
   PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
   CEXT: array[0..3] of string = ('.c', '.h', '.cpp', '.hpp');
   HTMLEXT: array[0..1] of string = ('.html', '.htm');
-
+  #}
+  {#
   CTEXT =
     '#include <proto/exec.h>'#13#10 + '#include <dos/dos.h>'#13#10 +
     '#include <intuition/intuition.h>'#13#10 +
@@ -40,7 +41,8 @@ const
     ''#13#10 + '  DisplayBeep( NULL );'#13#10 + ''#13#10 +
     '  CloseLibrary(&IntuitionBase->LibNode);'#13#10 +
     '  return RETURN_OK;'#13#10 + '  AROS_PROCFUNC_EXIT'#13#10 + '}';
-
+  #}
+  {#
   PASTEXT =
     'unit Unit1;'#13#10 + ''#13#10 + '{$mode objfpc}{$H+}'#13#10 +
     ''#13#10 + 'interface'#13#10 + ''#13#10 + 'uses'#13#10 +
@@ -55,12 +57,13 @@ const
     ''#13#10 + 'implementation'#13#10 + ''#13#10 + '{$R *.lfm}'#13#10 +
     ''#13#10 + '{ TForm1 }'#13#10 + ''#13#10 + 'procedure TForm1.Test;'#13#10 +
     'begin'#13#10 + '  writeln(''something to test with'', 14, '' also with numbers ;)'');'#13#10 + 'end;'#13#10 + ''#13#10 + 'end.';
-
+  #}
+  {#
   HTMLText = '<HTML>'#13#10 + '<!-- comment -->'#13#10 +
     '<BODY bgcolor="#ffffff">'#13#10 + '  Test &nbsp;'#13#10 +
     '  <INVALID_TAG>'#13#10 + '</HTML>';
-
-
+  #}
+  {#
   NText =
     'Sed ut perspiciatis unde omnis iste natus error sit voluptatem'#13#10 +
     'accusantium doloremque laudantium, totam rem aperiam, eaque'#13#10 +
@@ -91,6 +94,7 @@ const
     'maiores alias consequatur aut perferendis doloribus asperiores'#13#10 +
     'repellat. '#13#10 + ''#13#10 +
     '                              "De finibus bonorum et malorum" Cicero';
+  #}
 
 type
   { TMainWindow }
