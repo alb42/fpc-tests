@@ -361,7 +361,7 @@ object PrefsWin: TPrefsWin
         Left = 6
         Height = 21
         Top = 78
-        Width = 118
+        Width = 138
         AutoSize = False
         Color = 16578029
         ItemHeight = 13
@@ -380,7 +380,7 @@ object PrefsWin: TPrefsWin
         Left = 6
         Height = 21
         Top = 118
-        Width = 118
+        Width = 139
         AutoSize = False
         Color = 16578029
         ItemHeight = 13
@@ -1072,7 +1072,8 @@ object PrefsWin: TPrefsWin
         Left = 7
         Height = 17
         Top = 230
-        Width = 40
+        Width = 81
+        AutoSize = False
         Caption = 'Bold'
         OnClick = UseTextColClick
         TabOrder = 6
@@ -1081,7 +1082,8 @@ object PrefsWin: TPrefsWin
         Left = 7
         Height = 17
         Top = 254
-        Width = 43
+        Width = 81
+        AutoSize = False
         Caption = 'Italic'
         OnClick = UseTextColClick
         TabOrder = 7
@@ -1090,7 +1092,8 @@ object PrefsWin: TPrefsWin
         Left = 7
         Height = 17
         Top = 279
-        Width = 65
+        Width = 81
+        AutoSize = False
         Caption = 'Underline'
         OnClick = UseTextColClick
         TabOrder = 8
