@@ -503,7 +503,7 @@ begin
       // synfacil is not a class function inside SynFacilSyn class.
       DebugLn('Item ' + IntTostr(SyntaxIndex) + ' added to HighlightersList: ' + HighLighter.LanguageName);
     end
-    else writeln('ERROR: adding syntaxitemnr ', SyntaxIndex, ' to highlighterlist');
+    else DebugLn('INFO: skipped adding syntaxitemnr ' + IntToStr(SyntaxIndex) + ' to highlighterlist');
   end;
 end;
 
