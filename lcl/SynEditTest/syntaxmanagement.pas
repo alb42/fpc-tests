@@ -181,8 +181,8 @@ implementation
 Uses
   Forms,                                     // For Application
   SynEditStrConst,                           // For SyntaxManager, official highlighter names
-  inifiles;                                  // For reading/writing attributes prefs
-
+  inifiles,                                  // For reading/writing attributes prefs
+  LazLogger;                                 // debug
 
   {$I SyntaxDeclarations.inc}                // Syntax declarations go in here (in the end )
 
@@ -331,7 +331,7 @@ var
  AnIni : TIniFile;
  i     : Integer;
 begin
-  writeln('loading preferences from file ', IniFileName);
+  DebugLn('loading preferences from file ' + IniFileName);
   AnIni := TIniFile.Create({UTF8ToSys}(IniFilename));
   try
     with AnIni do
@@ -351,7 +351,7 @@ var
   AnIni : TIniFile;
   i     : integer;
 begin
-  writeln('writing preferences to file ', IniFileName);
+  DebugLn('writing preferences to file ' + IniFileName);
   AnIni := TIniFile.Create({UTF8ToSys}(IniFileName));
   try
     with AnIni do
@@ -501,9 +501,9 @@ begin
       // Theoreticallly now possible to use TSyntaxElement.name to retrieve the
       // languagename using SyntaxClassTypes, but alas custom LangName used by
       // synfacil is not a class function inside SynFacilSyn class.
-      Writeln('Item ', SyntaxIndex, ' added to HighlightersList: ', HighLighter.LanguageName);
+      DebugLn('Item ' + IntTostr(SyntaxIndex) + ' added to HighlightersList: ' + HighLighter.LanguageName);
     end
-    else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist: ');
+    else writeln('ERROR: adding syntaxitemnr ', SyntaxIndex, ' to highlighterlist');
   end;
 end;
 

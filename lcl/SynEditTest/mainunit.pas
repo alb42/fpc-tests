@@ -815,7 +815,7 @@ begin
   Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
   if EditorPanel.Visible then
     Frame.Editor.SetFocus;
-  writeln('leave - MainUnit.TabClickEvent');
+  // writeln('leave - MainUnit.TabClickEvent');
 end;
 
 procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: integer;
