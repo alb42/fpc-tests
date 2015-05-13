@@ -17,7 +17,7 @@ uses
   MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.52 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.53 (' +{$I %DATE%} +')';
 
 
 type
