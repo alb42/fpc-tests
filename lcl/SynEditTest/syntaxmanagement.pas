@@ -113,6 +113,8 @@ Type
   end;
 
 
+  { TSyntaxManager }
+
   TSyntaxManager = Class(TObject)
    private
     fElements : TFPObjectList;
@@ -123,6 +125,8 @@ Type
    public
     constructor Create;
     destructor  Destroy; override;
+   public
+    Function  ElementIndexByLanguageName(S: String): LongInt;
    public
     property  Elements[index: LongInt]: TSyntaxElement read GetElement;
     property  ElementsCount: LongInt read GetElementsCount;
@@ -293,6 +297,17 @@ begin
 
   fElements.Add(Element);
   result := Element;
+end;
+
+
+// Note that in opposite to normal indexby functions, this function will
+// return zero on failure to indicate None highlighter,
+function TSyntaxManager.ElementIndexByLanguageName(S: String): LongInt;
+begin
+  Result := 0;
+  While (Result < ElementsCount) and (CompareText(Elements[Result].Name,S) <> 0 )
+    do Result := Result + 1;
+  if Result = ElementsCount then Result := 0;
 end;
 
 
