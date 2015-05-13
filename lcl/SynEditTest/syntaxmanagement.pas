@@ -56,11 +56,14 @@ unit SyntaxManagement;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, menus, SynEditHighlighter;
+  Classes, SysUtils, Contnrs, menus,
+  SynHighlighterCpp, SynHighlighterPas,
+  SynHighlighterHTML, SynFacilHighlighter,  // EdiSyn Syntax Highlighters
+  SynEditHighlighter;
 
 
 Type
-  TSyntaxHighlighterType =
+  TSyntaxHighlighterType =  // See SyntaxClassTypes (need to keep in sync)
   (
     shtNone,   // a.k.a. No Highlighter at all
     shtCpp,    // a.k.a. TSynCppSyn
@@ -70,6 +73,17 @@ Type
   );
 
 
+const
+  SyntaxClassTypes: array[TSyntaxHighlighterType] of TSynCustomHighlighterClass =
+  (
+    nil,
+    TSynCppSyn,
+    TSynPasSyn,
+    TSynHTMLSyn,
+    TSynFacilSyn
+  );
+
+Type
   TSyntaxElement = class(TObject)
    private
     fSyntaxHLType : TSyntaxHighlighterType;
@@ -163,8 +177,6 @@ implementation
 Uses
   Forms,                                     // For Application
   SynEditStrConst,                           // For SyntaxManager, official highlighter names
-  SynHighlighterCpp, SynHighlighterPas,
-  SynHighlighterHTML, SynFacilHighlighter,   // EdiSyn Syntax Highlighters
   inifiles;                                  // For reading/writing attributes prefs
 
 
@@ -454,14 +466,10 @@ begin
     SyntaxElement := TSyntaxElement(SyntaxManager.fElements.Items[SyntaxIndex]);
     SyntaxHLType  := SyntaxElement.SyntaxHLType;
 
-    Case SyntaxHLType of
-      shtNone   : continue;                                 // a.k.a. No Highlighter at all
-      shtCPP    : Highlighter := TSynCppSyn.Create(nil);    // a.k.a. TSynCppSyn
-      shtPascal : Highlighter := TSynPasSyn.Create(nil);    // a.k.a. TSynPasSyn
-      shtHTML   : Highlighter := TSynHTMLSyn.Create(nil);   // a.k.a. TSynHTMLSyn
-      shtCustom : Highlighter := TSynFacilSyn.Create(nil);  // a.k.a. TSynFacilSyn
-      else        begin writeln('error: unknwon syntax Highlighter class'); continue; end;
-    end; // case
+    if Assigned(SyntaxClassTypes[SyntaxHLType]) then
+    begin
+      HighLighter := SyntaxClassTypes[SyntaxHLType].Create(nil);
+    end;
 
     If (Highlighter <> nil) then
     begin
@@ -475,6 +483,9 @@ begin
       end;
       fHighlighters.Add(Item);
       // SynFacilSyn missing: LanguageName not overriden.
+      // Theoreticallly now possible to use TSyntaxElement.name to retrieve the
+      // languagename using SyntaxClassTypes, but alas custom LangName used by
+      // synfacil is not a class function inside SynFacilSyn class.
       Writeln('Item ', SyntaxIndex, ' added to HighlightersList: ', HighLighter.LanguageName);
     end
     else writeln('error adding itemnr ', SyntaxIndex, ' to highlighterlist: ');
