@@ -579,13 +579,12 @@ begin
 end;
 
 function TPrefs.GetDefHighlighter: integer;
+Var SyntaxIndex: LongInt;
 begin
-  // Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
-  // NOTE: It is not possible to sync this in a sane way anymore.
-  // chosen 2, as currently it means Pascal, but there is no way to tell for
-  // sure.
-  // Possible solution: search SyntaxManager for hardcoded Pascal Name "Object pascal"
-  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', 2);
+  // Attempt to find Object Pascal Syntax index. Returns Highlighter None (zero)
+  // in case of failure, so we should be good to go.
+  SyntaxIndex := SyntaxManager.ElementIndexByLanguageName('ObjectPascal');
+  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', SyntaxIndex);
 end;
 
 function TPrefs.GetEdBgColor: TColor;
