@@ -190,7 +190,7 @@ Begin
   Result.Width  := W;
   Result.Height := H;
   Result.PixelFormat := pf32bit; // pf24bit;
-  {$ifdef AROS}
+  {$if defined(AROS) or defined(Win32)}
   if ( SumWeights > 0 ) then
   begin
     for j := 0 to Result.Height-1 do
