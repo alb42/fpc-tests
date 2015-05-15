@@ -11,6 +11,7 @@ object PrefsWin: TPrefsWin
   Constraints.MinHeight = 331
   Constraints.MinWidth = 524
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.2.4.0'
   object Pages: TPageControl
@@ -33,7 +34,7 @@ object PrefsWin: TPrefsWin
         Top = 0
         Width = 297
         Caption = '  Tab/Indent Handling  '
-        ClientHeight = 109
+        ClientHeight = 110
         ClientWidth = 293
         TabOrder = 0
         object Label1: TLabel
@@ -46,10 +47,10 @@ object PrefsWin: TPrefsWin
         end
         object ChooseTabWidth: TComboBox
           Left = 228
-          Height = 27
+          Height = 21
           Top = 2
           Width = 55
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 1
           Items.Strings = (
             '1'
@@ -123,10 +124,10 @@ object PrefsWin: TPrefsWin
         end
         object ChooseIndentWidth: TComboBox
           Left = 228
-          Height = 27
+          Height = 21
           Top = 30
           Width = 55
-          ItemHeight = 0
+          ItemHeight = 13
           ItemIndex = 1
           Items.Strings = (
             '1'
@@ -153,7 +154,7 @@ object PrefsWin: TPrefsWin
         Top = 129
         Width = 208
         Caption = '  Selection  '
-        ClientHeight = 86
+        ClientHeight = 87
         ClientWidth = 204
         TabOrder = 1
         object UseDblSelect: TCheckBox
@@ -208,7 +209,7 @@ object PrefsWin: TPrefsWin
         Top = 129
         Width = 297
         Caption = '  Sidebar  '
-        ClientHeight = 86
+        ClientHeight = 87
         ClientWidth = 293
         TabOrder = 2
         object UseLineNum: TCheckBox
@@ -251,10 +252,10 @@ object PrefsWin: TPrefsWin
         end
         object ChooseLine: TComboBox
           Left = 228
-          Height = 31
+          Height = 21
           Top = 2
           Width = 55
-          ItemHeight = 0
+          ItemHeight = 13
           Items.Strings = (
             '1'
             '2'
@@ -289,7 +290,7 @@ object PrefsWin: TPrefsWin
         Top = 0
         Width = 208
         Caption = 'File Handling'
-        ClientHeight = 109
+        ClientHeight = 110
         ClientWidth = 204
         TabOrder = 3
         object UseNewTab: TCheckBox
@@ -326,13 +327,13 @@ object PrefsWin: TPrefsWin
     end
     object HighLightTab: TTabSheet
       Caption = 'Colors'
-      ClientHeight = 352
-      ClientWidth = 687
+      ClientHeight = 348
+      ClientWidth = 683
       object Label10: TLabel
         Left = 6
-        Height = 17
+        Height = 13
         Top = 6
-        Width = 42
+        Width = 28
         Caption = 'Editor'
         ParentColor = False
       end
@@ -358,12 +359,12 @@ object PrefsWin: TPrefsWin
       end
       object LangSelection: TComboBox
         Left = 6
-        Height = 27
+        Height = 21
         Top = 78
-        Width = 118
+        Width = 138
         AutoSize = False
         Color = 16578029
-        ItemHeight = 0
+        ItemHeight = 13
         ItemIndex = 0
         Items.Strings = (
           'C/C++'
@@ -377,29 +378,29 @@ object PrefsWin: TPrefsWin
       end
       object SyntaxItems: TComboBox
         Left = 6
-        Height = 31
+        Height = 21
         Top = 118
-        Width = 118
+        Width = 139
         AutoSize = False
         Color = 16578029
-        ItemHeight = 0
+        ItemHeight = 13
         OnChange = SyntaxItemsChange
         Style = csDropDownList
         TabOrder = 1
       end
       object Panel1: TPanel
-        Left = 198
-        Height = 352
+        Left = 194
+        Height = 348
         Top = 0
         Width = 489
         Align = alRight
-        ClientHeight = 352
+        ClientHeight = 348
         ClientWidth = 489
         TabOrder = 2
         inline SynEdit1: TSynEdit
           Cursor = crDefault
           Left = 1
-          Height = 350
+          Height = 346
           Top = 1
           Width = 487
           Align = alClient
@@ -416,7 +417,7 @@ object PrefsWin: TPrefsWin
           BorderStyle = bsNone
           Gutter.Color = 16578029
           Gutter.Visible = False
-          Gutter.Width = 59
+          Gutter.Width = 57
           Gutter.MouseActions = <>
           RightGutter.Visible = False
           RightGutter.Width = 0
@@ -937,7 +938,7 @@ object PrefsWin: TPrefsWin
               MouseActions = <>
             end
             object SynGutterLineNumber1: TSynGutterLineNumber
-              Width = 19
+              Width = 17
               MouseActions = <>
               MarkupInfo.Background = 16578029
               MarkupInfo.Foreground = clNone
@@ -973,17 +974,17 @@ object PrefsWin: TPrefsWin
       end
       object UseTextCol: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 155
-        Width = 24
+        Width = 20
         OnClick = UseTextColClick
         TabOrder = 3
       end
       object Label18: TLabel
         Left = 30
-        Height = 17
+        Height = 13
         Top = 158
-        Width = 29
+        Width = 22
         Caption = 'Text'
         ParentColor = False
       end
@@ -999,17 +1000,17 @@ object PrefsWin: TPrefsWin
       end
       object UseBgCol: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 180
-        Width = 24
+        Width = 20
         OnClick = UseTextColClick
         TabOrder = 4
       end
       object Label19: TLabel
         Left = 30
-        Height = 17
+        Height = 13
         Top = 183
-        Width = 54
+        Width = 37
         Caption = 'BgColor'
         ParentColor = False
       end
@@ -1025,17 +1026,17 @@ object PrefsWin: TPrefsWin
       end
       object UseFrameCol: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 205
-        Width = 24
+        Width = 20
         OnClick = UseTextColClick
         TabOrder = 5
       end
       object Label20: TLabel
         Left = 30
-        Height = 17
+        Height = 13
         Top = 208
-        Width = 43
+        Width = 30
         Caption = 'Frame'
         ParentColor = False
       end
@@ -1051,9 +1052,9 @@ object PrefsWin: TPrefsWin
       end
       object Label21: TLabel
         Left = 6
-        Height = 17
+        Height = 13
         Top = 52
-        Width = 52
+        Width = 36
         Caption = 'Bracket'
         ParentColor = False
       end
@@ -1069,36 +1070,39 @@ object PrefsWin: TPrefsWin
       end
       object TextBold: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 230
-        Width = 57
+        Width = 81
+        AutoSize = False
         Caption = 'Bold'
         OnClick = UseTextColClick
         TabOrder = 6
       end
       object TextItalic: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 254
-        Width = 59
+        Width = 81
+        AutoSize = False
         Caption = 'Italic'
         OnClick = UseTextColClick
         TabOrder = 7
       end
       object TextUnderline: TCheckBox
         Left = 7
-        Height = 24
+        Height = 17
         Top = 279
-        Width = 91
+        Width = 81
+        AutoSize = False
         Caption = 'Underline'
         OnClick = UseTextColClick
         TabOrder = 8
       end
       object Label17: TLabel
         Left = 5
-        Height = 17
+        Height = 13
         Top = 29
-        Width = 35
+        Width = 26
         Caption = 'Font:'
         ParentColor = False
       end
@@ -1152,7 +1156,7 @@ object PrefsWin: TPrefsWin
           )
           ColWidths = (
             253
-            418
+            402
           )
         end
       end
@@ -1222,7 +1226,7 @@ object PrefsWin: TPrefsWin
         Width = 174
         Align = alLeft
         Caption = 'Commands'
-        ClientHeight = 333
+        ClientHeight = 334
         ClientWidth = 170
         TabOrder = 0
         object UserComList: TListBox
@@ -1234,7 +1238,6 @@ object PrefsWin: TPrefsWin
           OnDblClick = UserComListDblClick
           ScrollWidth = 162
           TabOrder = 0
-          TopIndex = -1
         end
         object EditButton: TButton
           Left = 5
@@ -1271,7 +1274,7 @@ object PrefsWin: TPrefsWin
         Width = 513
         Align = alClient
         Caption = 'Commands Settings'
-        ClientHeight = 333
+        ClientHeight = 334
         ClientWidth = 509
         Enabled = False
         TabOrder = 1
@@ -1281,7 +1284,7 @@ object PrefsWin: TPrefsWin
           Top = 120
           Width = 496
           Caption = '  StartModus  '
-          ClientHeight = 90
+          ClientHeight = 91
           ClientWidth = 492
           TabOrder = 0
           object ChooseStartForget: TRadioButton
@@ -1312,10 +1315,10 @@ object PrefsWin: TPrefsWin
           end
           object ChooseCaptureMode: TComboBox
             Left = 248
-            Height = 27
+            Height = 21
             Top = 57
             Width = 234
-            ItemHeight = 0
+            ItemHeight = 13
             ItemIndex = 0
             Items.Strings = (
               'Freepascal messages'
@@ -1362,10 +1365,10 @@ object PrefsWin: TPrefsWin
         end
         object ParamHelp: TComboBox
           Left = 295
-          Height = 27
+          Height = 21
           Top = 58
           Width = 206
-          ItemHeight = 0
+          ItemHeight = 13
           Items.Strings = (
             '{$f}  Filename'
             '{$F}  Filename w Path'
@@ -1513,80 +1516,6 @@ object PrefsWin: TPrefsWin
       OnClick = OkButtonClick
       TabOrder = 1
     end
-  end
-  object SynCppSyn1: TSynCppSyn
-    DefaultFilter = 'C++-Quelltexte (*.c,*.cpp,*.h,*.hpp,*.hh)|*.c;*.cpp;*.h;*.hpp;*.hh'
-    Enabled = False
-    AsmAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    DirecAttri.Foreground = clMaroon
-    DirecAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clBlack
-    IdentifierAttri.FrameEdges = sfeAround
-    InvalidAttri.Foreground = clRed
-    InvalidAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    KeyAttri.Style = []
-    NumberAttri.Foreground = clOlive
-    NumberAttri.FrameEdges = sfeAround
-    SpaceAttri.Foreground = clTeal
-    SpaceAttri.FrameEdges = sfeAround
-    StringAttri.Foreground = clNavy
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.Foreground = clTeal
-    SymbolAttri.FrameEdges = sfeAround
-    left = 16
-    top = 360
-  end
-  object SynPasSyn1: TSynPasSyn
-    Enabled = False
-    AsmAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    CommentAttri.Style = []
-    IDEDirectiveAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clBlack
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    NumberAttri.Foreground = clTeal
-    NumberAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    StringAttri.Foreground = clPurple
-    StringAttri.FrameEdges = sfeAround
-    SymbolAttri.FrameEdges = sfeAround
-    CaseLabelAttri.FrameEdges = sfeAround
-    DirectiveAttri.Foreground = clRed
-    DirectiveAttri.FrameEdges = sfeAround
-    CompilerMode = pcmFPC
-    NestedComments = True
-    ExtendedKeywordsMode = True
-    left = 96
-    top = 360
-  end
-  object SynHTMLSyn1: TSynHTMLSyn
-    DefaultFilter = 'HTML Document (*.htm,*.html)|*.htm;*.html'
-    Enabled = False
-    AndAttri.FrameEdges = sfeAround
-    ASPAttri.FrameEdges = sfeAround
-    CDATAAttri.FrameEdges = sfeAround
-    DOCTYPEAttri.FrameEdges = sfeAround
-    CommentAttri.Foreground = clGreen
-    CommentAttri.FrameEdges = sfeAround
-    IdentifierAttri.Foreground = clTeal
-    IdentifierAttri.FrameEdges = sfeAround
-    KeyAttri.Foreground = clBlue
-    KeyAttri.FrameEdges = sfeAround
-    SpaceAttri.FrameEdges = sfeAround
-    SymbolAttri.Foreground = clNavy
-    SymbolAttri.FrameEdges = sfeAround
-    TextAttri.FrameEdges = sfeAround
-    UndefKeyAttri.FrameEdges = sfeAround
-    ValueAttri.FrameEdges = sfeAround
-    left = 56
-    top = 360
   end
   object OpenDialog1: TOpenDialog
     left = 160

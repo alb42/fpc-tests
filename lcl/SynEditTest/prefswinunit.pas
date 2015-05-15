@@ -9,7 +9,7 @@ uses
   StdCtrls, ComCtrls, PrefsUnit, ATTabs, types, SynEdit, Syngutterlinenumber,
   SynEditHighlighter, SynHighlighterPas, SynHighlighterCpp, SynEditTypes,
   FrameUnit, lclProc, lcltype, stringhashlist, ValEdit, SynEditkeycmds,
-  SynHighlighterHTML, Grids, menus, EditBtn, Spin, Contnrs;
+  SynHighlighterHTML, Grids, menus, EditBtn, Spin, Contnrs, SyntaxManagement;
 
 const
   FILEPATTERN = '{$f}';
@@ -17,31 +17,6 @@ const
   FILEwExtPATTERN = '{$e}';
   FILEwExtwPathPATTERN = '{$E}';
   PATHPATTERN = '{$p}';
-
-  PasShortText =
-    'unit Test;'#13#10 +
-    '{$mode delphi}'#13#10 +
-    '{%Fold%}'#13#10 +
-    '  // Comment'#13#10 +
-    'begin'#13#10 +
-    '  writeln(''string'', 42);'#13#10 +
-    '  asm'#13#10 +
-    '    nop;'#13#10 +
-    '  end;'#13#10 +
-    '  b := 1 + color;'#13#10 +
-    '  case Align of'#13#10 +
-    '    alClient: writeln(''alClient''#13#10);'#13#10 +
-    '  end;'#13#10 +
-    'end.';
-  CShortText =
-    ' /*Comment*/ '#13#10 +
-    '#include <stdio.h>'#13#10 +
-    'int main(int argc, char **argv)'#13#10 +
-    '{'#13#10 +
-    '  int a = r + 10;'#13#10 +
-    '  printf("hello world\n");'#13#10 +
-    '  return 0'#13#10 +
-    '}';
 
 
 type
@@ -59,6 +34,7 @@ type
     Shift2: TShiftState;
   end;
   PIDEShortCut = ^TIDEShortCut;
+
   { TCustomShortCutGrabBox }
 
   TCustomShortCutGrabBox = class(TCustomPanel)
@@ -150,7 +126,6 @@ type
     ChooseStartForget: TRadioButton;
     ChooseWait: TRadioButton;
     ChooseCaptureOut: TRadioButton;
-    SynHTMLSyn1: TSynHTMLSyn;
     ProgTab: TTabSheet;
     UseTextCol: TCheckBox;
     UseBgCol: TCheckBox;
@@ -165,8 +140,6 @@ type
     Label20: TLabel;
     SynEdit1: TSynEdit;
     Panel1: TPanel;
-    SynCppSyn1: TSynCppSyn;
-    SynPasSyn1: TSynPasSyn;
     SyntaxItems: TComboBox;
     LangSelection: TComboBox;
     Label10: TLabel;
@@ -222,6 +195,7 @@ type
     procedure EditButtonClick(Sender: TObject);
     procedure FontButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure KeyListEditSelectCell(Sender: TObject; aCol, aRow: Integer;
       var CanSelect: Boolean);
@@ -248,17 +222,12 @@ type
     BlockEvent: Boolean;
     Tabs: TATTabs;
     ComIdx: Integer;
+    Highlighters : THighlighterList;
     Procedure PrefsToEditor(EdFrame: TEditorFrame);
   end;
 
 var
-  CAtts: array[0..9] of TSynHighlighterAttributes;
-  PasAtts: array[0..10] of TSynHighlighterAttributes;
-  HTMLAtts: array[0..9] of TSynHighlighterAttributes;
   PrefsWin: TPrefsWin;
-  PasPrefsName: string;
-  CPrefsName: string;
-  HTMLPrefsName: string;
   VirtualKeyStrings: TStringHashList = nil;
   CmdName: array[0..1000] of string;
   ShortCutList: array of record
@@ -271,46 +240,8 @@ var
 implementation
 
 uses
-  MainUnit;
+  MainUnit, SynFacilHighlighter;
 
-const
-  CNames: array[0..9] of string = (
-    'Assembler',
-    'Comment',
-    'Directive',
-    'Identifier',
-    'Invalid',
-    'Keyword',
-    'Number',
-    'Space',
-    'String',
-    'Symbol'
-    );
-  HTMLNames: array[0..9] of string = (
-    'And Codes',
-    'ASP',
-    'Comment',
-    'Identifier',
-    'Keyword',
-    'Space',
-    'Symbol',
-    'Text',
-    'Undef',
-    'Value'
-    );
-  PasNames: array[0..10] of string = (
-    'Assembler',
-    'Case Label',
-    'Comment',
-    'Directive',
-    'IDE Directive',
-    'Identifier',
-    'Keyword',
-    'Number',
-    'Space',
-    'String',
-    'Symbol'
-    );
 
 {$R *.lfm}
 
@@ -352,41 +283,29 @@ end;
 procedure TPrefsWin.FormCreate(Sender: TObject);
 var
   i: Integer;
+  HighlighterItem : THighlighterListItem;
+  SyntaxIndex : Integer;
+  s : String;
 begin
-  CAtts[0] := SynCppSyn1.AsmAttri;
-  CAtts[1] := SynCppSyn1.CommentAttri;
-  CAtts[2] := SynCppSyn1.DirecAttri;
-  CAtts[3] := SynCppSyn1.IdentifierAttri;
-  CAtts[4] := SynCppSyn1.InvalidAttri;
-  CAtts[5] := SynCppSyn1.KeyAttri;
-  CAtts[6] := SynCppSyn1.NumberAttri;
-  CAtts[7] := SynCppSyn1.SpaceAttri;
-  CAtts[8] := SynCppSyn1.StringAttri;
-  CAtts[9] := SynCppSyn1.SymbolAttri;
-
-  PasAtts[0] := SynPasSyn1.AsmAttri;
-  PasAtts[1] := SynPasSyn1.CaseLabelAttri;
-  PasAtts[2] := SynPasSyn1.CommentAttri;
-  PasAtts[3] := SynPasSyn1.DirectiveAttri;
-  PasAtts[4] := SynPasSyn1.IDEDirectiveAttri;
-  PasAtts[5] := SynPasSyn1.IdentifierAttri;
-  PasAtts[6] := SynPasSyn1.KeyAttri;
-  PasAtts[7] := SynPasSyn1.NumberAttri;
-  PasAtts[8] := SynPasSyn1.SpaceAttri;
-  PasAtts[9] := SynPasSyn1.StringAttri;
-  PasAtts[10] := SynPasSyn1.SymbolAttri;
-
-  HTMLAtts[0] := SynHTMLSyn1.AndAttri;
-  HTMLAtts[1] := SynHTMLSyn1.ASPAttri;
-  HTMLAtts[2] := SynHTMLSyn1.CommentAttri;
-  HTMLAtts[3] := SynHTMLSyn1.IdentifierAttri;
-  HTMLAtts[4] := SynHTMLSyn1.KeyAttri;
-  HTMLAtts[5] := SynHTMLSyn1.SpaceAttri;
-  HTMLAtts[6] := SynHTMLSyn1.SymbolAttri;
-  HTMLAtts[7] := SynHTMLSyn1.TextAttri;
-  HTMLAtts[8] := SynHTMLSyn1.UndefKeyAttri;
-  HTMLAtts[9] := SynHTMLSyn1.ValueAttri;
-
+  // SynEdit Highlighters
+  Highlighters := THighlighterList.Create;
+  // LangSelection combobox (based on Highlighters)
+  LangSelection.Items.BeginUpdate;
+  LangSelection.Clear;
+  for i := 0 to Pred(Highlighters.Count) do
+  begin
+    HighlighterItem := Highlighters.Items[i];
+    If Assigned(HighlighterItem) then
+    begin
+      SyntaxIndex := HighlighterItem.SyntaxIndex;
+      s := SyntaxManager.Elements[SyntaxIndex].MenuName;
+      langselection.Items.Add(s);
+    end;
+  end;
+  LangSelection.Items.EndUpdate;
+  // required for windows to make first item appear activated ?
+  LangSelection.ItemIndex := 0;
+  //
   CurRow := -1;
   Key1Box:=TCustomShortCutGrabBox.Create(Self);
   with Key1Box do begin
@@ -463,6 +382,11 @@ begin
   Tabs.OnTabClick:=@TabClickEvent;
 end;
 
+procedure TPrefsWin.FormDestroy(Sender: TObject);
+begin
+  Highlighters.Free;
+end;
+
 procedure TPrefsWin.ColEdBgColorChanged(Sender: TObject);
 begin
   SynEdit1.Color := ColEdBg.ButtonColor;
@@ -499,6 +423,8 @@ var
   cmd: String;
   j: Integer;
   UCom: TUserCommand;
+  SyntaxIndex: Integer;
+  s  : String;
 begin
   // Tab Settings
   UseTabsToSpace.Checked := Prefs.TabsToSpaces;
@@ -533,9 +459,13 @@ begin
   SynEdit1.Font.Size := Prefs.FontSize;
   FontButton.Caption := SynEdit1.Font.Name + '/' + IntToStr(SynEdit1.Font.Size);
   // Highlighter
-  SynPasSyn1.LoadFromFile(PasPrefsName);
-  SynCppSyn1.LoadFromFile(CPrefsName);
-  SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
+  // Retrieves prefs filename for every highlighter and Load Syntax Attributes
+  for i := 0 To Pred(Highlighters.Count) do
+  begin
+    SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
+    LoadSyntaxAttributesFromFile(Highlighters.Items[i].HighLighter, s);
+  end;
   LangSelectionChange(nil);
   // ShortCuts
   KeyListEdit.Visible:= False;
@@ -654,39 +584,47 @@ end;
 
 procedure TPrefsWin.LangSelectionChange(Sender: TObject);
 var
-  i: Integer;
+  i : Integer;
+  SyntaxIndex : Integer;
+  SyntaxElem  : TSyntaxElement;
+  HighlighterItem: THighlighterListItem;
+  Highlighter: TSynCustomHighlighter;
+  s : String;
 begin
   SyntaxItems.Items.BeginUpdate;
   SyntaxItems.Clear;
-  case LangSelection.ItemIndex of
-    0:
+
+  // LangSelection item indices are synced with Highlighters item indices
+  i := LangSelection.ItemIndex;
+
+  // Retrieve Details from current (selected) highlighter and make them active
+  If InRange(i, 0, Pred(Highlighters.Count)) then
+  begin
+    HighlighterItem := Highlighters.Items[i];
+    If assigned(HighlighterItem) then
     begin
-      SynEdit1.Highlighter := SynCppSyn1;
-      SynEdit1.Lines.Text := CShortText;
-      for i := 0 to High(CNames) do
-        SyntaxItems.Items.Add(CNames[i]);
-    end;
-    1:
-    begin
-      SynEdit1.Highlighter := SynPasSyn1;
-      SynEdit1.Lines.Text := PasShortText;
-      for i := 0 to High(PasNames) do
-        SyntaxItems.Items.Add(PasNames[i]);
-    end;
-    2:
-    begin
-      SynEdit1.Highlighter := SynHTMLSyn1;
-      SynEdit1.Lines.Text := HTMLText;
-      for i := 0 to High(HTMLNames) do
-        SyntaxItems.Items.Add(HTMLNames[i]);
-    end;
-  end;
+      Highlighter := HighlighterItem.HighLighter;
+      SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
+      SyntaxElem  := SyntaxManager.Elements[SyntaxIndex];
+
+      SynEdit1.Highlighter := Highlighter;
+      SynEdit1.Lines.Text  := SyntaxElem.SamplePrefs;
+
+      for i := 0 to Pred(Highlighter.AttrCount)
+        do SyntaxItems.Items.Add(Highlighter.Attribute[i].Name);
+    end
+    else Writeln('MISSION IMPOSSIBLE: Corresponding Highlighter Item was not assigned');
+  end
+  else Writeln('MISSION IMPOSSIBLE: langselection.itemindex out of range: ', i);
+
   SyntaxItems.Items.EndUpdate;
 end;
 
 procedure TPrefsWin.OkButtonClick(Sender: TObject);
 var
   i: Integer;
+  SyntaxIndex: Integer;
+  s : String;
 begin
   // Tab Settings
   Prefs.TabsToSpaces := UseTabsToSpace.Checked;
@@ -713,10 +651,13 @@ begin
   Prefs.BracketColor := ColEdBracket.ButtonColor;
   Prefs.FontName := SynEdit1.Font.Name;
   Prefs.FontSize := SynEdit1.Font.Size;
-  //
-  SynPasSyn1.SaveToFile(PasPrefsName);
-  SynCppSyn1.SaveToFile(CPrefsName);
-  SynHTMLSyn1.SaveToFile(HTMLPrefsName);
+  // Save Syntax Attributes for all highlighters
+  for i := 0 To Pred(Highlighters.Count) do
+  begin
+    SyntaxIndex := Highlighters.Items[i].SyntaxIndex;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
+    SaveSyntaxAttributesToFile(Highlighters.Items[i].HighLighter, s);
+  end;
   // Keys
   for i := 0 to High(ShortCutList) do
   begin
@@ -760,47 +701,28 @@ procedure TPrefsWin.SynEdit1DblClick(Sender: TObject);
 var
   Att: TSynHighlighterAttributes;
   token: string;
-  i: Integer;
+  i, j: Integer;
+  Highlighter : TSynCustomHighlighter;
+  HlItemIndex : LongInt;
+  AttrIndex   : LongInt;
 begin
-  //
- if SynEdit1.GetHighlighterAttriAtRowCol(SynEdit1.CaretXY, token, Att) then
- begin
-   case LangSelection.ItemIndex of
-    0: begin
-      for i := 0 to High(CAtts) do
+  // Find and activate double-clicked attribute
+  if SynEdit1.GetHighlighterAttriAtRowCol(SynEdit1.CaretXY, token, Att) then
+  begin
+    // LangSelection item indices are synced with Highlighters item indices
+    HLItemIndex := LangSelection.ItemIndex;
+    Highlighter := Highlighters.Items[HLItemIndex].HighLighter;
+
+    for AttrIndex := 0 to Pred(Highlighter.AttrCount) do
+    begin
+      if Att = Highlighter.Attribute[AttrIndex] then
       begin
-        if Att = CAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
-      end;
-    end;
-    1: begin
-      for i := 0 to High(PasAtts) do
-      begin
-        if Att = PasAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
-      end;
-    end;
-    2: begin
-      for i := 0 to High(HTMLAtts) do
-      begin
-        if Att = HTMLAtts[i] then
-        begin
-          SyntaxItems.ItemIndex := i;
-          SyntaxItemsChange(SyntaxItems);
-          Break;
-        end;
+        SyntaxItems.ItemIndex := AttrIndex;
+        SyntaxItemsChange(SyntaxItems);
+        Break;
       end;
     end;
   end;
- end;
 end;
 
 procedure TPrefsWin.SyntaxItemsChange(Sender: TObject);
@@ -942,6 +864,11 @@ begin
   ColHText.Visible := UseTextCol.Checked;
   ColHFrame.Visible := UseFrameCol.Checked;
   SetAttSetting;
+
+  // SynFacil manual talks of SynEdit.Invalidate in order to properly update
+  // contents (Seems to help).
+  If (SynEdit1.Highlighter is TSynFacilSyn) then SynEdit1.Invalidate;
+
   BlockEvent := False;
 end;
 
@@ -955,53 +882,22 @@ begin
 end;
 
 function TPrefsWin.GetAtt: TSynHighlighterAttributes;
+var
+  AttrIndex   : LongInt;
+  HLItemIndex : LongInt;
+  Highlighter : TSynCustomHighlighter;
 begin
+  // LangSelection item indices are synced with Highlighters item indices
   CurAtt := nil;
-  case LangSelection.ItemIndex of
-    0: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynCppSyn1.AsmAttri;
-        1: CurAtt := SynCppSyn1.CommentAttri;
-        2: CurAtt := SynCppSyn1.DirecAttri;
-        3: CurAtt := SynCppSyn1.IdentifierAttri;
-        4: CurAtt := SynCppSyn1.InvalidAttri;
-        5: CurAtt := SynCppSyn1.KeyAttri;
-        6: CurAtt := SynCppSyn1.NumberAttri;
-        7: CurAtt := SynCppSyn1.SpaceAttri;
-        8: CurAtt := SynCppSyn1.StringAttri;
-        9: CurAtt := SynCppSyn1.SymbolAttri;
-      end;
-    end;
-    1: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynPasSyn1.AsmAttri;
-        1: CurAtt := SynPasSyn1.CaseLabelAttri;
-        2: CurAtt := SynPasSyn1.CommentAttri;
-        3: CurAtt := SynPasSyn1.DirectiveAttri;
-        4: CurAtt := SynPasSyn1.IDEDirectiveAttri;
-        5: CurAtt := SynPasSyn1.IdentifierAttri;
-        6: CurAtt := SynPasSyn1.KeyAttri;
-        7: CurAtt := SynPasSyn1.NumberAttri;
-        8: CurAtt := SynPasSyn1.SpaceAttri;
-        9: CurAtt := SynPasSyn1.StringAttri;
-        10: CurAtt := SynPasSyn1.SymbolAttri;
-      end;
-    end;
-    2: begin
-      case SyntaxItems.ItemIndex of
-        0: CurAtt := SynHTMLSyn1.AndAttri;
-        1: CurAtt := SynHTMLSyn1.ASPAttri;
-        2: CurAtt := SynHTMLSyn1.CommentAttri;
-        3: CurAtt := SynHTMLSyn1.IdentifierAttri;
-        4: CurAtt := SynHTMLSyn1.KeyAttri;
-        5: CurAtt := SynHTMLSyn1.SpaceAttri;
-        6: CurAtt := SynHTMLSyn1.SymbolAttri;
-        7: CurAtt := SynHTMLSyn1.TextAttri;
-        8: CurAtt := SynHTMLSyn1.UndefKeyAttri;
-        9: CurAtt := SynHTMLSyn1.ValueAttri;
-      end;
-    end;
-  end;
+
+  // get current/active/selected highlighter
+  HLItemIndex := LangSelection.ItemIndex;
+  Highlighter := Highlighters.Items[HLItemIndex].HighLighter;
+
+  // get current/active/selected attribute
+  AttrIndex := SyntaxItems.ItemIndex;
+  CurAtt    := Highlighter.Attribute[AttrIndex];
+
   Result := CurAtt;
 end;
 
@@ -1072,8 +968,10 @@ end;
 procedure TPrefsWin.PrefsToEditor(EdFrame: TEditorFrame);
 var
   Ed: TSynEdit;
-  i: Integer;
+  i : Integer;
   ShortCut: TShortCut;
+  SyntaxIndex: Integer;
+  s : String;
 begin
   Ed := EdFrame.Editor;
   // Tabs/Indent Handling
@@ -1096,7 +994,7 @@ begin
     Ed.Options := Ed.Options + [eoTrimTrailingSpaces]
   else
     Ed.Options := Ed.Options - [eoTrimTrailingSpaces];
-  //SideBar
+  // SideBar
   Ed.Gutter.Parts[0].Visible := Prefs.Bookmarks;
   Ed.Gutter.Parts[1].Visible := Prefs.LineNumbers;
   TSynGutterLineNumber(Ed.Gutter.Parts[1]).ShowOnlyLineNumbersMultiplesOf := Prefs.LineSkipNum;
@@ -1120,10 +1018,13 @@ begin
   Ed.BracketMatchColor.Background := Prefs.BracketColor;
   Ed.Font.Name := Prefs.FontName;
   Ed.Font.Size := Prefs.FontSize;
-  //
-  EdFrame.SynCppSyn1.LoadFromFile(CPrefsName);
-  EdFrame.SynPasSyn1.LoadFromFile(PasPrefsName);
-  EdFrame.SynHTMLSyn1.LoadFromFile(HTMLPrefsName);
+  // Load Syntax attributes for every highlighter in current editor frame.
+  for i := 0 To Pred(EdFrame.Highlighters.Count) do
+  begin
+    SyntaxIndex := EdFrame.Highlighters.Items[i].SyntaxIndex;
+    s := SyntaxManager.Elements[SyntaxIndex].PrefsName;
+    LoadSyntaxAttributesFromFile(EdFrame.Highlighters.Items[i].HighLighter, s);
+  end;
   // Keybindings
   for i := 0 to Ed.Keystrokes.Count - 1 do
   begin
@@ -1434,9 +1335,6 @@ begin
 end;
 
 initialization
-  PasPrefsName := ChangeFileExt(Application.ExeName, 'Pas.prefs');
-  CPrefsName := ChangeFileExt(Application.ExeName, 'C.prefs');
-  HTMLPrefsName := ChangeFileExt(Application.ExeName, 'HTML.prefs');
   UserCommands := TUserCommands.Create(True);
 finalization;
   UserCommands.Free;

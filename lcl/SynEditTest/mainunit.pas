@@ -17,80 +17,8 @@ uses
   MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.52 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.53 (' +{$I %DATE%} +')';
 
-
-  PASEXT: array[0..3] of string = ('.pas', '.pp', '.inc', '.lpr');
-  CEXT: array[0..3] of string = ('.c', '.h', '.cpp', '.hpp');
-  HTMLEXT: array[0..1] of string = ('.html', '.htm');
-
-  CTEXT =
-    '#include <proto/exec.h>'#13#10 + '#include <dos/dos.h>'#13#10 +
-    '#include <intuition/intuition.h>'#13#10 +
-    '#include <intuition/intuitionbase.h>'#13#10 +
-    '#include <proto/intuition.h>'#13#10 + '#include <intuition/screens.h>'#13#10 +
-    ''#13#10 + 'const TEXT version[] = "VER: Beep 41.2 (03.03.2011)";'#13#10 +
-    ''#13#10 + '__startup AROS_PROCH(Start, argstr, argsize, SysBase)'#13#10 +
-    '{'#13#10 + '  AROS_PROCFUNC_INIT'#13#10 + ''#13#10 +
-    '  struct IntuitionBase *IntuitionBase;  // Its a comment'#13#10 +
-    ''#13#10 + '              /*Another'#13#10 +
-    '                Comment*/'#13#10 +
-    '  IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 0);'#13#10
-    + '  if (!IntuitionBase)'#13#10 + '    return RETURN_FAIL;'#13#10 +
-    ''#13#10 + '  DisplayBeep( NULL );'#13#10 + ''#13#10 +
-    '  CloseLibrary(&IntuitionBase->LibNode);'#13#10 +
-    '  return RETURN_OK;'#13#10 + '  AROS_PROCFUNC_EXIT'#13#10 + '}';
-
-  PASTEXT =
-    'unit Unit1;'#13#10 + ''#13#10 + '{$mode objfpc}{$H+}'#13#10 +
-    ''#13#10 + 'interface'#13#10 + ''#13#10 + 'uses'#13#10 +
-    '  Classes, SysUtils, FileUtil, SynEdit, SynHighlighterPas, Forms, Controls,'#13#10 +
-    '  Graphics, Dialogs;'#13#10 + ''#13#10 + 'type'#13#10 +
-    ''#13#10 + '  { TForm1 }'#13#10 + ''#13#10 +
-    '  TForm1 = class(TForm)'#13#10 + '    SynEdit1: TSynEdit;'#13#10 +
-    '    SynPasSyn1: TSynPasSyn;'#13#10 + '  private'#13#10 +
-    '    procedure Test;'#13#10 + '    { private declarations }'#13#10 +
-    '  public'#13#10 + '    { public declarations }'#13#10 +
-    '  end;'#13#10 + ''#13#10 + 'var'#13#10 + '  Form1: TForm1;'#13#10 +
-    ''#13#10 + 'implementation'#13#10 + ''#13#10 + '{$R *.lfm}'#13#10 +
-    ''#13#10 + '{ TForm1 }'#13#10 + ''#13#10 + 'procedure TForm1.Test;'#13#10 +
-    'begin'#13#10 + '  writeln(''something to test with'', 14, '' also with numbers ;)'');'#13#10 + 'end;'#13#10 + ''#13#10 + 'end.';
-
-  HTMLText = '<HTML>'#13#10 + '<!-- comment -->'#13#10 +
-    '<BODY bgcolor="#ffffff">'#13#10 + '  Test &nbsp;'#13#10 +
-    '  <INVALID_TAG>'#13#10 + '</HTML>';
-
-
-  NText =
-    'Sed ut perspiciatis unde omnis iste natus error sit voluptatem'#13#10 +
-    'accusantium doloremque laudantium, totam rem aperiam, eaque'#13#10 +
-    'ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae'#13#10 +
-    'dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas'#13#10 +
-    'sit aspernatur aut odit aut fugit, sed quia consequuntur magni'#13#10 +
-    'dolores eos qui ratione voluptatem sequi nesciunt. Neque porro'#13#10 +
-    'quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,'#13#10 +
-    'adipisci velit, sed quia non numquam eius modi tempora incidunt'#13#10 +
-    'ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim'#13#10 +
-    'ad minima veniam, quis nostrum exercitationem ullam corporis'#13#10 +
-    'suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?'#13#10 +
-    'Quis autem vel eum iure reprehenderit qui in ea voluptate velit'#13#10 +
-    'esse quam nihil molestiae consequatur, vel illum qui dolorem eum'#13#10 +
-    'fugiat quo voluptas nulla pariatur?'#13#10 + ''#13#10 +
-    'At vero eos et accusamus et iusto odio dignissimos ducimus qui'#13#10 +
-    'blanditiis praesentium voluptatum deleniti atque corrupti quos'#13#10 +
-    'dolores et quas molestias excepturi sint occaecati cupiditate non'#13#10 +
-    'provident, similique sunt in culpa qui officia deserunt mollitia animi,'#13#10 +
-    'id est laborum et dolorum fuga. Et harum quidem rerum facilis est'#13#10 +
-    'et expedita distinctio. Nam libero tempore, cum soluta nobis est'#13#10 +
-    'eligendi optio cumque nihil impedit quo minus id quod maxime'#13#10 +
-    'placeat facere possimus, omnis voluptas assumenda est, omnis'#13#10 +
-    'dolor repellendus. Temporibus autem quibusdam et aut officiis'#13#10 +
-    'debitis aut rerum necessitatibus saepe eveniet ut et voluptates'#13#10 +
-    'repudiandae sint et molestiae non recusandae. Itaque earum'#13#10 +
-    'rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus'#13#10 +
-    'maiores alias consequatur aut perferendis doloribus asperiores'#13#10 +
-    'repellat. '#13#10 + ''#13#10 +
-    '                              "De finibus bonorum et malorum" Cicero';
 
 type
   { TMainWindow }
@@ -111,7 +39,6 @@ type
     CloseAllMenu: TMenuItem;
     AboutMainMenu: TMenuItem;
     AboutMenu: TMenuItem;
-    HTMLMenu: TMenuItem;
     PrefsMenu: TMenuItem;
     SearchAllWindowMenu: TMenuItem;
     WindowMenu: TMenuItem;
@@ -142,7 +69,6 @@ type
     ReplaceMenu: TMenuItem;
     SearchAgainMenu: TMenuItem;
     SepMenu3: TMenuItem;
-    NoneMenu: TMenuItem;
     SepMenu2: TMenuItem;
     UndoMenu: TMenuItem;
     RedoMenu: TMenuItem;
@@ -158,8 +84,6 @@ type
     ExportMenu: TMenuItem;
     QuitMenu: TMenuItem;
     HighLightMenu: TMenuItem;
-    CMenu: TMenuItem;
-    PascalMenu: TMenuItem;
     ExampleMenu: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
@@ -168,7 +92,6 @@ type
     procedure AutoMenuClick(Sender: TObject);
     procedure CloseAllMenuClick(Sender: TObject);
     procedure CloseTabMenuClick(Sender: TObject);
-    procedure CMenuClick(Sender: TObject);
     procedure ComOutputMenuClick(Sender: TObject);
     procedure CopyMenuClick(Sender: TObject);
     procedure CutMenuClick(Sender: TObject);
@@ -180,9 +103,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
-    procedure HTMLMenuClick(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
-    procedure NoneMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
     procedure PrefsMenuClick(Sender: TObject);
     procedure RecMenu1Click(Sender: TObject);
@@ -195,7 +116,6 @@ type
     procedure SelAllMenuClick(Sender: TObject);
     procedure NewMenuClick(Sender: TObject);
     procedure OpenMenuClick(Sender: TObject);
-    procedure PascalMenuClick(Sender: TObject);
     procedure QuitMenuClick(Sender: TObject);
     procedure SaveAsMenuClick(Sender: TObject);
     procedure SaveMenuClick(Sender: TObject);
@@ -225,6 +145,7 @@ type
     function ReplaceFilePat(Base: string): string;
   public
     Tabs: TATTabs;
+    procedure HighLightMenuItemClick(Sender: TObject);
     procedure LoadFile(AFileName: string);
     function AbsCount: integer;
     function CurEditor: TSynEdit;
@@ -242,22 +163,26 @@ implementation
 
 uses
   GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit, AboutUnit,
-  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit, OutputUnit;
+  SearchAllUnit, SearchAllResultsUnit, PrefsWinUnit, OutputUnit,
+  SyntaxManagement;
 
 {$R *.lfm}
 
 { TMainWindow }
 
 procedure TMainWindow.ExampleMenuClick(Sender: TObject);
+var
+  SyntaxIndex: Integer;
 begin
-  if CMenu.Checked then
-    CurEditor.Lines.Text := CTEXT;
-  if PascalMenu.Checked then
-    CurEditor.Lines.Text := PASTEXT;
-  if HTMLMenu.Checked then
-    CurEditor.Lines.Text := HTMLTEXT;
-  if NoneMenu.Checked then
-    CurEditor.Lines.Text := NTEXT;
+  // Retrieve example code from SyntaxManager
+  for SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
+  begin
+    if SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked then
+    begin
+      CurEditor.Lines.Text := SyntaxManager.Elements[SyntaxIndex].SampleCode;
+      break;
+    end;
+  end;
   ResetChanged;
 end;
 
@@ -345,8 +270,27 @@ var
   i: integer;
   NFile: string;
   NewFrame: TEditorFrame;
+  SyntaxIndex : Integer;
+  MenuItem : TMenuItem;
 begin
   application.OnException := @HandleExceptions;
+  // Create dynamic MenuItems for Highlighter Menu
+  For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
+  begin
+    MenuItem := TMenuItem.Create(HighLightMenu);
+    MenuItem.Caption    := SyntaxManager.Elements[SyntaxIndex].MenuName;
+    MenuItem.Tag        := SyntaxIndex;
+    MenuItem.GroupIndex := 1;
+    MenuItem.RadioItem  := true;
+    MenuItem.Checked    := false;
+    MenuItem.AutoCheck  := true;
+    MenuItem.OnClick    := @HighlightMenuItemClick;
+    HighLightMenu.Insert(SyntaxIndex, MenuItem);
+    // Because of the autocheck we need to keep track of its status. Use the
+    // individual dynamic created menuitems stored in SyntaxManager for that.
+    // The MenuItem's tag can be used to sync with Syntaxmanager.
+    SyntaxManager.Elements[SyntaxIndex].MenuItem := MenuItem;
+  end;
   // Counter for Editornames ;)
   FAbsCount := 0;
   // Tab control initial Values
@@ -389,28 +333,11 @@ begin
   // Auto Highlighter preferences
   AutoMenu.Checked := Prefs.AutoHighlighter;
   // which highlighter is default
-  case Prefs.DefHighlighter of
-    HIGHLIGHTER_C:
-    begin
-      CMenu.Checked := True;
-      CMenuClick(nil);
-    end;
-    HIGHLIGHTER_PASCAL:
-    begin
-      PascalMenu.Checked := True;
-      PascalMenuClick(Sender);
-    end;
-    HIGHLIGHTER_HTML:
-    begin
-      HTMLMenu.Checked := True;
-      HTMLMenuClick(Sender);
-    end
-    else
-    begin
-      NoneMenu.Checked := True;
-      NoneMenuClick(Sender);
-    end;
-  end;
+  SyntaxIndex := Prefs.DefHighlighter;
+  // Fallback to Highlighter None in case of an error. harcoded zero value though.
+  If not InRange(SyntaxIndex, 0, Pred(SyntaxManager.ElementsCount)) then SyntaxIndex := 0;
+  SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked := True;
+  HighlightMenuItemClick(SyntaxManager.Elements[SyntaxIndex].MenuItem);
   // Recent Files up to 10
   RecFileList := TStringList.Create;
   RecMenuList[0] := RecMenu1;
@@ -510,21 +437,36 @@ begin
   CloseTabMenuClick(Sender);
 end;
 
+procedure TMainWindow.HighLightMenuItemClick(Sender: TObject);
+var
+  SyntaxIndex : LongInt;
+  HighlighterItem : THighlighterListItem;
+begin
+  // NOTE: behavioral change, Sender _needs_ to be the MenuItem from which
+  // the click was invoked. See also: dynamic menu creation @ FormCreate;
+  If (Sender As TMenuItem).Checked then
+  begin
+    // Sync
+    SyntaxIndex := (Sender As TMenuItem).Tag;
+    // In case of invalid SyntaxIndex default to harcoded zero value (no highlighter)
+    If not InRange(SyntaxIndex, 0, Pred(SyntaxManager.ElementsCount)) then SyntaxIndex := 0;
+
+    // Obtain highlighter listitem
+    HighlighterItem := CurFrame.Highlighters.FindItemBySyntaxIndex(SyntaxIndex);
+
+    If Assigned(HighlighterItem)
+    then CurEditor.Highlighter := HighlighterItem.HighLighter
+    else CurEditor.Highlighter := nil;
+
+    ExportMenu.Enabled    := assigned(CurEditor.Highlighter);
+    MikroStat.Highlighter := SyntaxManager.Elements[SyntaxIndex].MikroName;
+  end;
+end;
+
 procedure TMainWindow.NewTabMenuClick(Sender: TObject);
 begin
   // New Tab please.
   TabPlusClickEvent(Tabs);
-end;
-
-procedure TMainWindow.NoneMenuClick(Sender: TObject);
-begin
-  // Switch Highlighter off
-  if NoneMenu.Checked then
-  begin
-    CurEditor.Highlighter := nil;
-    ExportMenu.Enabled := False;
-    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
-  end;
 end;
 
 procedure TMainWindow.PasteMenuClick(Sender: TObject);
@@ -651,17 +593,6 @@ begin
   end;
 end;
 
-procedure TMainWindow.CMenuClick(Sender: TObject);
-begin
-  // Set the C Highlighter
-  if CMenu.Checked then
-  begin
-    CurEditor.Highlighter := CurFrame.SynCppSyn1;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'C';
-  end;
-end;
-
 procedure TMainWindow.ComOutputMenuClick(Sender: TObject);
 begin
   OutWindow.Show;
@@ -703,9 +634,9 @@ begin
     if Res <> mrYes then
       Exit;
   end;
-  //and now... to something completely different... ehm I mean trash everything
-  //we delete all except one, which one is not important thats the reason for
-  // the -2, thats the Tan we clean then
+  // and now... for something completely different... ehm ... I mean trash
+  // everything. We delete all except one, which one is not important thats the
+  // reason for the -2, thats the Tan we clean then
   for i := 0 to Tabs.TabCount - 2 do
     Tabs.DeleteTab(0, False, False);
   // switch to the last exisiting tab
@@ -733,28 +664,6 @@ procedure TMainWindow.CutMenuClick(Sender: TObject);
 begin
   // CutClip
   CurEditor.CutToClipboard;
-end;
-
-procedure TMainWindow.PascalMenuClick(Sender: TObject);
-begin
-  // Pascal highlighter
-  // TODO: Change Highlighters to a List with Tags as Index
-  if PascalMenu.Checked then
-  begin
-    CurEditor.Highlighter := CurFrame.SynPasSyn1;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'Pas';
-  end;
-end;
-
-procedure TMainWindow.HTMLMenuClick(Sender: TObject);
-begin
-  if HTMLMenu.Checked then
-  begin
-    CurEditor.Highlighter := CurFrame.SynHTMLSyn1;
-    ExportMenu.Enabled := True;
-    MikroStat.Highlighter := 'HTML';
-  end;
 end;
 
 procedure TMainWindow.QuitMenuClick(Sender: TObject);
@@ -802,16 +711,18 @@ begin
 end;
 
 procedure TMainWindow.SetDefHighMenuClick(Sender: TObject);
+Var
+  SyntaxIndex: Integer;
 begin
-  // HighlighterSetting as Default (TODO: as List? for more Highlighters?)
-  if CMenu.Checked then
-    Prefs.DefHighlighter := HIGHLIGHTER_C;
-  if PascalMenu.Checked then
-    Prefs.DefHighlighter := HIGHLIGHTER_PASCAL;
-  if HTMLMenu.Checked then
-    Prefs.DefHighlighter := HIGHLIGHTER_HTML;
-  if NoneMenu.Checked then
-    Prefs.DefHighlighter := HIGHLIGHTER_NONE;
+  // HighlighterSetting as Default
+  For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
+  begin
+    if SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked then
+    begin
+      Prefs.DefHighlighter:= SyntaxIndex;
+      break;
+    end;
+  end;
 end;
 
 procedure TMainWindow.SynEdit1ProcessCommand(Sender: TObject;
@@ -865,7 +776,10 @@ procedure TMainWindow.TabClickEvent(Sender: TObject);
 var
   i: integer;
   Frame: TEditorFrame;
+  SyntaxIndex: Integer;
 begin
+  // writeln('enter - MainUnit.TabClickEvent');
+
   EditorPanel.BeginUpdateBounds;
   for i := 0 to Tabs.TabCount - 1 do
   begin
@@ -873,23 +787,35 @@ begin
     if Frame.Editor.Visible <> (i = Tabs.TabIndex) then
       Frame.Editor.Visible := (i = Tabs.TabIndex);
   end;
+  // Let correct menuitem be checked based on active Frame/Editor
   if Assigned(CurEditor.Highlighter) then
   begin
-    if CurEditor.Highlighter is TSynCppSyn then
-      CMenu.Checked := True;
-    if CurEditor.Highlighter is TSynHtmlSyn then
-      HTMLMenu.Checked := True;
-    if CurEditor.Highlighter is TSynPasSyn then
-      PascalMenu.Checked := True;
+    For i := 0 To Pred(CurFrame.Highlighters.Count) do
+    begin
+      // writeln('MainUnit.TabClickEvent: Highlighter name: ', CurEditor.Highlighter.LanguageName);
+      If CurEditor.Highlighter = CurFrame.Highlighters.Items[i].HighLighter then
+      begin
+        SyntaxIndex := CurFrame.Highlighters.Items[i].SyntaxIndex;
+        SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked := true;
+        // writeln('MainUnit.TabClickEvent: Matched a highlighter and checked MenuItem');
+        break;
+      end;
+    end;
   end
+  // ToDo: remove hardcoded zero index fallback value (highlighter is None)
   else
-    NoneMenu.Checked := True;
+  begin
+    // writeln('MainUnit.TabClickEvent: No valid highlighter, Check None menuitem');
+    SyntaxManager.Elements[0].MenuItem.Checked:= true;
+  end;
+
   UpdateStatusBar;
   UpdateTitlebar;
   EditorPanel.EndUpdateBounds;
   Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
   if EditorPanel.Visible then
     Frame.Editor.SetFocus;
+  // writeln('leave - MainUnit.TabClickEvent');
 end;
 
 procedure TMainWindow.TabCloseEvent(Sender: TObject; ATabIndex: integer;
@@ -930,6 +856,7 @@ end;
 procedure TMainWindow.TabPlusClickEvent(Sender: TObject);
 var
   NewFrame: TEditorFrame;
+  SyntaxIndex: Integer;
 begin
   EditorPanel.Visible := False;
   NewFrame := TEditorFrame.Create(Self);
@@ -941,14 +868,17 @@ begin
   NewFrame.Editor.Gutter.Parts[0].Visible := Prefs.Bookmarks;
   NewFrame.Editor.Gutter.Parts[1].Visible := Prefs.LineNumbers;
   // Highlighter
-  if PascalMenu.Checked then
-    NewFrame.Editor.Highlighter := NewFrame.SynPasSyn1;
-  if CMenu.Checked then
-    NewFrame.Editor.Highlighter := NewFrame.SynCppSyn1;
-  if HTMLMenu.Checked then
-    NewFrame.Editor.Highlighter := NewFrame.SynHTMLSyn1;
-  if NoneMenu.Checked then
-    NewFrame.Editor.Highlighter := nil;
+  For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
+  begin
+    If SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked then
+    begin
+      if SyntaxManager.Elements[SyntaxIndex].SyntaxHLType = shtNone
+      then NewFrame.Editor.Highlighter := nil
+      else NewFrame.Editor.Highlighter := NewFrame.Highlighters.FindItemBySyntaxIndex(SyntaxIndex).HighLighter;
+      break;
+    end;
+  end;
+
   // Add the Tab
   Tabs.AddTab(-1, 'New Tab', NewFrame, False, clNone);
 
@@ -1012,59 +942,61 @@ procedure TMainWindow.AutoHighlighter;
 var
   Ext: string;
   i: integer;
+  SyntaxIndex: Integer;
 begin
   if AutoMenu.Checked then
   begin
     Ext := LowerCase(trim(ExtractFileExt(CurFrame.Filename)));
-    for i := 0 to High(PASEXT) do
+
+    For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
     begin
-      if Ext = PASEXT[i] then
+      if SyntaxManager.Elements[SyntaxIndex].HasFileExtension(Ext) then
       begin
-        PascalMenu.Checked := True;
-        PascalMenuClick(PascalMenu);
+        SyntaxManager.Elements[SyntaxIndex].MenuItem.Checked := True;
+        HighlightMenuItemClick(SyntaxManager.Elements[SyntaxIndex].MenuItem);
         Exit;
       end;
     end;
-    for i := 0 to High(CEXT) do
-    begin
-      if Ext = CEXT[i] then
-      begin
-        CMenu.Checked := True;
-        CMenuClick(CMenu);
-        Exit;
-      end;
-    end;
-    for i := 0 to High(HTMLEXT) do
-    begin
-      if Ext = HTMLEXT[i] then
-      begin
-        HTMLMenu.Checked := True;
-        HTMLMenuClick(CMenu);
-        Exit;
-      end;
-    end;
-    NoneMenu.Checked := True;
-    NoneMenuClick(NoneMenu);
+    // ToDo: Remove hardcoded zero index (highlighter is None)
+    // e.g. implement findbytype method in syntaxmanager
+    SyntaxManager.Elements[0].MenuItem.Checked := True;
+    HighlightMenuItemClick(SyntaxManager.Elements[0].MenuItem);
   end;
 end;
 
 procedure TMainWindow.UpdateStatusBar;
+var
+  i               : LongInt;
+  SyntaxIndex     : Integer;
+  HighlighterItem : THighlighterListItem;
 begin
   CoordPanel.Caption := IntToStr(CurEditor.CaretX) + ', ' + IntToStr(CurEditor.CaretY);
   MikroStat.Changed := CurEditor.Modified;
-  if CurEditor.Highlighter = nil then
+
+  if (CurEditor.Highlighter = nil) then
   begin
-    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;
+    // writeln('Highlighter = nil, done newcode');
+    MikroStat.Highlighter := NOHIGHLIGHTER_TEXT;  // TODO: transfer const to SyntaxManagement unit ?
   end
   else
   begin
-    if CurEditor.Highlighter is TSynCppSyn then
-      MikroStat.Highlighter := 'C';
-    if CurEditor.Highlighter is TSynPasSyn then
-      MikroStat.Highlighter := 'Pas';
-    if CurEditor.Highlighter is TSynHTMLSyn then
-      MikroStat.Highlighter := 'HTML';
+    //  writeln('Highlighter <> nil, for-next looping');
+    for i := 0 to Pred(curFrame.Highlighters.Count) do
+    begin
+      HighlighterItem := curFrame.Highlighters.Items[i];
+      If Assigned(HighlighterItem) then
+      begin
+        if CurEditor.Highlighter = HighlighterItem.HighLighter then
+        begin
+          // Writeln('set highlighter text');
+          SyntaxIndex := HighlighterItem.SyntaxIndex;
+          MikroStat.Highlighter :=  SyntaxManager.Elements[SyntaxIndex].MikroName;
+          break;
+        end;
+      end;
+    end;
   end;
+
   MikroStat.InsMode := CurEditor.InsertMode;
   UndoMenu.Enabled := CurEditor.CanUndo;
   RedoMenu.Enabled := CurEditor.CanRedo;

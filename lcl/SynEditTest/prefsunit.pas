@@ -26,12 +26,6 @@ const
   DEFAULTFONTSIZE = 11;
   {$endif}
 
-
-  HIGHLIGHTER_NONE = 0;
-  HIGHLIGHTER_C = 1;
-  HIGHLIGHTER_PASCAL = 2;
-  HIGHLIGHTER_HTML = 3;
-
 type
   TUserCommand = class
     ComLabel: string;
@@ -217,6 +211,9 @@ var
   Prefs: TPrefs;
 
 implementation
+
+Uses
+  SyntaxManagement;
 
 { TPrefs }
 
@@ -582,8 +579,12 @@ begin
 end;
 
 function TPrefs.GetDefHighlighter: integer;
+Var SyntaxIndex: LongInt;
 begin
-  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', HIGHLIGHTER_PASCAL);
+  // Attempt to find Object Pascal Syntax index. Returns Highlighter None (zero)
+  // in case of failure, so we should be good to go.
+  SyntaxIndex := SyntaxManager.ElementIndexByLanguageName('ObjectPascal');
+  Result := IniFile.ReadInteger(SECTION_HIGHLIGHTER, 'Default', SyntaxIndex);
 end;
 
 function TPrefs.GetEdBgColor: TColor;

@@ -9,7 +9,7 @@ uses
   Interfaces, // this includes the LCL widgetset
   Forms, MainUnit, GotLineUnit, SearchReplaceUnit, ReplaceReqUnit, PrefsUnit,
   FrameUnit, MikroStatUnit, AboutUnit, ATTabs, SearchAllUnit, 
-SearchAllResultsUnit, PrefsWinUnit, startprogunit, OutPutUnit;
+SearchAllResultsUnit, PrefsWinUnit, startprogunit, OutPutUnit, SyntaxManagement;
 
 {$R *.res}
 
