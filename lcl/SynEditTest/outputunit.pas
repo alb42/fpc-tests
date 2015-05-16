@@ -257,7 +257,7 @@ begin
       Posi := Trim(Copy(Line, StartLine + 1, StartType - StartLine - 1));
       Filename := Trim(Copy(Line, 1, StartLine - 1));
       Line := Line + chr(27)+'n';
-      if Msg = 'Note' then
+      if (Msg = 'Note') or (Msg = 'Hint') then
       begin
         Insert(chr(27) + 'i' + chr(27) + 'b', Line , StartType + 1);
         Insert(NoteMark, Line, 1);
