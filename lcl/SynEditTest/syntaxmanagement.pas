@@ -56,7 +56,7 @@ unit SyntaxManagement;
 interface
 
 uses
-  Classes, SysUtils, Contnrs, menus,
+  Classes, SysUtils, Contnrs, menus, Graphics,
   SynHighlighterCpp, SynHighlighterPas,
   SynHighlighterHTML, SynFacilHighlighter,  // EdiSyn Syntax Highlighters
   SynEditHighlighter;
@@ -72,14 +72,32 @@ Type
     shtCustom  // a.k.a. TSynFacilSyn
   );
 
+  { TEdiSynPasSyn }
+
+  TEdiSynPasSyn = class(TSynPasSyn)
+    constructor Create(AOwner: TComponent); override;
+  end;
+
+  { TEdiSynCppSyn }
+
+  TEdiSynCppSyn = class(TSynCppSyn)
+    constructor Create(AOwner: TComponent); override;
+  end;
+
+  { TEdiSynHTMLSyn }
+
+  TEdiSynHTMLSyn = class(TSynHTMLSyn)
+    constructor Create(AOwner: TComponent); override;
+  end;
+
 
 const
   SyntaxClassTypes: array[TSyntaxHighlighterType] of TSynCustomHighlighterClass =
   (
     nil,
-    TSynCppSyn,
-    TSynPasSyn,
-    TSynHTMLSyn,
+    TEdiSynCppSyn,
+    TEdiSynPasSyn,
+    TEdiSynHTMLSyn,
     TSynFacilSyn
   );
 
@@ -200,6 +218,50 @@ Uses
 function InRange(const AValue, AMin, AMax: Integer): Boolean;inline;
 begin
   Result:=(AValue>=AMin) and (AValue<=AMax);
+end;
+
+{ TEdiSynCppSyn }
+
+constructor TEdiSynCppSyn.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  CommentAttri.Foreground := clGreen;
+  DirecAttri.Foreground := clMaroon;
+  IdentifierAttri.Foreground := clBlack;
+  InvalidAttri.Foreground := clRed;
+  KeyAttri.Foreground := clBlue;
+  NumberAttri.Foreground := clOlive;
+  SpaceAttri.Foreground := clTeal;
+  StringAttri.Foreground := clNavy;
+  SymbolAttri.Foreground := clTeal;
+end;
+
+{ TEdiSynHTMLSyn }
+
+constructor TEdiSynHTMLSyn.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  CommentAttri.Foreground := clGreen;
+  IdentifierAttri.Foreground := clTeal;
+  KeyAttri.Foreground := clBlue;
+  SymbolAttri.Foreground := clNavy;
+end;
+
+{ TEdiSynPasSyn }
+
+constructor TEdiSynPasSyn.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  CommentAttri.Foreground := clGreen;
+  CommentAttri.Style := [];
+  IdentifierAttri.Foreground := clBlack;
+  KeyAttri.Foreground := clBlue;
+  NumberAttri.Foreground := clTeal;
+  StringAttri.Foreground := clPurple;
+  DirectiveAttri.Foreground := clRed;
+  CompilerMode := pcmFPC;
+  NestedComments := True;
+  ExtendedKeywordsMode := True;
 end;
 
 
