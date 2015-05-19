@@ -363,27 +363,12 @@ begin
   NewFrame.Filename := '';
   if Paramcount > 0 then
   begin
-    //writeln('paramcount ' ,Paramcount, ' file ', GetWBArg(1) );
     try
       LoadFile(ParamStr(1)); // Try to load the file will set CurFrame.Filename
     except
       NewFrame.Filename := '';
     end;
   end;
-  {$ifdef HASAMIGA}
-  // Some AROS Quirks when started via icon from a TextFile
-  if (NewFrame.Filename = '') and Assigned(AOS_WBMsg) then
-  begin
-    if PWBStartup(AOS_WBMsg)^.sm_NumArgs > 1 then
-    begin
-      try
-        LoadFile(GetWBArg(1)); // Load it
-      except
-        NewFrame.Filename := '';
-      end;
-    end;
-  end;
-  {$endif}
   // set Programname for the Caption
   ProgName := VERSION;
   Delete(Progname, 1, 6);  // Cut Version
