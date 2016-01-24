@@ -120,6 +120,7 @@ begin
   {$endif}
 
   SetHook(ButtonHook, @buttonFunc, Pointer($42));
+
   //
   writeln(HexStr(@ButtonHook));
   but := MUI_MakeObject(MUIO_Button, [NativeUInt(PChar('_Ok'))]);

@@ -92,12 +92,12 @@ end;
 
 procedure TMUIBase.AddChild(const NChild: TMUIBase);
 begin
-  DoMethod(FParentTarget, OM_ADDMEMBER, [NChild.MUIObject]);
+  DoMethod(FParentTarget, [OM_ADDMEMBER, PtrUInt(NChild.MUIObject)]);
 end;
 
 procedure TMUIBase.RemoveChild(const NChild: TMUIBase);
 begin
-  DoMethod(FParentTarget, OM_REMMEMBER, [NChild.MUIObject]);
+  DoMethod(FParentTarget, [OM_REMMEMBER, PtrUInt(NChild.MUIObject)]);
 end;
 
 
@@ -115,7 +115,7 @@ begin
   FParentTarget := MUI_NewObject(MUIC_Group,
     [TAG_END, TAG_END]);
   FMUIObject := MUI_NewObject(MUIC_Window,
-    [(MUIA_Window_RootObject), FParentTarget,
+    [MUIA_Window_RootObject, PtrUInt(FParentTarget),
      TAG_END]);
 
   if Assigned(FMUIObject) then

@@ -88,7 +88,7 @@ begin
 
   ButtonHook.h_Entry := IPTR(@buttonFunc);
 
-  but := MUI_MakeObject(MUIO_Button, [PChar('_Ok')]);
+  but := MUI_MakeObject(MUIO_Button, [PtrUInt(PChar('_Ok'))]);
 
   AddTags(Tags, [Tag_Done, 0, TAG_Done, 0]);
   if Assigned(ALBsClass) then
@@ -109,7 +109,7 @@ begin
   MUIB.Parent := MWin;
   MUIB2.Parent := MWin;
   app := Mapp.MUIObject;
-  SetAttrs(app, [MUIA_Application_Window, wnd, TAG_END]);
+  SetAttrs(app, [MUIA_Application_Window, PtrUInt(wnd), TAG_END]);
 
 
   {txt := MUI_NewObject(MUIC_Text,
@@ -136,8 +136,8 @@ begin
   begin
     writeln('app ok');
     CallHook(PHook(OCLASS(wnd)), wnd,
-      [MUIM_Notify, MUIA_Window_CloseRequest, True,
-      LongWord(app), 2,
+      [MUIM_Notify, MUIA_Window_CloseRequest, LTrue,
+      PtrUInt(app), 2,
       MUIM_Application_ReturnID, MUIV_Application_ReturnID_Quit]);
     (*
     CallHook(PHook(OCLASS(but)), but,
@@ -147,12 +147,12 @@ begin
    *)
     sigs := 0;
     writeln('open it');
-    SetAttrs(wnd, [MUIA_Window_Open, True, TAG_END]);
+    SetAttrs(wnd, [MUIA_Window_Open, LTrue, TAG_END]);
     if myGet(wnd, MUIA_Window_Open)<>0 then
     begin
       writeln('Window open');
       while Integer(CallHook(PHook(OCLASS(app)), app,
-                     [MUIM_Application_NewInput, @sigs]))
+                     [MUIM_Application_NewInput, PtrUInt(@sigs)]))
             <> MUIV_Application_ReturnID_Quit do
       begin
         if (sigs <> 0) then
