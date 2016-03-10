@@ -4,7 +4,7 @@ object MainWindow: TMainWindow
   Top = 160
   Width = 801
   Caption = 'MainWindow'
-  ClientHeight = 495
+  ClientHeight = 491
   ClientWidth = 801
   Color = 16578029
   Menu = MainMenu
@@ -12,11 +12,11 @@ object MainWindow: TMainWindow
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.2.4.0'
+  LCLVersion = '1.6.0.4'
   object LowerPanel: TPanel
     Left = 0
     Height = 28
-    Top = 467
+    Top = 463
     Width = 801
     Align = alBottom
     BevelOuter = bvNone
@@ -75,7 +75,7 @@ object MainWindow: TMainWindow
   end
   object EditorPanel: TPanel
     Left = 0
-    Height = 463
+    Height = 459
     Top = 2
     Width = 801
     Align = alClient
@@ -171,6 +171,10 @@ object MainWindow: TMainWindow
       object ExportMenu: TMenuItem
         Caption = 'Export as HTML'
         OnClick = ExportMenuClick
+      end
+      object MenuPrint: TMenuItem
+        Caption = 'Print'
+        OnClick = MenuPrintClick
       end
       object MenuItem2: TMenuItem
         Caption = '-'

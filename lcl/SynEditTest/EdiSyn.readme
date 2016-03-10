@@ -1,4 +1,4 @@
-EdiSyn 0.53
+EdiSyn 0.54
 
 by Marcus "ALB42" Sackrow
 
@@ -76,17 +76,22 @@ Ctrl + Shift + F1          Previous Tab
 Ctrl + Shift + F2          Next Tab
 
 History:
+
+0.54
+  FIX: Restored default highlighter colors
+  FIX: Hint marker for freepascal output
+  FIX: Faster redrawing
+  FIX: Messagewindows buttons
+
 0.53 
   ADD: Hollywood highlighter (Magorium)
 
 0.52
-
   ADD: Font Selection
   FIX: Load HTML Colors
   FIX: Export HTML
 
 0.51
-
   ADD: Highlight all search results
   ADD: Highlighter with italic, bold and underline
   ADD: ProgramOutput Menu: copy to clipboard
@@ -95,7 +100,6 @@ History:
   FIX: Position save of output window
 
 0.50
-
   ADD: Iconify Icon
   ADD: User Program Startup
   ADD: Catching Program output
@@ -103,7 +107,6 @@ History:
   ADD: ShortCuts for User programs
 
 0.42
-
   FIX: Shortcuts with Alt Key
   ADD: Shortcuts with Amiga key
   FIX: Wrong keybinding
@@ -113,11 +116,9 @@ History:
   ADD: Column Selecting
 
 0.41
-
   ADD: HTML Highlighter
 
 0.40 "Easter Edition"
-
   ADD: Preferences Dialog
   ADD: Key binding Dialog with Key catcher
   ADD: Highlighter Color selection Dialog
@@ -130,14 +131,12 @@ History:
   ADD: Easter Eggs
 
 0.34
-
   FIX: Warning for reopen file in same Tab removed
   FIX: Errormessage if a file cannot be open
   ADD: Search All requester (directory, open files)
   ADD: Search All result window with highlighting
 
 0.33
-
   FIX: Beep also when searching backwards (Shift F3)
   ADD: Warn if a file is already open in the editor, jump to this tab
   ADD: Show full path in Window title.
@@ -145,7 +144,6 @@ History:
   ADD: About Box
 
 0.32
-
   ADD: Call Search dialog with selection -> used as search text
   ADD: Search Dialog improved
   ADD: Search and replace history
@@ -153,7 +151,6 @@ History:
   FIX: Not Call Application to redraw
  
 0.31
-
   ADD: Bookmarks (Ctrl + Shift + 0..9 for set, Ctrl + 0..9 for jump to bookmark) in the picture Bookmark 5 is set.
   ADD: Bookmark bar can be switched on/off
   FIX: Crash when close a Tab via key removed (Focus issue)
@@ -163,14 +160,12 @@ History:
   CHG: Use MUI Requesters instead of EasyRequest -> looks nicer and the Window behind gets redraw events.
 
 0.30
-
   ADD: Tabs
   CHG: nicer Colors
   ADD: better Statusbar (extendable)
   FIX: many Bugfixes (focus, keys ....)
   
 0.20
-
   ADD: Name, Icon, Readme
   ADD: Search, Replace (not complete)
   ADD: Close Question

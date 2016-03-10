@@ -68,7 +68,7 @@ type
   TATTabDrawEvent = procedure (Sender: TObject;
     AElemType: TATTabElemType; ATabIndex: Integer;
     ACanvas: TCanvas; const ARect: TRect; var ACanDraw: boolean) of object;
-  TATTabMoveEvent = procedure (Sender: TObject; NFrom, NTo: Integer) of object;  
+  TATTabMoveEvent = procedure (Sender: TObject; NFrom, NTo: Integer) of object;
 
 type
   TATTriType = (triDown, triLeft, triRight);
@@ -107,7 +107,7 @@ type
 
     //spaces
     FTabNumPrefix: atString;
-    FTabBottom: boolean; 
+    FTabBottom: boolean;
     FTabAngle: Integer; //angle of tab border: from 0 (vertcal border) to any size
     FTabHeight: Integer;
     FTabWidthMin: Integer; //tab minimal width (used when lot of tabs)
@@ -513,7 +513,7 @@ begin
   FTabIndentArrowLeft:= 4;
   FTabIndentArrowRight:= 20;
   FTabIndentColor:= 3;
-  
+
   FTabShowClose:= tbShowAll;
   FTabShowPlus:= true;
   FTabShowPlusText:= ' + ';
@@ -908,7 +908,7 @@ begin
         false
         );
       DoPaintAfter(AType, -1, C, ARect);
-    end;    
+    end;
   end;
 
   //paint passive tabs
@@ -960,7 +960,7 @@ begin
         TATTabData(FTabList[i]).TabModified
         );
       DoPaintAfter(aeTabActive, i, C, ARect);
-    end;  
+    end;
   end;
 
   //paint arrows
@@ -1011,7 +1011,7 @@ begin
   //arrows?
   GetArrowRect(RDown);
 
-  {
+{
   if FTabShowScroll then
     if PtInRect(RLeft, Pnt) then
     begin
@@ -1025,7 +1025,8 @@ begin
       Result:= cAtArrowRight;
       Exit
     end;
-  }  
+  }
+
 
   if FTabShowMenu then
     if PtInRect(RDown, Pnt) then
@@ -1275,7 +1276,7 @@ begin
         FOnTabEmpty(Self);
 
     if Assigned(FOnTabMove) then
-      FOnTabMove(Self, AIndex, -1);    
+      FOnTabMove(Self, AIndex, -1);
   end;
 
   Result:= true;
@@ -1436,7 +1437,7 @@ begin
   if NFrom<0 then Exit;
   NTo:= FTabIndexDrop;
   if NTo<0 then NTo:= TabCount-1;
-  if NFrom=NTo then Exit;  
+  if NFrom=NTo then Exit;
 
   FTabList.Move(NFrom, NTo);
   SetTabIndex(NTo);
@@ -1462,7 +1463,7 @@ begin
         TControl2(ATarget).OnDragDrop(ATarget, Data.TabObject, P.X, P.Y);
     end;
     Exit;
-  end;  
+  end;
 
   ATabs:= ATarget as TATTabs;
   if not ATabs.TabDragEnabled then Exit;
@@ -1484,7 +1485,7 @@ begin
   if NTabTo<0 then
     ATabs.TabIndex:= ATabs.TabCount-1
   else
-    ATabs.TabIndex:= NTabTo;  
+    ATabs.TabIndex:= NTabTo;
 
   //delete old tab (don't call OnTabClose)
   DeleteTab(NTab, false{AllowEvent}, false);

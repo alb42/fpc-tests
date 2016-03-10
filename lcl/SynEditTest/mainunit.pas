@@ -17,7 +17,7 @@ uses
   MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.53 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.54 (' +{$I %DATE%} +')';
 
 
 type
@@ -29,6 +29,7 @@ type
     CutMenu: TMenuItem;
     BookmarkImages: TImageList;
     ComOutputMenu: TMenuItem;
+    MenuPrint: TMenuItem;
     UserMenu: TMenuItem;
     StatLabel: TLabel;
     MenuItem1: TMenuItem;
@@ -103,6 +104,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure GoToLineMenuClick(Sender: TObject);
     procedure DestroyTabTimerTimer(Sender: TObject);
+    procedure MenuPrintClick(Sender: TObject);
     procedure NewTabMenuClick(Sender: TObject);
     procedure PasteMenuClick(Sender: TObject);
     procedure PrefsMenuClick(Sender: TObject);
@@ -420,6 +422,24 @@ begin
   // SynEdit Editor inside one of its Events -> Key press -> Close Tab
   DestroyTabTimer.Enabled := False;
   CloseTabMenuClick(Sender);
+end;
+
+procedure TMainWindow.MenuPrintClick(Sender: TObject);
+var
+  F: File;
+  i, num: Integer;
+  str: string;
+begin
+  {$I-}
+  AssignFile(F, 'PRT:');
+  Rewrite(F,1);
+  {$I+}
+  if IOResult = 0 then
+  begin
+    str := #27'[4w' + CurEditor.Lines.Text + #0;
+    Blockwrite(F, str[1], Length(str), i);
+    CloseFile(F);
+  end;
 end;
 
 procedure TMainWindow.HighLightMenuItemClick(Sender: TObject);

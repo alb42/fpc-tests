@@ -1336,7 +1336,7 @@ end;
 
 initialization
   UserCommands := TUserCommands.Create(True);
-finalization;
+finalization
   UserCommands.Free;
   FreeAndNil(VirtualKeyStrings);
 end.

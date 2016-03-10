@@ -228,18 +228,19 @@ end;
 procedure TOutWindow.BeautifyFPC;
 var
   Line: string;
-  Filename: string;
+  //Filename: string;
   StartLine, StartType, StartMsg: Integer;
-  i, len: Integer;
+  i: Integer;
+  //len: Integer;
   Msg: string;
-  Posi: string;
+  //Posi: string;
 begin
   Files.Clear;
   Origtext.Assign(Outlist.Items);
   for i := 0 to OutList.Items.Count - 1 do
   begin
     Line := OutList.Items[i];
-    Len := Length(Line);
+    //Len := Length(Line);
     //
     StartLine := Pos('Compiling ', Line);
     if StartLine = 1 then
@@ -254,12 +255,12 @@ begin
     if (StartLine > 0) and (StartType > 0) and (StartMsg > 0) then
     begin
       Msg := Trim(Copy(Line, StartType + 1, StartMsg - StartType - 1));
-      Posi := Trim(Copy(Line, StartLine + 1, StartType - StartLine - 1));
-      Filename := Trim(Copy(Line, 1, StartLine - 1));
+      //Posi := Trim(Copy(Line, StartLine + 1, StartType - StartLine - 1));
+      //Filename := Trim(Copy(Line, 1, StartLine - 1));
       Line := Line + chr(27)+'n';
       if (Msg = 'Note') or (Msg = 'Hint') then
       begin
-        Insert(chr(27) + 'i' + chr(27) + 'b', Line , StartType + 1);
+        Insert(chr(27) + 'i', Line , StartType + 1);
         Insert(NoteMark, Line, 1);
       end;
       if Msg = 'Warning' then

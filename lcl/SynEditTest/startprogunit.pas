@@ -175,11 +175,11 @@ begin
     SYS_Input, 0,
     NP_CLI, 1,
     NP_StackSize, FStackSize,
-    SYS_Output, cos,
-    SYS_Error, cer,
-    NP_ExitCode, @MyExitCode,
-    NP_ExitData, NativeInt(Self),
-    NP_UserData, NativeInt(Self),
+    SYS_Output, PtrUInt(cos),
+    SYS_Error, PtrUInt(cer),
+    NP_ExitCode, PtrUInt(@MyExitCode),
+    NP_ExitData, PtrUInt(Self),
+    NP_UserData, PtrUInt(Self),
     TAG_END, TAG_END]);
   // Open the File to read
   Reset(F);
