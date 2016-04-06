@@ -1,4 +1,4 @@
-﻿{                               SynFacilRegex
+{                               SynFacilRegex
 Unidad con rutinas básicas de SynFacilSyn.
 Incluye la definición de la clase base: TSynFacilSynBase, que es la clase padre
 de TSYnFacilSyn.
@@ -14,6 +14,7 @@ uses
   SysUtils, Classes, SynEditHighlighter, strutils, Graphics, DOM, LCLIntf,
   SynEditHighlighterFoldBase, SynEditTypes;
 
+
 {$IFNDEF FPC_WINLIKEWIDESTRING}
 {$DEFINE HAS_NO_WIDESTRING_MANAGER}
 {$ENDIF}
@@ -25,10 +26,10 @@ type
   //simples. Solo incluyen literales de cadena o listas.
   tFaRegExpType = (
     tregString,   //Literal de cadena: "casa"
-    tregChars,    //Lista de caracteres: [A..Z]
-    tregChars01,  //Lista de caracteres: [A..Z]?
-    tregChars0_,  //Lista de caracteres: [A..Z]*
-    tregChars1_   //Lista de caracteres: [A..Z]+
+    tregChars,    //Lista de caracteres: [A-Z]
+    tregChars01,  //Lista de caracteres: [A-Z]?
+    tregChars0_,  //Lista de caracteres: [A-Z]*
+    tregChars1_   //Lista de caracteres: [A-Z]+
   );
 
   //Acciones a ejecutar en las comparaciones
@@ -44,9 +45,8 @@ type
     Chars    : array[#0..#255] of ByteBool; //caracteres
     Text     : string;             //cadena válida
     expTyp   : tFaRegExpType;      //tipo de expresión
-    TokTyp   : TSynHighlighterAttributes;   //tipo de token al salir
-    dMatch   : byte;   //desplazamiento en caso de coincidencia (0 = salir)
-    dMiss    : byte;   //desplazamiento en caso de no coincidencia (0 = salir)
+    aMatch   : TSynHighlighterAttributes;  //atributo asignado en caso TRUE
+    aFail    : TSynHighlighterAttributes;  //atributo asignado en caso TRUE
     //Campos para ejecutar instrucciones, cuando No cumple
     actionFail : tFaActionOnMatch;
     destOnFail : integer;  //posición destino
@@ -69,14 +69,15 @@ type
     Instrucs : array of tFaTokContentInst;  //Instrucciones del token por contenido
     nInstruc : integer;      //Cantidad de instrucciones
     procedure Clear;
-//    function ValidateInterval(var cars: string): boolean;
-    procedure AddInstruct(exp: string; ifTrue: string='next'; ifFalse: string='exit';
-      TokTyp0: TSynHighlighterAttributes = nil);
+    procedure AddInstruct(exp: string; ifTrue: string=''; ifFalse: string='';
+      atMatch: TSynHighlighterAttributes=nil; atFail: TSynHighlighterAttributes=
+  nil);
     procedure AddRegEx(exp: string; Complete: boolean=false);
   private
     function AddItem(expTyp: tFaRegExpType; ifMatch, ifFail: string): integer;
-    procedure AddOneInstruct(var exp: string; ifTrue: string='next'; ifFalse: string
-      ='exit'; TokTyp0: TSynHighlighterAttributes=nil);
+    procedure AddOneInstruct(var exp: string; ifTrue: string; ifFalse: string;
+      atMatch: TSynHighlighterAttributes=nil; atFail: TSynHighlighterAttributes=
+  nil);
   end;
 
   ///////// Definiciones básicas para el resaltador ///////////
@@ -109,17 +110,20 @@ type
     typDel: TFaTypeDelim;  {indica si el token especial actual, es en realidad, el
                             delimitador inicial de un token delimitado o por contenido}
     dEnd  : string;        //delimitador final (en caso de que sea delimitador)
-    pRange: TFaProcRange;    //procedimiento para procesar el token o rango(si es multilinea)
+    pRange: TFaProcRange;  //procedimiento para procesar el token o rango(si es multilinea)
     folTok: boolean;       //indica si el token delimitado, tiene plegado
+    chrEsc: char;          //Caracter de escape de token delimitado. Si no se usa, contiene #0.
     //propiedades para manejo de bloques y plegado de código
-    bloIni : boolean;       //indica si el token es inicio de bloque de plegado
-    bloIniL: array of TFaSynBlock;  //lista de referencias a los bloques que abre
-    bloFin : boolean;       //indica si el token es fin de bloque de plegado
-    bloFinL: array of TFaSynBlock;  //lista de referencias a los bloques que cierra
-    secIni : boolean;       //indica si el token es inicio de sección de bloque
-    secIniL: array of TFaSynBlock;  //lista de bloques de los que es inicio de sección
-    firstSec: TFaSynBlock;     //sección que se debe abrir al abrir el bloque
+    openBlk   : boolean;      //indica si el token es inicio de bloque de plegado
+    BlksToOpen: array of TFaSynBlock;  //lista de referencias a los bloques que abre
+    closeBlk  : boolean;      //indica si el token es fin de bloque de plegado
+    BlksToClose: array of TFaSynBlock; //lista de referencias a los bloques que cierra
+    OpenSec   : boolean;      //indica si el token es inicio de sección de bloque
+    SecsToOpen: array of TFaSynBlock;  //lista de bloques de los que es inicio de sección
+    firstSec  : TFaSynBlock; //sección que se debe abrir al abrir el bloque
   end;
+
+  TEvBlockOnOpen = procedure(blk: TFaSynBlock; var Cancel: boolean) of object;
 
   TArrayTokSpec = array of TTokSpec;
   //clase para manejar la definición de bloques de sintaxis
@@ -131,6 +135,9 @@ type
     BackCol     : TColor;    //color de fondo de un bloque
     IsSection   : boolean;   //indica si es un bloque de tipo sección
     UniqSec     : boolean;   //índica que es sección única
+    CloseParent : boolean;   //indica que debe cerrar al blqoue padre al cerrarse
+    OnBeforeOpen      : TEvBlockOnOpen;  //evento de apertura de bloque
+    OnBeforeClose     : TEvBlockOnOpen;  //evento de cierre de bloque
   end;
 
   TPtrATokEspec = ^TArrayTokSpec;     //puntero a tabla
@@ -227,7 +234,7 @@ type
   end;
 
 function ExtractRegExp(var exp: string; var str: string; var listChars: string): tFaRegExpType;
-function ExtractRegExp(var exp: string; var RegexTyp: tFaRegExpType ): string;
+function ExtractRegExpN(var exp: string; var RegexTyp: tFaRegExpType ): string;
 function ReplaceEscape(str: string): string;
 
 implementation
@@ -236,8 +243,8 @@ const
 //    ERR_START_NO_EMPTY = 'Parámetro "Start" No puede ser nulo';
 //    ERR_EXP_MUST_BE_BR = 'Expresión debe ser de tipo [lista de caracteres]';
 //    ERR_TOK_DELIM_NULL = 'Delimitador de token no puede ser nulo';
-//    ERR_NOT_USE_START
-//    ERR_PAR_START_CHARS
+//    ERR_NOT_USE_START = 'No se puede usar "Start" y "CharsStart" simultáneamente.';
+//    ERR_PAR_START_CHARS = 'Se debe definir el parámetro "Start" o "CharsStart".';
 //    ERR_TOK_DEL_IDE_ERR = 'Delimitador de token erróneo: %s (debe ser identificador)';
 //    ERR_IDEN_ALREA_DEL = 'Identificador "%s" ya es delimitador inicial.';
 //    ERR_INVAL_ATTR_LAB = 'Atributo "%s" no válido para etiqueta <%s>';
@@ -257,7 +264,12 @@ const
 
     //Mensajes de tokens por contenido
 //    ERR_EMPTY_INTERVAL = 'Error: Intervalo vacío.';
-//    ERR_DEF_INTERVAL = 'Error en definición de intervalo: %s';
+//    ERR_EMPTY_EXPRES = 'Expresión vacía.';
+//    ERR_EXPECTED_BRACK = 'Se esperaba "]".';
+//    ERR_UNSUPPOR_EXP_ = 'Expresión no soportada.';
+//    ERR_INC_ESCAPE_SEQ = 'Secuencia de escape incompleta.';
+//    ERR_SYN_PAR_IFFAIL_ = 'Error de sintaxis en parámetro "IfFail": ';
+//    ERR_SYN_PAR_IFMATCH_ = 'Error de sintaxis en parámetro "IfMarch": ';
     ERR_EMPTY_INTERVAL = 'Error: Empty Interval.';
     ERR_EMPTY_EXPRES = 'Empty expression.';
     ERR_EXPECTED_BRACK = 'Expected "]".';
@@ -301,11 +313,11 @@ begin
         Result := copy(txt, 1,4);
       end;
       txt := copyEx(txt,5);
-    end else begin
-      if convert then begin    //toma caracter hexdecimal
-        //secuencia normal de dos caracteres
+    end else begin //se supone que es de tipo \A
+      //secuencia normal de dos caracteres
+      if convert then begin  //hay que convertirlo
         Result := txt[2];
-      end else begin
+      end else begin  //lo toma tal cual
         Result := copy(txt,1,2);
       end;
       txt := copyEx(txt,3);
@@ -336,7 +348,7 @@ begin
   Result := ExtractChar(txt, escaped, false);
 end;
 function ReplaceEscape(str: string): string;
-{Reemplaza las secuencias de eescape por su caracter real. Las secuencias de
+{Reemplaza las secuencias de escape por su caracter real. Las secuencias de
 escape recnocidas son:
 * Secuencia de 2 caracteres: "\#", donde # es un caracter cualquiera, excepto"x".
   Esta secuencia equivale al caracter "#".
@@ -351,6 +363,7 @@ Dentro de las expresiones regulares de esta librería, los caracteres: "[", "*",
 "\*" -> "*"
 "\?" -> "?"
 "\+" -> "+"
+"\x$$" -> caracter ASCII $$
 }
 begin
   Result := '';
@@ -380,69 +393,113 @@ begin
   end;
   Result := f;
 end;
-procedure ValidateInterval(var cars: string);
-{Valida un conjunto de caracteres, expandiendo los intervalos de tipo "A-Z", y
-remplazando las secuencias de escape como: "\[", "\\", "\-", ...
-El caracter "-", se considera como indicador de intervalo, a menos que se encuentre
-en elprimer o ùltimocaracter de la cadena.
-Si hay error genera una excepción.}
-var
-  c, car1, car2: char;
-  car: string;
-  tmp: String;
-begin
-  //reemplaza intervalos
-  if cars = '' then
-    raise ESynFacilSyn.Create(ERR_EMPTY_INTERVAL);
-  car  := ExtractCharN(cars);  //Si el primer caracter es "-". lo toma literal.
-  tmp := car;  //inicia cadena para acumular.
-  car1 := ExtractChar(car);    //Se asume que es inicio de intervalo. Ademas car<>''. No importa qye se pierda 'car'
-  car := ExtractCharN(cars);   //extrae siguiente
-  while car<>'' do begin
-    if car = '-' then begin
-      //es intervalo
-      car2 := ExtractChar(cars);   //caracter final
-      if car2 = #0 then begin
-        //Es intervalo incompleto, podría genera error, pero mejor asumimos que es el caracter "-"
-        tmp += '-';
-        break;  //sale por que se supone que ya no hay más caracteres
-      end;
-      //se tiene un intervalo que hay que reemplazar
-      for c := Chr(Ord(car1)+1) to car2 do  //No se incluye "car1", porque ya se agregó
-        tmp += c;
-    end else begin  //simplemente acumula
-      tmp += car;
-      car1 := ExtractChar(car);    //Se asume que es inicio de intervalo. No importa qye se pierda 'car'
-    end;
-    car := ExtractCharN(cars);  //extrae siguiente
-  end;
-  cars := ReplaceEscape(tmp);
-  cars := StringReplace(cars, '%HIGH%', altos,[rfReplaceAll]);
-  cars := StringReplace(cars, '%ALL%', bajos+altos,[rfReplaceAll]);
-end;
 function ExtractRegExp(var exp: string; var str: string; var listChars: string): tFaRegExpType;
-{Extrae parte de una expresión regular y devuelve el tipo.
+{Extrae parte de una expresión regular y devuelve el tipo. Esta función se basa en
+que toda expresión regular se puede reducir a literales de cadenas o listas (con o
+sin cuantificador).
 En los casos de listas de caracteres, expande los intervalos de tipo: A..Z, reemplaza
 las secuencias de escape y devuelve la lista en "listChars".
 En el caso de que sea un literal de cadena, reemplaza las secuencias de escape y
 devuelve la cadena en "str".
 Soporta todas las formas definidas en "tFaRegExpType".
 Si encuentra error, genera una excepción.}
+  procedure ValidateInterval(var cars: string);
+  {Valida un conjunto de caracteres, expandiendo los intervalos de tipo "A-Z", y
+  remplazando las secuencias de escape como: "\[", "\\", "\-", ...
+  El caracter "-", se considera como indicador de intervalo, a menos que se encuentre
+  en el primer o ùltimo caracter de la cadena, o esté escapado.
+  Si hay error genera una excepción.}
+  var
+    c, car1, car2: char;
+    car: string;
+    tmp: String;
+    Invert: Boolean;
+    carsSet: set of char;
+  begin
+    //reemplaza intervalos
+    if cars = '' then
+      raise ESynFacilSyn.Create(ERR_EMPTY_INTERVAL);
+    //Verifica si es lista invertida
+    Invert := false;
+    if cars[1] = '^' then begin
+      Invert := true;        //marca
+      cars := copyEx(cars,2);  //quita "^"
+    end;
+    //Procesa contenido, reemplazando los caracteres escapados.
+    //Si el primer caracter es "-". lo toma literal, sin asumir error.
+    car1 := ExtractChar(cars);   //Extrae caracter convertido. Se asume que es inicio de intervalo.
+    tmp := car1;  //inicia cadena para acumular.
+    car := ExtractCharN(cars);   //Eextrae siguiente. Sin convertir porque puede ser "\-"
+    while car<>'' do begin
+      if car = '-' then begin
+        //es intervalo
+        car2 := ExtractChar(cars);   //caracter final
+        if car2 = #0 then begin
+          //Es intervalo incompleto, podría genera error, pero mejor asumimos que es el caracter "-"
+          tmp += '-';
+          break;  //sale por que se supone que ya no hay más caracteres
+        end;
+        //se tiene un intervalo que hay que reemplazar
+        for c := Chr(Ord(car1)+1) to car2 do  //No se incluye "car1", porque ya se agregó
+          tmp += c;
+      end else begin  //simplemente acumula
+        car1 := ExtractChar(car);   //Se asume que es inicio de intervalo. No importa perder "car"
+        tmp += car1;  //Es necesario, porque puede estar escapado
+      end;
+      car := ExtractCharN(cars);  //extrae siguiente
+    end;
+    cars := StringReplace(tmp, '%HIGH%', altos,[rfReplaceAll]);
+    cars := StringReplace(cars, '%ALL%', bajos+altos,[rfReplaceAll]);
+    //Verifica si debe invertir lista
+    if Invert then begin
+      //Convierte a conjunto
+      carsSet := [];
+      for c in cars do carsSet += [c];
+      //Agrega caracteres
+      cars := '';
+      for c := #1 to #255 do  //no considera #0
+        if not (c in carsSet) then cars += c;
+    end;
+  end;
 var
-  f: Integer;
   tmp: string;
   lastAd: String;
-
 begin
   if exp= '' then
     raise ESynFacilSyn.Create(ERR_EMPTY_EXPRES);
+  //Reemplaza secuencias conocidas que equivalen a listas.
+  if copy(exp,1,2) = '\d' then begin
+    exp := '[0-9]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\D' then begin
+    exp := '[^0-9]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\a' then begin
+    exp := '[A-Za-z]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\w' then begin
+    exp := '[A-Za-z0-9_]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\W' then begin
+    exp := '[^A-Za-z0-9_]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\s' then begin
+    exp := ' ' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\S' then begin
+    exp := '[^ ]' + copyEx(exp,3);
+  end else if copy(exp,1,2) = '\t' then begin
+    exp := '\x09' + copyEx(exp,3);
+  end else if copy(exp,1,1) = '.' then begin
+    exp := '[\x01-\xFF]' + copyEx(exp,2);
+  end;
+  //analiza la secuencia
   if (exp[1] = '[') and (length(exp)>1) then begin    //Es lista de caracteres
-    f := PosChar(']', exp);  //Busca final, obviando "\]"
-    if f=0 then
+    //Captura interior del intervalo.
+    exp := CopyEx(exp,2);
+    listChars := '';
+    tmp := ExtractCharN(exp);   //No convierte para no confundir "\]"
+    while (exp<>'') and (tmp<>']') do begin
+      listChars += tmp;
+      tmp := ExtractCharN(exp);  //No convierte para no confundir "\]"
+    end;
+    if (tmp<>']') then   //no se encontró ']'
       raise ESynFacilSyn.Create(ERR_EXPECTED_BRACK);
-    //El intervalo se cierra
-    listChars := copy(exp,2,f-2); //toma interior de lista
-    exp := copyEx(exp,f+1);       //extrae parte procesada
+    //la norma es tener aquí, el contenido de la lista, pero manteniendo los caracteres escapados
     ValidateInterval(listChars);  //puede simplificar "listChars". También puede generar excepción
     if exp = '' then begin   //Lista de tipo "[ ... ]"
       Result := tregChars;
@@ -533,10 +590,10 @@ begin
     Result := tregString;
   end;
 end;
-function ExtractRegExp(var exp: string; var RegexTyp: tFaRegExpType ): string;
+function ExtractRegExpN(var exp: string; var RegexTyp: tFaRegExpType ): string;
 {Extrae parte de una expresión regular y la devuelve como cadena . Actualiza el
 tipo de expresión obtenida en "RegexTyp".
-No Reemplaza las secuencias de excape ni los intervalos, devuelve el text tal cual}
+No Reemplaza las secuencias de excape ni los intervalos, devuelve el texto tal cual}
 var
   listChars, str: string;
   exp0: String;
@@ -557,7 +614,7 @@ begin
 end;
 function tFaTokContent.AddItem(expTyp: tFaRegExpType; ifMatch, ifFail: string): integer;
 //Agrega un ítem a la lista Instrucs[]. Devuelve el número de ítems.
-//Configura el comportamiento de la instrucciómn usando "ifMatch".
+//Configura el comportamiento de la instrucción usando "ifMatch".
 var
   ifMatch0, ifFail0: string;
 
@@ -575,7 +632,7 @@ var
 //    Result := copy(txt,1,p);
 //    txt := copyEx(txt, p+1);
   end;
-  function extractPar(var txt: string; var hasSign: boolean; errMsg: string): integer;
+  function extractPar(var txt: string; errMsg: string): integer;
   //Extrae un valor numérico
   var
     p, p0: Integer;
@@ -585,19 +642,17 @@ var
     if txt = '' then exit(0);
     if txt[1] = '(' then begin
       //caso esperado
-      hasSign := false;
       p := 2;  //explora
       if not (txt[2] in ['+','-','0'..'9']) then  //validación
         raise ESynFacilSyn.Create(errMsg + ifFail0);
+      sign := 1;  //signo por defecto
       if txt[2] = '+' then begin
-        hasSign := true;
         p := 3;  //siguiente caracter
         sign := 1;
         if not (txt[3] in ['0'..'9']) then
           raise ESynFacilSyn.Create(errMsg + ifFail0);
       end;
       if txt[2] = '-' then begin
-        hasSign := true;
         p := 3;  //siguiente caracter
         sign := -1;
         if not (txt[3] in ['0'..'9']) then
@@ -627,7 +682,6 @@ var
 
 var
   inst: String;
-  hasSign: boolean;
   n: Integer;
 begin
   ifMatch0 := ifMatch;  //guarda valor original
@@ -643,7 +697,11 @@ begin
   Result := nInstruc;
   //Configura comportamiento
   if ifMatch<>'' then begin
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+    ifMatch := UpperCase(ifMatch);
+    {$ELSE}
     ifMatch := UpCase(ifMatch);
+    {$ENDIF}
     while ifMatch<>'' do begin
       inst := extractIns(ifMatch);
       if inst = 'NEXT' then begin  //se pide avanzar al siguiente
@@ -651,13 +709,13 @@ begin
       end else if inst = 'EXIT' then begin  //se pide salir
         if HavePar(ifMatch) then begin  //EXIT con parámetro
           Instrucs[n].actionMatch := aomExitpar;
-          Instrucs[n].destOnMatch := n + extractPar(ifMatch, hasSign, ERR_SYN_PAR_IFMATCH_);
+          Instrucs[n].destOnMatch := n + extractPar(ifMatch, ERR_SYN_PAR_IFMATCH_);
         end else begin   //EXIT sin parámetros
           Instrucs[n].actionMatch := aomExit;
         end;
       end else if inst = 'MOVE' then begin
         Instrucs[n].actionMatch := aomMovePar;  //Mover a una posición
-        Instrucs[n].destOnMatch := n + extractPar(ifMatch, hasSign, ERR_SYN_PAR_IFMATCH_);
+        Instrucs[n].destOnMatch := n + extractPar(ifMatch, ERR_SYN_PAR_IFMATCH_);
       end else begin
         raise ESynFacilSyn.Create(ERR_SYN_PAR_IFMATCH_ + ifMatch0);
       end;
@@ -667,7 +725,11 @@ begin
     end;
   end;
   if ifFail<>'' then begin
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+    ifFail := UpperCase(ifFail);
+    {$ELSE}
     ifFail := UpCase(ifFail);
+    {$ENDIF}
     while ifFail<>'' do begin
       inst := extractIns(ifFail);
       if inst = 'NEXT' then begin  //se pide avanzar al siguiente
@@ -675,13 +737,13 @@ begin
       end else if inst = 'EXIT' then begin  //se pide salir
         if HavePar(ifFail) then begin  //EXIT con parámetro
           Instrucs[n].actionFail := aomExitpar;
-          Instrucs[n].destOnFail := n + extractPar(ifFail, hasSign, ERR_SYN_PAR_IFFAIL_);
+          Instrucs[n].destOnFail := n + extractPar(ifFail, ERR_SYN_PAR_IFFAIL_);
         end else begin   //EXIT sin parámetros
           Instrucs[n].actionFail := aomExit;
         end;
       end else if inst = 'MOVE' then begin
         Instrucs[n].actionFail := aomMovePar;  //Mover a una posición
-        Instrucs[n].destOnFail := n + extractPar(ifFail, hasSign, ERR_SYN_PAR_IFFAIL_);
+        Instrucs[n].destOnFail := n + extractPar(ifFail, ERR_SYN_PAR_IFFAIL_);
       end else begin
         raise ESynFacilSyn.Create(ERR_SYN_PAR_IFFAIL_ + ifFail0);
       end;
@@ -691,11 +753,13 @@ begin
     end;
   end;
 end;
-procedure tFaTokContent.AddOneInstruct(var exp: string;
-                ifTrue: string = 'next'; ifFalse: string = 'exit';
-  TokTyp0: TSynHighlighterAttributes=nil);
-//Agrega una y solo instrucción al token por contenido. Si encuentra más de una
-//instrucción, genera una excepción.
+procedure tFaTokContent.AddOneInstruct(var exp: string; ifTrue: string; ifFalse: string;
+      atMatch: TSynHighlighterAttributes=nil; atFail: TSynHighlighterAttributes=nil);
+{Agrega una y solo instrucción al token por contenido. Si encuentra más de una
+instrucción, genera una excepción. Si se pone ifTrue en blnnco, se asumirá 'next',
+si se pone "ifFalse" en blanco, se se asumirá 'exit'.
+Este es el punto de entrada único para agregar una instrucción de Regex a
+tFaTokContent}
 var
   list: String;
   str: string;
@@ -715,30 +779,41 @@ begin
   tregChars1_:  //Es de tipo lista de caracteres [...]+
     begin
       n := AddItem(t, ifTrue, ifFalse)-1;  //agrega
-      Instrucs[n].TokTyp := TokTyp0;
+      if atMatch=nil then Instrucs[n].aMatch :=TokTyp  //toma atributo de la clase
+      else Instrucs[n].aMatch:= atMatch;
+      if atFail=nil then Instrucs[n].aFail := TokTyp   //toma atributo de la clase
+      else Instrucs[n].aFail:= atFail;
       //Configura caracteres de contenido
       for c := #0 to #255 do Instrucs[n].Chars[c] := False;
       for c in list do Instrucs[n].Chars[c] := True;
     end;
   tregString: begin      //Es de tipo texto literal
       n := AddItem(t, ifTrue, ifFalse)-1;  //agrega
-      Instrucs[n].TokTyp := TokTyp0;
+      if atMatch=nil then Instrucs[n].aMatch :=TokTyp  //toma atributo de la clase
+      else Instrucs[n].aMatch:= atMatch;
+      if atFail=nil then Instrucs[n].aFail := TokTyp   //toma atributo de la clase
+      else Instrucs[n].aFail:= atFail;
+      //configura cadena
       if CaseSensitive then Instrucs[n].Text := str
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+      else Instrucs[n].Text := UpperCase(str);  //ignora caja
+      {$ELSE}
       else Instrucs[n].Text := UpCase(str);  //ignora caja
+      {$ENDIF}
     end;
   else
     raise ESynFacilSyn.Create(ERR_UNSUPPOR_EXP_ + expr);
   end;
 end;
-procedure tFaTokContent.AddInstruct(exp: string; ifTrue: string;
-  ifFalse: string; TokTyp0: TSynHighlighterAttributes);
-//Agrega una instrucción para el procesamiento del token pro contenido.
-//Solo se dbe indicar una instrucción, de otra forma se generará un error.
+procedure tFaTokContent.AddInstruct(exp: string; ifTrue: string=''; ifFalse: string='';
+      atMatch: TSynHighlighterAttributes=nil; atFail: TSynHighlighterAttributes=nil);
+//Agrega una instrucción para el procesamiento del token por contenido.
+//Solo se debe indicar una instrucción, de otra forma se generará un error.
 var
   expr: String;
 begin
   expr := exp;   //guarda, porque se va a trozar
-  AddOneInstruct(exp, ifTrue, ifFalse, TokTyp0);  //si hay error genera excepción
+  AddOneInstruct(exp, ifTrue, ifFalse, atMatch, atFail);  //si hay error genera excepción
   //Si llegó aquí es porque se obtuvo una expresión válida, pero la
   //expresión continua.
   if exp<>'' then begin
@@ -765,7 +840,7 @@ begin
   end else begin
     //La coinicidencia puede ser parcial
     while exp<>'' do begin
-      AddOneInstruct(exp);  //en principio, siempre debe coger una expresión
+      AddOneInstruct(exp,'','');  //en principio, siempre debe coger una expresión
     end;
   end;
 end;
@@ -908,9 +983,14 @@ function TSynFacilSynBase.CreaBuscTokEspec(var mat: TArrayTokSpec; cad: string;
 {Busca o crea el token especial indicado en "cad". Si ya existe, devuelve TRUE y
  actualiza "i" con su posición. Si no existe. Crea el token especial y devuelve la
  referencia en "i". Se le debe indicar la tabla a buscar en "mat"}
-var r:TTokSpec;
+var
+  r:TTokSpec;
 begin
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+  if not CaseSensitive then cad:= UpperCase(cad);  //cambia caja si es necesario
+  {$ELSE}
   if not CaseSensitive then cad:= UpCase(cad);  //cambia caja si es necesario
+  {$ENDIF}
   if BuscTokEspec(mat, cad, i, TokPos) then exit(true);  //ya existe, devuelve en "i"
   //no existe, hay que crearlo. Aquí se definen las propiedades por defecto
   r.txt:=cad;         //se asigna el nombre
@@ -920,9 +1000,10 @@ begin
   r.dEnd:='';         //sin delimitador final
   r.pRange:=nil;      //sin función de rango
   r.folTok:=false;    //sin plegado de token
-  r.bloIni:=false;    //sin plegado de bloque
-  r.bloFin:=false;    //sin plegado de bloque
-  r.secIni:=false;    //no es sección de bloque
+  r.chrEsc := #0;       //sin caracter de escape
+  r.openBlk:=false;    //sin plegado de bloque
+  r.closeBlk:=false;    //sin plegado de bloque
+  r.OpenSec:=false;    //no es sección de bloque
   r.firstSec:=nil;     //inicialmente no abre ningún bloque
 
   i := High(mat)+1;   //siguiente posición
@@ -969,23 +1050,19 @@ begin
   Result.n:=0;         //si no encuentra devuelve 0
   for i:= 0 to n.Attributes.Length-1 do begin
     atri := n.Attributes.Item[i];
-    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-    if UpperCase(string(atri.NodeName)) = UpperCase(string(nomb)) then begin 
-    {$ELSE} 
-    if UpCase(atri.NodeName) = UpCase(nomb) then begin 
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+    if UpperCase(atri.NodeName) = UpperCase(nomb) then begin
+    {$ELSE}
+    if UpCase(atri.NodeName) = UpCase(nomb) then begin
     {$ENDIF}
       Result.hay := true;          //marca bandera
       Result.val := atri.NodeValue;  //lee valor
-      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-      Result.bol := UpperCase(string(atri.NodeValue)) = 'TRUE';  //lee valor booleano 
-      {$ELSE} 
-      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee valor booleano 
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+      Result.bol := UpperCase(atri.NodeValue) = 'TRUE';  //lee valor booleano
+      {$ELSE}
+      Result.bol := UpCase(atri.NodeValue) = 'TRUE';  //lee valor booleano
       {$ENDIF}
-      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-      cad := trim(string(atri.NodeValue));  //valor sin espacios 
-      {$ELSE} 
-      cad := trim(atri.NodeValue);  //valor sin espacios 
-      {$ENDIF}
+      cad := trim(atri.NodeValue);  //valor sin espacios
       //lee número
       if (cad<>'') and (cad[1] in ['0'..'9']) then  //puede ser número
         EsEntero(cad,Result.n); //convierte
@@ -997,10 +1074,10 @@ begin
         EsHexa(copy(cad,6,2),b);
         Result.col:=RGB(r,g,b);
       end else begin  //constantes de color
-        {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-        case UpperCase(cad) of 
-        {$ELSE} 
-        case UpCase(cad) of 
+        {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+        case UpperCase(cad) of
+        {$ELSE}
+        case UpCase(cad) of
         {$ENDIF}
         'WHITE'      : Result.col:=rgb($FF,$FF,$FF);
         'SILVER'     : Result.col:=rgb($C0,$C0,$C0);
@@ -1047,23 +1124,19 @@ begin
   //Realiza la verificación
   for i:= 0 to n.Attributes.Length-1 do begin
     atri := n.Attributes.Item[i];
-    {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-    nombre := UpperCase(string(atri.NodeName)); 
-    {$ELSE} 
-    nombre := UpCase(atri.NodeName); 
+    {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+    nombre := UpperCase(atri.NodeName);
+    {$ELSE}
+    nombre := UpCase(atri.NodeName);
     {$ENDIF}
     //verifica existencia
     hay := false;
     for j:= 0 to lisTmp.Count -1 do begin
-      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-      tmp := trim(string(lisTmp[j])); 
-      {$ELSE} 
-      tmp := trim(lisTmp[j]); 
-      {$ENDIF}
-      {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-      if nombre = UpperCase(string(tmp)) then begin
-      {$ELSE} 
-      if nombre = UpCase(tmp) then begin 
+      tmp := trim(lisTmp[j]);
+      {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+      if nombre = UpperCase(tmp) then begin
+      {$ELSE}
+      if nombre = UpCase(tmp) then begin
       {$ENDIF}
          hay := true; break;
       end;
@@ -1083,9 +1156,7 @@ var
   nf  : Integer;
   tam1: Integer;
 begin
-  fTokenID := tc.TokTyp;   //pone tipo
-//  repeat inc(posFin);
-//  until not tc.CharsToken[fLine[posFin]];
+  fTokenID := tc.TokTyp;   //No debería ser necesario ya que se asignará después.
   inc(posFin);  //para pasar al siguiente caracter
   n := 0;
   while n<tc.nInstruc do begin
@@ -1109,6 +1180,7 @@ begin
         end;
         //verifica la coincidencia
         if i = tam1 then begin //cumple
+          fTokenID := tc.Instrucs[n].aMatch;  //pone atributo
           case tc.Instrucs[n].actionMatch of
           aomNext:;   //no hace nada, pasa al siguiente elemento
           aomExit: break;    //simplemente sale
@@ -1123,6 +1195,7 @@ begin
           end;
           end;
         end else begin      //no cumple
+          fTokenID := tc.Instrucs[n].aFail;  //pone atributo
           posFin := posFin0;   //restaura posición
           case tc.Instrucs[n].actionFail of
           aomNext:;   //no hace nada, pasa al siguiente elemento
@@ -1143,6 +1216,7 @@ begin
         //debe existir solo una vez
         if tc.Instrucs[n].Chars[fLine[posFin]] then begin
           //cumple el caracter
+          fTokenID := tc.Instrucs[n].aMatch;  //pone atributo
           inc(posFin);  //pasa a la siguiente instrucción
           //Cumple el caracter
           case tc.Instrucs[n].actionMatch of
@@ -1160,6 +1234,7 @@ begin
           end;
         end else begin
           //no se encuentra ningún caracter de la lista
+          fTokenID := tc.Instrucs[n].aFail;  //pone atributo
           case tc.Instrucs[n].actionFail of
           aomNext:;   //no hace nada, pasa al siguiente elemento
           aomExit: break;    //simplemente sale
@@ -1181,6 +1256,7 @@ begin
           inc(posFin);  //pasa a la siguiente instrucción
         end;
         //siempre cumplirá este tipo, no hay nada que verificar
+        fTokenID := tc.Instrucs[n].aMatch;  //pone atributo
         case tc.Instrucs[n].actionMatch of
         aomNext:;   //no hace nada, pasa al siguiente elemento
         aomExit: break;    //simplemente sale
@@ -1201,6 +1277,8 @@ begin
           inc(posFin);
         end;
         //siempre cumplirá este tipo, no hay nada que verificar
+        fTokenID := tc.Instrucs[n].aMatch;  //pone atributo
+        //¿No debería haber código aquí también?
       end;
     tregChars1_: begin   //conjunto de caracteres: [ ... ]+
         //debe existir una o más veces
@@ -1209,6 +1287,7 @@ begin
           inc(posFin);
         end;
         if posFin>posFin0 then begin   //Cumple el caracter
+          fTokenID := tc.Instrucs[n].aMatch;  //pone atributo
           case tc.Instrucs[n].actionMatch of
           aomNext:;   //no hace nada, pasa al siguiente elemento
           aomExit: break;    //simplemente sale
@@ -1223,6 +1302,7 @@ begin
           end;
           end;
         end else begin   //No cumple
+          fTokenID := tc.Instrucs[n].aFail;  //pone atributo
           case tc.Instrucs[n].actionFail of
           aomNext:;   //no hace nada, pasa al siguiente elemento
           aomExit: break;    //simplemente sale
@@ -1379,7 +1459,11 @@ var
   i: Integer;
 begin
   Result := nil;     //por defecto es null
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+  txt := UpperCase(txt);   //ignora la caja
+  {$ELSE}
   txt := UpCase(txt);   //ignora la caja
+  {$ENDIF}
   if txt = 'EOL'        then Result := tkEol else
   if txt = 'SYMBOL'     then Result := tkSymbol else
   if txt = 'SPACE'      then Result := tkSpace else
@@ -1390,10 +1474,10 @@ begin
   if txt = 'COMMENT'    then Result := tkComment
   else begin
     for i:=0 to AttrCount-1 do begin
-        {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-        if Upcase(string(Attribute[i].Name)) = txt then 
-        {$ELSE} 
-        if Upcase(Attribute[i].Name) = txt then 
+        {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+        if Uppercase(Attribute[i].Name) = txt then
+        {$ELSE}
+        if Upcase(Attribute[i].Name) = txt then
         {$ENDIF}
           Result := Attribute[i];  //devuleve índice
     end;
@@ -1405,7 +1489,11 @@ begin
   //primera comparación
   if GetAttribByName(txt) <> nil then exit(true);
   //puede que haya sido "NULL"
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+  if UpperCase(txt) = 'NULL' then exit(true);
+  {$ELSE}
   if UpCase(txt) = 'NULL' then exit(true);
+  {$ENDIF}
   //definitivamente no es
   Result := False;
 end;
@@ -1427,10 +1515,10 @@ var
   tipTok: TSynHighlighterAttributes;
   Atrib: TSynHighlighterAttributes;
 begin
-  {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-  if UpperCase(string(nodo.NodeName)) <> 'ATTRIBUTE' then exit(false); 
-  {$ELSE} 
-  if UpCase(nodo.NodeName) <> 'ATTRIBUTE' then exit(false); 
+  {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+  if UpperCase(nodo.NodeName) <> 'ATTRIBUTE' then exit(false);
+  {$ELSE}
+  if UpCase(nodo.NodeName) <> 'ATTRIBUTE' then exit(false);
   {$ENDIF}
   Result := true;  //encontró
   ////////// Lee parámetros //////////
@@ -1462,10 +1550,10 @@ begin
      if tForeCol.hay then Atrib.Foreground:=tForeCol.col;
      if tFrameCol.hay then Atrib.FrameColor:=tFrameCol.col;
      if tFrameEdg.hay then begin
-       {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-       case UpCase(string(tFrameEdg.val)) of 
-       {$ELSE} 
-       case UpCase(tFrameEdg.val) of 
+       {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+       case UpperCase(tFrameEdg.val) of
+       {$ELSE}
+       case UpCase(tFrameEdg.val) of
        {$ENDIF}
        'AROUND':Atrib.FrameEdges:=sfeAround;
        'BOTTOM':Atrib.FrameEdges:=sfeBottom;
@@ -1474,10 +1562,10 @@ begin
        end;
      end;
      if tFrameSty.hay then begin
-       {$IFDEF HAS_NO_WIDESTRING_MANAGER} 
-       case UpCase(string(tFrameSty.val)) of 
-       {$ELSE} 
-       case UpCase(tFrameSty.val) of 
+       {$IFDEF HAS_NO_WIDESTRING_MANAGER}
+       case UpperCase(tFrameSty.val) of
+       {$ELSE}
+       case UpCase(tFrameSty.val) of
        {$ENDIF}
        'SOLID': Atrib.FrameStyle:=slsSolid;
        'DASHED':Atrib.FrameStyle:=slsDashed;
