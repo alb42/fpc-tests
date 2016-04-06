@@ -393,7 +393,7 @@ var
  AnIni : TIniFile;
  i     : Integer;
 begin
-  DebugLn('loading preferences from file ' + IniFileName);
+  //DebugLn('loading preferences from file ' + IniFileName);
   AnIni := TIniFile.Create({UTF8ToSys}(IniFilename));
   try
     with AnIni do
@@ -413,7 +413,7 @@ var
   AnIni : TIniFile;
   i     : integer;
 begin
-  DebugLn('writing preferences to file ' + IniFileName);
+  //DebugLn('writing preferences to file ' + IniFileName);
   AnIni := TIniFile.Create({UTF8ToSys}(IniFileName));
   try
     with AnIni do
@@ -563,9 +563,11 @@ begin
       // Theoreticallly now possible to use TSyntaxElement.name to retrieve the
       // languagename using SyntaxClassTypes, but alas custom LangName used by
       // synfacil is not a class function inside SynFacilSyn class.
-      DebugLn('Item ' + IntTostr(SyntaxIndex) + ' added to HighlightersList: ' + HighLighter.LanguageName);
+      //DebugLn('Item ' + IntTostr(SyntaxIndex) + ' added to HighlightersList: ' + HighLighter.LanguageName);
     end
-    else DebugLn('INFO: skipped adding syntaxitemnr ' + IntToStr(SyntaxIndex) + ' to highlighterlist');
+    else
+      //DebugLn('INFO: skipped adding syntaxitemnr ' + IntToStr(SyntaxIndex) + ' to highlighterlist');
+    ;
   end;
 end;
 

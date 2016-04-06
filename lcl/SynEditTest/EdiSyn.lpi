@@ -23,7 +23,7 @@
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
-      <DestinationDirectory Value="$(ProjPath)/published/"/>
+      <DestinationDirectory Value="$(ProjPath)\published\"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|o|so);*~;backup"/>
     </PublishOptions>
@@ -40,11 +40,10 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="19">
       <Unit0>
         <Filename Value="EdiSyn.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="EdiSyn"/>
       </Unit0>
       <Unit1>
         <Filename Value="mainunit.pas"/>
@@ -102,7 +101,6 @@
       <Unit8>
         <Filename Value="ATTabs.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="ATTabs"/>
       </Unit8>
       <Unit9>
         <Filename Value="aboutunit.pas"/>
@@ -158,6 +156,14 @@
         <Filename Value="SyntaxDeclarations.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="SynFacilBasic.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="SynFacilHighlighter.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -169,11 +175,5 @@
       <IncludeFiles Value="$(ProjOutDir)"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <Other>
-      <CompilerMessages>
-        <MsgFileName Value=""/>
-      </CompilerMessages>
-      <CompilerPath Value="$(CompPath)"/>
-    </Other>
   </CompilerOptions>
 </CONFIG>
