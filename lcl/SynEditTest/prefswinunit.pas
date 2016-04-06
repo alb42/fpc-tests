@@ -83,6 +83,8 @@ type
     AcceptCom: TButton;
     BrowseComButton: TButton;
     BrowseDirButton: TButton;
+    Label28: TLabel;
+    RememberFiles: TCheckBox;
     FontButton: TButton;
     CancelComButton: TButton;
     ChooseSaveStart: TCheckBox;
@@ -447,6 +449,7 @@ begin
   // File Handling
   UseNewTab.Checked := Prefs.OpenNewTab;
   UseFullPath.Checked := Prefs.FullPath;
+  RememberFiles.Checked := Prefs.RememberFiles;
   // selection
   UseDblSelect.Checked := Prefs.DblSelLine;
   UseBlockOverride.Checked := Prefs.BlockOverwrite;
@@ -641,6 +644,7 @@ begin
   // File Handling
   Prefs.OpenNewTab := UseNewTab.Checked;
   Prefs.FullPath := UseFullPath.Checked;
+  Prefs.RememberFiles := RememberFiles.Checked;
   // Selection
   Prefs.DblSelLine := UseDblSelect.Checked;
   Prefs.BlockOverwrite := UseBlockOverride.Checked;

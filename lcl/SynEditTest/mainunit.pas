@@ -14,7 +14,7 @@ uses
   Unix,
   {$endif}
   synexporthtml, SynEditTypes, SynEditKeyCmds, LCLType, StdCtrls, Math, ATTabs,
-  MikroStatUnit, SynHighlighterhtml, synEditTextbuffer, Process;
+  MikroStatUnit, SynHighlighterhtml, Process;
 
 const
   VERSION = '$VER: EdiSyn 0.54 (' +{$I %DATE%} +')';
@@ -148,7 +148,7 @@ type
   public
     Tabs: TATTabs;
     procedure HighLightMenuItemClick(Sender: TObject);
-    procedure LoadFile(AFileName: string);
+    procedure LoadFile(AFileName: string; MakeNewFrame: Boolean = False; HideMessages: Boolean = False);
     function AbsCount: integer;
     function CurEditor: TSynEdit;
     function CurFrame: TEditorFrame;
@@ -274,8 +274,15 @@ var
   NewFrame: TEditorFrame;
   SyntaxIndex : Integer;
   MenuItem : TMenuItem;
+  MakeNewFrame: Boolean;
+  OpenFileRecord: TOpenFiles;
 begin
   application.OnException := @HandleExceptions;
+  // set Programname for the Caption
+  ProgName := VERSION;
+  Delete(Progname, 1, 6);  // Cut Version
+  Delete(Progname, Pos('(', Progname), Length(Progname)); // Cut Date
+  AboutUnit.PrgVersion := Trim(Copy(Progname, Pos(' ', Progname), Length(Progname)));
   // Create dynamic MenuItems for Highlighter Menu
   For SyntaxIndex := 0 to Pred(SyntaxManager.ElementsCount) do
   begin
@@ -361,21 +368,40 @@ begin
     RecMenuList[i].Visible := NFile <> ''; // only show if there is something in
     RecMenuList[i].Tag := i;
   end;
-  // Load file if there is a parameter list
   NewFrame.Filename := '';
+  // Load files if saved on exit
+  MakeNewFrame := False;
+  if Prefs.RememberFiles then
+  begin
+    try
+      i := 0;
+      repeat
+        OpenFileRecord := Prefs.OpenFiles[i];
+        if OpenFileRecord.Filename <> '' then
+        begin
+          LoadFile(OpenFileRecord.Filename, MakeNewFrame, True);
+          MakeNewFrame := True;
+          CurEditor.CaretXY := OpenFileRecord.Cursor;
+        end;
+        Inc(i);
+      until (OpenFileRecord.Filename = '');
+    except
+      ;
+    end;
+  end;
+  // Load file if there is a parameter list
   if Paramcount > 0 then
   begin
     try
-      LoadFile(ParamStr(1)); // Try to load the file will set CurFrame.Filename
+      for i := 1 to Paramcount do
+      begin
+        LoadFile(ParamStr(i), MakeNewFrame, True); // Try to load the file will set CurFrame.Filename
+        MakeNewFrame := True;
+      end;
     except
-      NewFrame.Filename := '';
+      ;
     end;
   end;
-  // set Programname for the Caption
-  ProgName := VERSION;
-  Delete(Progname, 1, 6);  // Cut Version
-  Delete(Progname, Pos('(', Progname), Length(Progname)); // Cut Date
-  AboutUnit.PrgVersion := Trim(Copy(Progname, Pos(' ', Progname), Length(Progname)));
   // Init Mikrostats set everything twice, to init (because it compares for equal values)
   MikroStat.Highlighter := '';
   MikroStat.Changed := True;
@@ -386,17 +412,39 @@ begin
   UpdateUserMenu;
   // Update Titlebar, status bar
   UpdateTitlebar;
-  ResetChanged;
+  //ResetChanged;
   UpdateStatusBar;
 end;
 
 procedure TMainWindow.FormDestroy(Sender: TObject);
+var
+  i: Integer;
+  OpenFileRecord: TOpenFiles;
+  EdFrame: TEditorFrame;
 begin
   // save The current position for next run
   Prefs.XPos := Left;
   Prefs.YPos := Top;
   Prefs.Width := Width;
   Prefs.Height := Height;
+  if Prefs.RememberFiles then
+  begin
+    for i := 0 to Tabs.TabCount - 1 do
+    begin
+      EdFrame := nil;
+      if Assigned(Tabs.GetTabData(i)) then
+        EdFrame := TEditorFrame(Tabs.GetTabData(i).TabObject);
+      if Assigned(EdFrame) then
+      begin
+        OpenFileRecord.Filename := EdFrame.Filename;
+        OpenFileRecord.Cursor := EdFrame.Editor.CaretXY;
+        Prefs.OpenFiles[i] := OpenFileRecord;
+      end;
+    end;
+    OpenFileRecord.Filename := '';
+    OpenFileRecord.Cursor := Point(0, 0);
+    Prefs.OpenFiles[Tabs.TabCount] := OpenFileRecord;
+  end;
   // Recent File list
   RecFileList.Free;
 end;
@@ -427,13 +475,14 @@ end;
 procedure TMainWindow.MenuPrintClick(Sender: TObject);
 var
   F: File;
-  i, num: Integer;
+  i: Integer;
   str: string;
 begin
   {$I-}
   AssignFile(F, 'PRT:');
   Rewrite(F,1);
   {$I+}
+  i := 0;
   if IOResult = 0 then
   begin
     str := #27'[4w' + CurEditor.Lines.Text + #0;
@@ -818,7 +867,7 @@ begin
   UpdateTitlebar;
   EditorPanel.EndUpdateBounds;
   Frame := TEditorFrame(Tabs.GetTabData(Tabs.TabIndex).TabObject);
-  if EditorPanel.Visible then
+  if Visible and EditorPanel.Visible then
     Frame.Editor.SetFocus;
   // writeln('leave - MainUnit.TabClickEvent');
 end;
@@ -892,7 +941,8 @@ begin
 
   EditorPanel.Visible := True;
 
-  NewFrame.Editor.SetFocus;
+  if Visible then
+    NewFrame.Editor.SetFocus;
 
 end;
 
@@ -946,7 +996,6 @@ end;
 procedure TMainWindow.AutoHighlighter;
 var
   Ext: string;
-  i: integer;
   SyntaxIndex: Integer;
 begin
   if AutoMenu.Checked then
@@ -1030,7 +1079,7 @@ begin
   Caption := Progname + ' - ' + IntToStr(Tabs.TabIndex + 1) + ': ' + DispName;
 end;
 
-procedure TMainWindow.LoadFile(AFileName: string);
+procedure TMainWindow.LoadFile(AFileName: string; MakeNewFrame: Boolean = False; HideMessages: Boolean = False);
 var
   Res: integer;
   i: integer;
@@ -1048,7 +1097,7 @@ begin
     if LowerCase(TEditorFrame(Tabs.GetTabData(i).TabObject).Filename) =
       lowercase(AFilename) then
     begin
-      if i <> Tabs.TabIndex then
+      if (i <> Tabs.TabIndex) and (not HideMessages) then
       begin
         Res := MessageDlg('Already open', 'This file is already open in Tab ' +
           IntToStr(i + 1) + #13#10 + 'Change to this Tab, instead of loading?',
@@ -1064,14 +1113,14 @@ begin
         KeepSameTab := True;
     end;
   end;
-  if Prefs.OpenNewTab and (not CurEditor.Modified) and (not KeepSameTab) then
+  if (Prefs.OpenNewTab and (not CurEditor.Modified) and (not KeepSameTab)) or MakeNewFrame then
   begin
-    if Length(CurEditor.Lines.Text) > 1 then
+    if (Length(CurEditor.Lines.Text) > 1) or MakeNewFrame then
       Self.TabPlusClickEvent(nil);
   end
   else
   begin
-    if CurEditor.Modified then
+    if CurEditor.Modified and not HideMessages then
     begin
       Res := MessageDlg('Unsaved Data',
         'There are unsaved changes in this Tab.'#13#10'Do you really want to close it?',
@@ -1083,7 +1132,14 @@ begin
   try
     CurEditor.Lines.LoadFromFile(AFilename);
   except
-    ShowMessage('Cannot open File: "' + AFilename + '"');
+    if not HideMessages then
+      ShowMessage('Cannot open File: "' + AFilename + '"');
+    CurFrame.Filename := AFileName;
+    CurFrame.Editor.Modified := True;
+    Tabs.GetTabData(Tabs.TabIndex).TabModified := True;
+    AutoHighlighter;
+    UpdateTitlebar;
+    Prefs.InitialDir := ExtractFilePath(CurFrame.FileName);
     Exit;
   end;
   CurFrame.Filename := AFileName;

@@ -39,6 +39,11 @@ type
     ShortCut: TShortCut;
   end;
 
+  TOpenFiles = record
+    Filename: string;
+    Cursor: TPoint;
+  end;
+
   { TPrefs }
 
   TPrefs = class
@@ -63,6 +68,7 @@ type
     function GetInitialDir: string;
     function GetLineNumbers: boolean;
     function GetLineSkipNum: integer;
+    function GetOpenFile(Idx: Integer): TOpenFiles;
     function GetOpenNewTab: Boolean;
     function GetOutHeight: integer;
     function GetOutWidth: integer;
@@ -72,6 +78,7 @@ type
     function GetPromptReplace: boolean;
     function GetRecFile(Idx: integer): string;
     function GetRegExp: boolean;
+    function GetRememberFiles: Boolean;
     function GetSAllRecursive: boolean;
     function GetSearchAllMode: Integer;
     function GetSearchBegin: boolean;
@@ -109,6 +116,7 @@ type
     procedure SetInitialDir(AValue: string);
     procedure SetLineNumbers(AValue: boolean);
     procedure SetLineSkipNum(AValue: integer);
+    procedure SetOpenFile(Idx: Integer; AValue: TOpenFiles);
     procedure SetOpenNewTab(AValue: Boolean);
     procedure SetOutHeight(AValue: integer);
     procedure SetOutWidth(AValue: integer);
@@ -118,6 +126,7 @@ type
     procedure SetPromptReplace(AValue: boolean);
     procedure SetRecFile(Idx: integer; AValue: string);
     procedure SetRegExp(AValue: boolean);
+    procedure SetRememberFiles(AValue: Boolean);
     procedure SetSAllRecursive(AValue: boolean);
     procedure SetSearchAllMode(AValue: Integer);
     procedure SetSearchBegin(AValue: boolean);
@@ -153,6 +162,7 @@ type
     property Width: integer read GetWidth write SetWidth;
     property Height: integer read GetHeight write SetHeight;
     property RecentFiles[Idx: integer]: string read GetRecFile write SetRecFile;
+    property OpenFiles[Idx: Integer]: TOpenFiles read GetOpenFile write SetOpenFile;
     property AutoHighlighter: boolean read GetAutoHighlighter write SetAutoHighlighter;
     property DefHighlighter: integer read GetDefHighlighter write SetHighlighter;
 
@@ -170,6 +180,7 @@ type
     // File Handling
     property FullPath: boolean read GetFullPath write SetFullPath;
     property OpenNewTab: Boolean read GetOpenNewTab write SetOpenNewTab;
+    property RememberFiles: Boolean read GetRememberFiles write SetRememberFiles;
     // Selection
     property DblSelLine: Boolean read GetDblSelLine write SetDblSelLine;
     property BlockOverwrite: Boolean read GetBlockOverwrite write SetBlockOverwrite;
@@ -388,9 +399,21 @@ begin
   IniFile.WriteString(SECTION_FILES, 'Recent_' + IntToStr(Idx), AValue);
 end;
 
+procedure TPrefs.SetOpenFile(Idx: Integer; AValue: TOpenFiles);
+begin
+  IniFile.WriteString(SECTION_FILES, 'File_' + IntToStr(Idx), AValue.Filename);
+  IniFile.WriteInteger(SECTION_FILES, 'FilePosX_' + IntToStr(Idx), AValue.Cursor.X);
+  IniFile.WriteInteger(SECTION_FILES, 'FilePosY_' + IntToStr(Idx), AValue.Cursor.Y);
+end;
+
 procedure TPrefs.SetRegExp(AValue: boolean);
 begin
   IniFile.WriteBool(SECTION_SEARCH, 'RegularExpression', AValue);
+end;
+
+procedure TPrefs.SetRememberFiles(AValue: Boolean);
+begin
+  IniFile.WriteBool(SECTION_FILES, 'RememberFiles', AValue);
 end;
 
 procedure TPrefs.SetSAllRecursive(AValue: boolean);
@@ -617,9 +640,21 @@ begin
   Result := IniFile.ReadString(SECTION_FILES, 'Recent_' + IntToStr(Idx), '');
 end;
 
+function TPrefs.GetOpenFile(Idx: Integer): TOpenFiles;
+begin
+  Result.Filename := IniFile.ReadString(SECTION_FILES, 'File_' + IntToStr(Idx), '');
+  Result.Cursor.X := IniFile.ReadInteger(SECTION_FILES, 'FilePosX_' + IntToStr(Idx), 0);
+  Result.Cursor.Y := IniFile.ReadInteger(SECTION_FILES, 'FilePosY_' + IntToStr(Idx), 0);
+end;
+
 function TPrefs.GetRegExp: boolean;
 begin
   Result := IniFile.ReadBool(SECTION_SEARCH, 'RegularExpression', False);
+end;
+
+function TPrefs.GetRememberFiles: Boolean;
+begin
+  Result := IniFile.ReadBool(SECTION_FILES, 'RememberFiles', False);
 end;
 
 function TPrefs.GetSAllRecursive: boolean;
