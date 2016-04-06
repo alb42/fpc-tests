@@ -17,7 +17,7 @@ uses
   MikroStatUnit, SynHighlighterhtml, Process;
 
 const
-  VERSION = '$VER: EdiSyn 0.54 (' +{$I %DATE%} +')';
+  VERSION = '$VER: EdiSyn 0.55 (' +{$I %DATE%} +')';
 
 
 type
@@ -274,8 +274,6 @@ var
   NewFrame: TEditorFrame;
   SyntaxIndex : Integer;
   MenuItem : TMenuItem;
-  MakeNewFrame: Boolean;
-  OpenFileRecord: TOpenFiles;
 begin
   application.OnException := @HandleExceptions;
   // set Programname for the Caption
@@ -369,39 +367,7 @@ begin
     RecMenuList[i].Tag := i;
   end;
   NewFrame.Filename := '';
-  // Load files if saved on exit
-  MakeNewFrame := False;
-  if Prefs.RememberFiles then
-  begin
-    try
-      i := 0;
-      repeat
-        OpenFileRecord := Prefs.OpenFiles[i];
-        if OpenFileRecord.Filename <> '' then
-        begin
-          LoadFile(OpenFileRecord.Filename, MakeNewFrame, True);
-          MakeNewFrame := True;
-          CurEditor.CaretXY := OpenFileRecord.Cursor;
-        end;
-        Inc(i);
-      until (OpenFileRecord.Filename = '');
-    except
-      ;
-    end;
-  end;
-  // Load file if there is a parameter list
-  if Paramcount > 0 then
-  begin
-    try
-      for i := 1 to Paramcount do
-      begin
-        LoadFile(ParamStr(i), MakeNewFrame, True); // Try to load the file will set CurFrame.Filename
-        MakeNewFrame := True;
-      end;
-    except
-      ;
-    end;
-  end;
+
   // Init Mikrostats set everything twice, to init (because it compares for equal values)
   MikroStat.Highlighter := '';
   MikroStat.Changed := True;
@@ -450,9 +416,46 @@ begin
 end;
 
 procedure TMainWindow.FormShow(Sender: TObject);
+var
+  MakeNewFrame: Boolean;
+  i: Integer;
+  OpenFileRecord: TOpenFiles;
 begin
   // Move/Size the window to the previous saved parameters
   SetBounds(Prefs.XPos, Prefs.YPos, Prefs.Width, Prefs.Height);
+  // Load files if saved on exit
+  MakeNewFrame := False;
+  if Prefs.RememberFiles then
+  begin
+    try
+      i := 0;
+      repeat
+        OpenFileRecord := Prefs.OpenFiles[i];
+        if OpenFileRecord.Filename <> '' then
+        begin
+          LoadFile(OpenFileRecord.Filename, MakeNewFrame, True);
+          MakeNewFrame := True;
+          CurEditor.CaretXY := OpenFileRecord.Cursor;
+        end;
+        Inc(i);
+      until (OpenFileRecord.Filename = '');
+    except
+      ;
+    end;
+  end;
+  // Load file if there is a parameter list
+  if Paramcount > 0 then
+  begin
+    try
+      for i := 1 to Paramcount do
+      begin
+        LoadFile(ParamStr(i), MakeNewFrame, True); // Try to load the file will set CurFrame.Filename
+        MakeNewFrame := True;
+      end;
+    except
+      ;
+    end;
+  end;
 end;
 
 procedure TMainWindow.GoToLineMenuClick(Sender: TObject);
