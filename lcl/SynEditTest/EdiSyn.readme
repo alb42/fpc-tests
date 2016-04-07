@@ -77,6 +77,12 @@ Ctrl + Shift + F2          Next Tab
 
 History:
 
+0.55
+  ADD: Remember open files on close, open them on next EdiSyn start
+  CHG: Open multiple files via start parameters
+  CHG: not existing file name parameter as as default save name
+  FIX: Delayed loding errors
+
 0.54
   FIX: Restored default highlighter colors
   FIX: Hint marker for freepascal output
