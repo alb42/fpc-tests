@@ -1,36 +1,29 @@
-program class1;
+program class3;
 {$mode objfpc}{$H+}
 
 //***************************************************************************
 // Here is the beginning of our simple new class...                         *
 //***************************************************************************
 
-{.$define WORKING_COORDS}
-
-
-// This is an example for the simplest possible MUI class. It's just some
-// kind of custom image and supports only two methods:
-// MUIM_AskMinMax and MUIM_Draw.
-
-// This is the instance data for our custom class.
-// Since it's a very simple class, it contains just a dummy entry.
-
 uses
   {$if defined(MorphOS) or defined(Amiga)}
   amigalib,
   {$endif}
-  Exec, Utility, intuition, agraphics, AmigaDos, mui, muihelper;
+  sysutils, Exec, Utility, intuition, agraphics, AmigaDos, mui, muihelper;
 
+
+// This is the instance data for our custom class.
 type
   TMyData = record
-    dummy: LongInt;
+    x, y, sx, sy: LongInt;
   end;
+  PMyData = ^TMyData;
 
 // AskMinMax method will be called before the window is opened
 // and before layout takes place. We need to tell MUI the
 // minimum, maximum and default size of our object.
 
-function mAskMinMax(cl: PIClass; Obj: PObject_; Msg: PMUIP_AskMinMax): PtrUInt;
+function mAskMinMax(cl: PIClass; Obj: PObject_; Msg: PMUIP_AskMinMax): longword;
 begin
   mAskMinMax := 0;
 
@@ -57,15 +50,14 @@ end;
 // Note: You may only render within the rectangle
 //       OBJ_mleft(obj), OBJ_mtop(obj), OBJ_mwidth(obj), OBJ_mheight(obj).
 
-function mDraw(cl: PIClass; Obj: PObject_; Msg: PMUIP_Draw): PtrUInt;
+function mDraw(cl: PIClass; Obj: PObject_; Msg: PMUIP_Draw): longword;
 var
   i: Integer;
-  {$ifdef WORKING_COORDS}
-  x,y: Integer;
-  {$endif}
+  Data: PMyData;
+  p: PLongWord;
 begin
   mDraw := 0;
-
+  Data := INST_DATA(cl, Pointer(obj));
   // let our superclass draw itself first, area class would
   // e.g. draw the frame and clear the whole region. What
   // it does exactly depends on msg->flags.
@@ -74,40 +66,109 @@ begin
 
   // if MADF_DRAWOBJECT isn't set, we shouldn't draw anything.
   // MUI just wanted to update the frame or something like that.
-
-  if (Msg^.flags and MADF_DRAWOBJECT) = 0 then
-    Exit;
-
-  // ok, everything ready to render...
-  {$ifdef WORKING_COORDS}
-  i := OBJ_dri(obj)^.dri_Pens[TEXTPEN];
-  SetAPen(OBJ_rp(obj), i);
-  {$else}
-  SetAPen(OBJ_rp(obj), OBJ_dri(obj)^.dri_Pens[TEXTPEN]);
-  {$endif}
-
-  i := OBJ_mleft(obj);
-  while i <= OBJ_mright(obj) do
+  P := Pointer(Msg);
+  for i := 0 to 3 do
   begin
-    {$ifdef WORKING_COORDS}
-    x := OBJ_mleft(obj);
-    y := OBJ_mbottom(obj);
-    GFXMove(OBJ_rp(obj), x, y);
-    y := OBJ_mtop(obj);
-    Draw(OBJ_rp(obj), i, y);
-    x := OBJ_mright(obj);
-    y := OBJ_mbottom(obj);
-    GFXMove(OBJ_rp(obj), x, y);
-    y := OBJ_mtop(obj);
-    Draw(OBJ_rp(obj), i, y);
-    {$else}
-    GFXMove(OBJ_rp(obj), OBJ_mleft(obj), OBJ_mbottom(obj));
-    Draw(OBJ_rp(obj), i, OBJ_mtop(obj));
-    GFXMove(OBJ_rp(obj), OBJ_mright(obj), OBJ_mbottom(obj));
-    Draw(OBJ_rp(obj), i, OBJ_mtop(obj));
-    {$endif}
-    Inc(i, 5);
+  //  writeln(i, ' Msg: $', IntToHex(P^, 8));
+  //  Inc(P);
+  end;
+  //writeln('Msg1: $', IntToHex(Msg^.MethodID, 8));
+  //writeln('Msg2: $', IntToHex(Msg^.flags, 8));
+  //writeln(' Size: ', SizeOf(Msg^));
+  if (Msg^.flags and MADF_DRAWUPDATE) <> 0 then
+  begin
+    if (data^.sx <> 0) or (data^.sy <> 0) then
+    begin
+      SetBPen(OBJ_rp(obj), OBJ_dri(obj)^.dri_Pens[SHINEPEN]);
+      ScrollRaster(OBJ_rp(obj), data^.sx, data^.sy, OBJ_mleft(obj), OBJ_mtop(obj), OBJ_mright(obj), OBJ_mbottom(obj));
+      SetBPen(OBJ_rp(obj), 0);
+      data^.sx := 0;
+      data^.sy := 0;
+    end
+    else
+    begin
+      SetAPen(OBJ_rp(obj), OBJ_dri(obj)^.dri_Pens[SHADOWPEN]);
+      WritePixel(OBJ_rp(obj), Data^.x, Data^.y);
+    end;
   end
+  else
+  begin
+    if (Msg^.flags and MADF_DRAWOBJECT) <> 0 then
+    begin
+      SetAPen(OBJ_rp(obj), OBJ_dri(obj)^.dri_Pens[SHINEPEN]);
+      RectFill(OBJ_rp(obj), OBJ_mleft(obj), OBJ_mtop(obj), OBJ_mright(obj), OBJ_mbottom(obj));
+    end;
+  end;
+end;
+
+function mSetup(cl: PIClass; Obj: PObject_; Msg: PMUIP_Setup): PtrUInt;
+begin
+  DoSuperMethodA(Cl, Obj, Msg);
+  MUI_RequestIDCMP(Obj, IDCMP_MOUSEBUTTONS or IDCMP_RAWKEY);
+
+  mSetup := MUI_TRUE;
+end;
+
+function mCleanup(cl: PIClass; Obj: PObject_; Msg: PMUIP_Setup): PtrUInt;
+begin
+  MUI_RejectIDCMP(Obj, IDCMP_MOUSEBUTTONS or IDCMP_RAWKEY);
+
+  mCleanup := DoSuperMethodA(Cl, Obj, Msg);
+end;
+
+function mHandleInput(cl: PIClass; Obj: PObject_; Msg: PMUIP_HandleInput): PtrUInt;
+var
+  Data: PMyData;
+begin
+  Data := INST_DATA(cl, Pointer(obj));
+  if Assigned(msg^.imsg) then
+  begin
+    case msg^.imsg^.IClass of
+      IDCMP_MOUSEBUTTONS: begin
+        if msg^.imsg^.Code = SELECTDOWN then
+        begin
+          if OBJ_IsInObject(msg^.imsg^.MouseX, msg^.imsg^.MouseY, obj) then
+          begin
+            data^.x := msg^.imsg^.MouseX;
+            data^.y := msg^.imsg^.MouseY;
+            MUI_Redraw(obj, MADF_DRAWUPDATE);
+            MUI_RequestIDCMP(obj, IDCMP_MOUSEMOVE);
+          end;
+        end
+        else
+          MUI_RejectIDCMP(obj, IDCMP_MOUSEMOVE);
+      end;
+      IDCMP_MOUSEMOVE: begin
+        if OBJ_IsInObject(msg^.imsg^.MouseX, msg^.imsg^.MouseY, obj) then
+        begin
+          data^.x := msg^.imsg^.MouseX;
+          data^.y := msg^.imsg^.MouseY;
+          MUI_Redraw(obj, MADF_DRAWUPDATE);
+        end;
+      end;
+      IDCMP_RAWKEY: begin
+        case msg^.imsg^.code of
+          CURSORLEFT: begin
+            Data^.sx := -1;
+            MUI_Redraw(obj, MADF_DRAWUPDATE);
+          end;
+          CURSORRIGHT: begin
+            Data^.sx := 1;
+            MUI_Redraw(obj, MADF_DRAWUPDATE);
+          end;
+          CURSORUP: begin
+            Data^.sy := -1;
+            MUI_Redraw(obj, MADF_DRAWUPDATE);
+          end;
+          CURSORDOWN: begin
+            Data^.sy := 1;
+            MUI_Redraw(obj, MADF_DRAWUPDATE);
+          end;
+        end;
+      end;
+    end;
+  end;
+  mHandleInput := DoSuperMethodA(Cl, Obj, Msg);
 end;
 
 // Here comes the dispatcher for our custom class. We only need to
@@ -117,8 +178,11 @@ end;
 function MyDispatcher(cl: PIClass; Obj: PObject_; Msg: intuition.PMsg): PtrUInt;
 begin
   case Msg^.MethodID of
+    MUIM_Setup: MyDispatcher := mSetup(cl, Obj, Pointer(Msg));
+    MUIM_Cleanup: MyDispatcher := mCleanup(cl, Obj, Pointer(Msg));
     MUIM_AskMinMax: MyDispatcher := mAskMinMax(cl, Obj, Pointer(Msg));
     MUIM_Draw: MyDispatcher := mDraw(cl, Obj, Pointer(Msg));
+    MUIM_HandleInput: MyDispatcher := mHandleInput(cl, Obj, Pointer(Msg));
     else
       MyDispatcher := DoSuperMethodA(cl, obj, msg);
   end;
@@ -148,21 +212,25 @@ begin
       Exit;
     end;
     App := MH_Application([
-      MUIA_Application_Title,       AsTag('Class1'),
-      MUIA_Application_Version,     AsTag('$VER: Class1 19.5 (12.02.97)'),
+      MUIA_Application_Title,       AsTag('Class3'),
+      MUIA_Application_Version,     AsTag('$VER: Class3 19.5 (12.02.97)'),
       MUIA_Application_Copyright,   AsTag('©1993, Stefan Stuntz'),
       MUIA_Application_Author,      AsTag('Stefan Stuntz'),
       MUIA_Application_Description, AsTag('Demonstrate the use of custom classes.'),
-      MUIA_Application_Base,        AsTag('CLASS1'),
+      MUIA_Application_Base,        AsTag('Class3'),
 
       SubWindow, AsTag(MH_Window(Window, [
-        MUIA_Window_Title, AsTag('A Simple Custom Class'),
-        MUIA_Window_ID,    MAKE_ID('C','L','S','1'),
-        WindowContents, AsTag(MH_HGroup([
+        MUIA_Window_Title, AsTag('A rather complex custom class'),
+        MUIA_Window_ID,    MAKE_ID('C','L','S','3'),
+        WindowContents, AsTag(MH_VGroup([
+
+          Child, AsTag(MH_Text(
+            PChar(MUIX_C + 'Paint with mouse,'#10'scroll with cursor keys.'), [
+            MUIA_Background, MUII_TextBack,
+            TAG_DONE])),
 
           Child, AsTag(MH_NewObject(MyObj, mcc^.mcc_Class, nil, [
             MUIA_Frame, MUIV_Frame_Text,
-            MUIA_Background, MUII_BACKGROUND,
             TAG_DONE])),
 
           TAG_DONE])),

@@ -187,10 +187,8 @@ begin
   // if MADF_DRAWOBJECT isn't set, we shouldn't draw anything.
   // MUI just wanted to update the frame or something like that.
 
-  {$ifndef AROS} // on AROS it does not work, flags is always 0
   if (Msg^.flags and MADF_DRAWOBJECT) = 0 then
     Exit;
-  {$endif}
 
   // test if someone changed our pen
   if Data^.PenChange then
