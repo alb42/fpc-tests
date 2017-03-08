@@ -8,7 +8,7 @@ program class2;
 {.$define WORKING_COORDS}
 
 uses
-  {$if defined(MorphOS) or defined(Amiga)}
+  {$if defined(MorphOS) or defined(Amiga68k)}
   amigalib,
   {$endif}
   Exec, Utility, intuition, agraphics, AmigaDos, mui, muihelper;

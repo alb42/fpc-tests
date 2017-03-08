@@ -1,7 +1,7 @@
-program Layout;
+program Popup;
 {$mode objfpc}{$H+}
 uses
-  {$if defined(MorphOS) or defined(Amiga)}
+  {$if defined(MorphOS) or defined(Amiga68k)}
   amigalib,
   {$endif}
   sysUtils, Exec, Utility, intuition, agraphics, AmigaDos, ASL, mui, muihelper;

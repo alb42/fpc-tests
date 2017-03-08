@@ -16,7 +16,7 @@ program class1;
 // Since it's a very simple class, it contains just a dummy entry.
 
 uses
-  {$if defined(MorphOS) or defined(Amiga)}
+  {$if defined(MorphOS) or defined(Amiga68k)}
   amigalib,
   {$endif}
   Exec, Utility, intuition, agraphics, AmigaDos, mui, muihelper;

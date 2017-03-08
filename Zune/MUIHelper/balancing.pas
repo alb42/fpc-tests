@@ -1,7 +1,7 @@
 program balancing;
 
 uses
-  {$if defined(MorphOS) or defined(Amiga)}
+  {$if defined(MorphOS) or defined(Amiga68k)}
   amigalib,
   {$endif}
   Exec, Utility, intuition, AmigaDos, mui, muihelper;

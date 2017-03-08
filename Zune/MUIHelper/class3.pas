@@ -6,7 +6,7 @@ program class3;
 //***************************************************************************
 
 uses
-  {$if defined(MorphOS) or defined(Amiga)}
+  {$if defined(MorphOS) or defined(Amiga68k)}
   amigalib,
   {$endif}
   sysutils, Exec, Utility, intuition, agraphics, AmigaDos, mui, muihelper;
